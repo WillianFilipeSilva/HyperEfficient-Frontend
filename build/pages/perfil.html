@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/logo.svg" />
+    <link rel="icon" type="image/png" href="../assets/img/logo.svg" />
+    <title>HyperEfficient - Perfil</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <link href="../assets/css/dashboard-tailwind.css" rel="stylesheet" />
+  </head>
+  <body class="m-0 font-sans antialiased font-normal dark:bg-slate-900 text-base leading-default bg-gray-50 text-slate-500">
+    <div class="absolute bg-y-50 w-full top-0 min-h-75">
+      <span class="absolute top-0 left-0 w-full h-full bg-blue-500 opacity-60"></span>
+    </div>
+
+    <aside class="fixed inset-y-0 flex-wrap items-center justify-between block w-full p-0 my-4 overflow-y-auto antialiased transition-transform duration-200 -translate-x-full bg-white border-0 shadow-xl dark:shadow-none dark:bg-slate-850 xl:ml-6 max-w-64 ease-nav-brand z-990 rounded-2xl xl:left-0 xl:translate-x-0" aria-expanded="false">
+      <div class="h-19">
+        <i class="absolute top-0 right-0 p-4 opacity-50 cursor-pointer fas fa-times dark:text-white text-slate-400 xl:hidden" sidenav-close></i>
+        <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap dark:text-white text-slate-700" href="dashboard.html" target="_blank">
+          <img src="../assets/img/logo.svg" class="inline h-full max-w-full transition-all duration-200 dark:hidden ease-nav-brand max-h-8" alt="main_logo" />
+          <img src="../assets/img/logo.svg" class="hidden h-full max-w-full transition-all duration-200 dark:inline ease-nav-brand max-h-8" alt="main_logo" />
+          <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand">HyperEfficient</span>
+        </a>
+      </div>
+
+      <hr class="h-px mt-0 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent" />
+
+      <div class="items-center block w-auto max-h-screen overflow-auto h-sidenav grow basis-full">
+        <ul class="flex flex-col pl-0 mb-0">
+
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors dark:text-white dark:opacity-80" href="dashboard.html">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 text-sm leading-normal text-blue-500 ni ni-tv-2"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Dashboard</span>
+            </a>
+          </li>
+          
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors dark:text-white dark:opacity-80" href="listagem.html">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 leading-normal text-orange-500 ni ni-calendar-grid-58 text-sm"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Listagem</span>
+            </a>
+          </li>
+
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors dark:text-white dark:opacity-80" href="../pages/Setor/listagem-setor.html">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 leading-normal text-blue-500 ni ni-building text-sm"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Setores</span>
+            </a>
+          </li>
+
+          <li class="w-full mt-4">
+            <h6 class="pl-6 ml-2 font-bold leading-tight uppercase dark:text-white text-xs opacity-60">Usuario</h6>
+          </li>
+
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 bg-blue-500/13 dark:text-white dark:opacity-80 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap rounded-lg px-4 font-semibold text-slate-700 transition-colors" href="perfil.html">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 leading-normal text-slate-700 ni ni-single-02 text-sm"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Perfil</span>
+            </a>
+          </li>
+
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors dark:text-white dark:opacity-80" href="login.html">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 text-sm leading-normal text-orange-500 ni ni-single-copy-04"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Login</span>
+            </a>
+          </li>
+
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors dark:text-white dark:opacity-80" href="cadastro.html">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 text-sm leading-normal text-cyan-500 ni ni-collection"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Cadastrar</span>
+            </a>
+          </li>
+
+          <li class="mt-0.5 w-full">
+            <a class="py-2.7 text-sm ease-nav-brand my-0 mx-2 flex items-center whitespace-nowrap px-4 transition-colors dark:text-white dark:opacity-80" href="javascript:;" id="logoutBtn">
+              <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                <i class="relative top-0 leading-normal text-red-500 text-sm ni ni-button-power"></i>
+              </div>
+              <span class="ml-1 duration-300 opacity-100 pointer-events-none ease">Sair</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+
+    <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
+      <!-- Navbar -->
+      <nav class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all ease-in shadow-none duration-250 rounded-2xl lg:flex-nowrap lg:justify-start" navbar-main navbar-scroll="false">
+        <div class="flex items-center justify-between w-full mx-auto flex-wrap-inherit">
+          <nav>
+            <ol class="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
+              <li class="text-sm leading-normal">
+                <a class="text-white opacity-50" href="javascript:;">Páginas</a>
+              </li>
+              <li class="text-sm pl-2 capitalize leading-normal text-white before:float-left before:pr-2 before:text-white before:content-['/']" aria-current="page">Perfil</li>
+            </ol>
+            <h6 class="mb-0 font-bold text-white capitalize">Perfil</h6>
+          </nav>
+
+          <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
+            <div class="flex items-center md:ml-auto">
+              <div class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease">
+                <span class="text-sm ease leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
+                  <i class="fas fa-search"></i>
+                </span>
+                <input type="text" class="pl-9 text-sm focus:shadow-primary-outline ease w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow" placeholder="Buscar" />
+              </div>
+              
+              <!-- Informações do usuário logado -->
+              <div class="flex items-center ml-4">
+                <div class="flex items-center">
+                  <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span class="text-white text-sm font-semibold" id="userInitials">U</span>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-white" id="userName">Usuário</p>
+                    <p class="text-xs text-white opacity-75" id="userEmail">usuario@email.com</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="w-full px-6 py-6 mx-auto">
+        <div class="relative flex flex-col flex-auto overflow-hidden break-words bg-white border-0 dark:bg-slate-850 dark:shadow-dark-xl shadow-3xl rounded-2xl bg-clip-border">
+          <div class="flex flex-wrap">
+            <div class="flex-none w-auto max-w-full px-3 pt-2">
+              <div class="relative inline-flex items-center justify-center text-white transition-all duration-200 ease-in-out text-base rounded-xl">
+                <div class="h-15 w-15 shadow-2xl rounded-10 bg-blue-500 flex items-center justify-center">
+                  <span class="text-2xl font-bold text-white" id="profileInitials">U</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex-none w-auto max-w-full px-3 my-auto">
+              <div class="h-full">
+                <h5 class="mb-1 dark:text-white" id="profileName">Carregando...</h5>
+                <p class="mb-0 text-sm text-slate-600 dark:text-white/80" id="profileEmail">carregando@email.com</p>
+                <p class="mb-0 text-xs text-slate-500 dark:text-white/60" id="profileStatus">Status: Carregando...</p>
+              </div>
+            </div>
+            <div class="w-full max-w-full px-3 mx-auto mt-4 sm:my-auto sm:mr-0 md:w-1/2 md:flex-none lg:w-4/12">
+                <button type="button" id="editButton" class="z-30 flex items-center flex justify-end w-full px-3 py-1 mb-0 transition-colors ease-in-out border-0 rounded-lg bg-inherit text-slate-700 hover:bg-blue-50" role="button">
+                  <i class="ni ni-settings-gear-65"></i>
+                  <span class="ml-2">Editar Perfil</span>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="w-full px-6 mx-auto">
+        <div class="flex flex-wrap mx-3">
+          <div class="w-full">
+            <div class="relative flex flex-col min-w-0 break-words bg-white border-0 shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+              <div class="border-black/12.5 rounded-t-2xl border-b-0 border-solid p-6 pb-0">
+                <div class="flex items-center">
+                  <p class="mb-0 dark:text-white/80">Informações do Perfil</p>
+                  <button type="button" id="saveButton" class="hidden inline-block px-8 py-2 mb-4 ml-auto font-bold leading-normal text-center text-white align-middle transition-all ease-in bg-green-500 border-0 rounded-lg shadow-md cursor-pointer text-xs tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">
+                    <span data-text>Salvar Alterações</span>
+                    <span data-loading class="hidden">Salvando...</span>
+                  </button>
+                  <button type="button" id="cancelButton" class="hidden inline-block px-8 py-2 mb-4 ml-2 font-bold leading-normal text-center text-white align-middle transition-all ease-in bg-gray-500 border-0 rounded-lg shadow-md cursor-pointer text-xs tracking-tight-rem hover:shadow-xs hover:-translate-y-px active:opacity-85">Cancelar</button>
+                </div>
+              </div>
+              <div class="flex-auto p-6">
+                <div class="flex flex-wrap -mx-3">
+                  <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+                    <div class="mb-4">
+                      <label for="name" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Nome</label>
+                      <input type="text" id="nameInput" name="name" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" disabled />
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="h-px mx-0 my-4 bg-transparent border-0 opacity-25 bg-gradient-to-r from-transparent via-black/40 to-transparent dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent " />
+                
+                <p class="leading-normal uppercase dark:text-white dark:opacity-60 text-sm">Informações de acesso</p>
+
+                <div class="flex flex-wrap -mx-3">
+                  <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+                    <div class="mb-4">
+                      <label for="email" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Email</label>
+                      <input type="email" id="emailInput" name="email" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" disabled />
+                    </div>
+                  </div>
+
+                  <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+                    <div class="mb-4">
+                      <label for="newPassword" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Nova Senha (opcional)</label>
+                      <input type="password" id="newPasswordInput" name="newPassword" placeholder="Deixe em branco para não alterar" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" disabled />
+                    </div>
+                  </div>
+
+                  <div class="w-full max-w-full px-3 shrink-0 md:w-full md:flex-0">
+                    <div class="mb-4">
+                      <label for="confirmPassword" class="inline-block mb-2 ml-1 font-bold text-xs text-slate-700 dark:text-white/80">Confirmar Nova Senha</label>
+                      <input type="password" id="confirmPasswordInput" name="confirmPassword" placeholder="Confirme a nova senha" class="focus:shadow-primary-outline dark:bg-slate-850 dark:text-white text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none" disabled />
+                    </div>
+                  </div>
+              </div>
+              
+              <!-- Mensagem de erro -->
+              <div id="errorMessage" class="mt-4 text-red-500 text-sm hidden"></div>
+              
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="pt-4">
+          <div class="w-full px-6 mx-auto">
+            <div class="text-sm leading-normal text-center text-slate-500 lg:text-left">
+              © 2025
+              feito <i class="fa fa-heart"></i> por
+              <span class="font-semibold text-slate-700 dark:text-white" target="_blank">HyperEfficient</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </main>
+  
+  <script src="../assets/js/plugins/perfect-scrollbar.min.js" async></script>
+  <script src="../assets/js/dashboard-tailwind.js?v=1.0.1" async></script>
+  <script src="../assets/js/api-config.js"></script>
+  <script src="../assets/js/utils.js"></script>
+  
+  <script>
+    // Proteção de rotas - verificar se o usuário está logado
+    document.addEventListener('DOMContentLoaded', function() {
+      // DESATIVADO TEMPORARIAMENTE: Verificar se o usuário está logado
+      // if (!AuthUtils.isLoggedIn()) {
+      //   Utils.redirect('../login.html');
+      //   return;
+      // }
+      // if (AuthUtils.isTokenExpired()) {
+      //   Utils.showToast('Sua sessão expirou. Faça login novamente.', 'warning');
+      //   AuthUtils.logout();
+      //   return;
+      // }
+      carregarInformacoesUsuario();
+      configurarBotoes();
+    });
+    
+    // Variáveis globais
+    let usuarioOriginal = null;
+    let modoEdicao = false;
+    
+    // Função para carregar informações do usuário
+    function carregarInformacoesUsuario() {
+      const usuario = AuthUtils.getCurrentUser();
+      
+      if (usuario) {
+        usuarioOriginal = { ...usuario }; // Backup dos dados originais
+        
+        // Atualizar informações no header
+        const userNameElement = document.getElementById('userName');
+        const userEmailElement = document.getElementById('userEmail');
+        const userInitialsElement = document.getElementById('userInitials');
+        
+        if (userNameElement) {
+          userNameElement.textContent = usuario.nome || 'Usuário';
+        }
+        
+        if (userEmailElement) {
+          userEmailElement.textContent = usuario.email || 'usuario@email.com';
+        }
+        
+        if (userInitialsElement) {
+          const iniciais = Utils.getInitials(usuario.nome || 'U', 2);
+          userInitialsElement.textContent = iniciais;
+        }
+        
+        // Atualizar informações do perfil
+        const profileNameElement = document.getElementById('profileName');
+        const profileEmailElement = document.getElementById('profileEmail');
+        const profileStatusElement = document.getElementById('profileStatus');
+        const profileInitialsElement = document.getElementById('profileInitials');
+        
+        if (profileNameElement) {
+          profileNameElement.textContent = usuario.nome || 'Usuário';
+        }
+        
+        if (profileEmailElement) {
+          profileEmailElement.textContent = usuario.email || 'usuario@email.com';
+        }
+        
+        if (profileStatusElement) {
+          const status = usuario.ativo ? 'Ativo' : 'Inativo';
+          profileStatusElement.textContent = `Status: ${status}`;
+        }
+        
+        if (profileInitialsElement) {
+          const iniciais = Utils.getInitials(usuario.nome || 'U', 2);
+          profileInitialsElement.textContent = iniciais;
+        }
+        
+        // Preencher formulário
+        const nameInput = document.getElementById('nameInput');
+        const emailInput = document.getElementById('emailInput');
+        
+        if (nameInput) {
+          nameInput.value = usuario.nome || '';
+        }
+        
+        if (emailInput) {
+          emailInput.value = usuario.email || '';
+        }
+      }
+    }
+    
+    // Função para configurar botões
+    function configurarBotoes() {
+      const editButton = document.getElementById('editButton');
+      const saveButton = document.getElementById('saveButton');
+      const cancelButton = document.getElementById('cancelButton');
+      const logoutBtn = document.getElementById('logoutBtn');
+      
+      // Botão de editar
+      if (editButton) {
+        editButton.addEventListener('click', function() {
+          alternarModoEdicao(true);
+        });
+      }
+      
+      // Botão de salvar
+      if (saveButton) {
+        saveButton.addEventListener('click', function() {
+          salvarAlteracoes();
+        });
+      }
+      
+      // Botão de cancelar
+      if (cancelButton) {
+        cancelButton.addEventListener('click', function() {
+          alternarModoEdicao(false);
+          restaurarDadosOriginais();
+        });
+      }
+      
+      // Botão de logout
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          if (confirm('Tem certeza que deseja sair?')) {
+            Utils.showToast('Logout realizado com sucesso!', 'info');
+            AuthUtils.logout();
+          }
+        });
+      }
+    }
+    
+    // Função para alternar modo de edição
+    function alternarModoEdicao(editar) {
+      modoEdicao = editar;
+      
+      const nameInput = document.getElementById('nameInput');
+      const emailInput = document.getElementById('emailInput');
+      const newPasswordInput = document.getElementById('newPasswordInput');
+      const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+      const editButton = document.getElementById('editButton');
+      const saveButton = document.getElementById('saveButton');
+      const cancelButton = document.getElementById('cancelButton');
+      
+      // Habilitar/desabilitar campos
+      if (nameInput) nameInput.disabled = !editar;
+      if (emailInput) emailInput.disabled = !editar;
+      if (newPasswordInput) newPasswordInput.disabled = !editar;
+      if (confirmPasswordInput) confirmPasswordInput.disabled = !editar;
+      
+      // Mostrar/ocultar botões
+      if (editButton) editButton.classList.toggle('hidden', editar);
+      if (saveButton) saveButton.classList.toggle('hidden', !editar);
+      if (cancelButton) cancelButton.classList.toggle('hidden', !editar);
+      
+      // Limpar erros
+      Utils.hideError('errorMessage');
+      
+      // Limpar campos de senha
+      if (newPasswordInput) newPasswordInput.value = '';
+      if (confirmPasswordInput) confirmPasswordInput.value = '';
+    }
+    
+    // Função para restaurar dados originais
+    function restaurarDadosOriginais() {
+      if (usuarioOriginal) {
+        const nameInput = document.getElementById('nameInput');
+        const emailInput = document.getElementById('emailInput');
+        
+        if (nameInput) nameInput.value = usuarioOriginal.nome || '';
+        if (emailInput) emailInput.value = usuarioOriginal.email || '';
+      }
+    }
+    
+    // Função para salvar alterações
+    async function salvarAlteracoes() {
+      const nameInput = document.getElementById('nameInput');
+      const emailInput = document.getElementById('emailInput');
+      const newPasswordInput = document.getElementById('newPasswordInput');
+      const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+      
+      const nome = nameInput ? nameInput.value.trim() : '';
+      const email = emailInput ? emailInput.value.trim() : '';
+      const novaSenha = newPasswordInput ? newPasswordInput.value : '';
+      const confirmarSenha = confirmPasswordInput ? confirmPasswordInput.value : '';
+      
+      // Validação
+      const formData = { nome, email };
+      const validations = {
+        nome: {
+          required: true,
+          requiredMessage: 'Por favor, preencha o nome',
+          minLength: 2,
+          minLengthMessage: 'O nome deve ter pelo menos 2 caracteres'
+        },
+        email: {
+          required: true,
+          requiredMessage: 'Por favor, preencha o email',
+          email: true,
+          emailMessage: 'Por favor, insira um email válido'
+        }
+      };
+      
+      const validation = Utils.validateForm(formData, validations);
+      
+      if (!validation.isValid) {
+        const firstError = Object.values(validation.errors)[0];
+        Utils.showError('errorMessage', firstError);
+        return;
+      }
+      
+      // Validar senha se fornecida
+      if (novaSenha) {
+        if (novaSenha.length < 6) {
+          Utils.showError('errorMessage', 'A nova senha deve ter pelo menos 6 caracteres');
+          return;
+        }
+        
+        if (novaSenha !== confirmarSenha) {
+          Utils.showError('errorMessage', 'As senhas não coincidem');
+          return;
+        }
+      }
+      
+      try {
+        Utils.showButtonLoading('saveButton', 'Salvando...');
+        Utils.hideError('errorMessage');
+        
+        // Preparar dados para atualização
+        const dadosAtualizacao = {
+          id: usuarioOriginal.id,
+          nome: nome,
+          email: email,
+          ativo: usuarioOriginal.ativo
+        };
+        
+        // Adicionar senha se fornecida
+        if (novaSenha) {
+          dadosAtualizacao.senha = novaSenha;
+        }
+        
+        // Fazer requisição de atualização
+        const data = await API_CONFIG.authenticatedRequest(API_CONFIG.ENDPOINTS.USUARIOS, {
+          method: 'PUT',
+          body: JSON.stringify(dadosAtualizacao)
+        });
+        
+        // Atualizar dados no localStorage
+        const usuarioAtualizado = { ...usuarioOriginal, nome, email };
+        Utils.saveToStorage('usuario', usuarioAtualizado);
+        
+        // Atualizar interface
+        usuarioOriginal = usuarioAtualizado;
+        carregarInformacoesUsuario();
+        
+        // Sair do modo de edição
+        alternarModoEdicao(false);
+        
+        Utils.showToast('Perfil atualizado com sucesso!', 'success');
+        
+      } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
+        Utils.showError('errorMessage', error.message || 'Erro ao atualizar perfil');
+      } finally {
+        Utils.hideButtonLoading('saveButton');
+      }
+    }
+    
+    // Função para verificar periodicamente se o token expirou
+    setInterval(function() {
+      if (AuthUtils.isLoggedIn() && AuthUtils.isTokenExpired()) {
+        Utils.showToast('Sua sessão expirou. Faça login novamente.', 'warning');
+        AuthUtils.logout();
+      }
+    }, 60000); // Verificar a cada minuto
+  </script>
+</html>
