@@ -45,15 +45,21 @@
     if (btn) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
-        if (confirm('Tem certeza que deseja sair?')) {
-          if (window.Utils && window.Utils.showToast && window.AuthUtils && window.AuthUtils.logout) {
-            Utils.showToast('Logout realizado com sucesso!', 'info');
-            AuthUtils.logout();
-          } else {
-            // fallback
-            localStorage.clear();
-            window.location.href = '/build/pages/login.html';
-          }
+        if (window.Utils && typeof Utils.showModal === 'function') {
+          Utils.showModal({
+            message: 'Tem certeza que deseja sair da sua conta?',
+            title: 'Sair',
+            onConfirm: function() {
+              if (window.Utils && window.Utils.showToast && window.AuthUtils && window.AuthUtils.logout) {
+                Utils.showToast('Logout realizado com sucesso!', 'info');
+                AuthUtils.logout();
+              } else {
+                // fallback
+                localStorage.clear();
+                window.location.href = '/build/pages/login.html';
+              }
+            }
+          });
         }
       });
     }
