@@ -92,7 +92,7 @@
                         <span id="signupButtonLoading" class="hidden">Cadastrando...</span>
                       </button>
                     </div>
-                    <p class="mt-4 mb-0 leading-normal text-sm">Já tem uma conta? <a href="../login.html" class="font-bold text-slate-700">Login</a></p>
+                    <p class="mt-4 mb-0 leading-normal text-sm">Já tem uma conta? <a href="../pages/login.html" class="font-bold text-slate-700">Login</a></p>
                   </form>
                 </div>
               </div>
@@ -131,15 +131,15 @@
         const data = await API_CONFIG.publicRequest(API_CONFIG.ENDPOINTS.CADASTRO, {
           method: 'POST',
           body: JSON.stringify({
-            nome: nome,
             email: email,
+            nome: nome,
             senha: senha
           })
         });
         
         // Mostrar sucesso e redirecionar
         Utils.showToast('Cadastro realizado com sucesso!', 'success');
-        Utils.redirect('../login.html', 1500);
+        Utils.redirect('/build/pages/login.html', 1500);
         
       } catch (error) {
         console.error('Erro no cadastro:', error);

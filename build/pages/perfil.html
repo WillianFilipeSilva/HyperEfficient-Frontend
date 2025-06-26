@@ -127,19 +127,6 @@
                 </span>
                 <input type="text" class="pl-9 text-sm focus:shadow-primary-outline ease w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow" placeholder="Buscar" />
               </div>
-              
-              <!-- Informações do usuário logado -->
-              <div class="flex items-center ml-4">
-                <div class="flex items-center">
-                  <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
-                    <span class="text-white text-sm font-semibold" id="userInitials">U</span>
-                  </div>
-                  <div class="ml-3">
-                    <p class="text-sm font-medium text-white" id="userName">Usuário</p>
-                    <p class="text-xs text-white opacity-75" id="userEmail">usuario@email.com</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -159,7 +146,7 @@
               <div class="h-full">
                 <h5 class="mb-1 dark:text-white" id="profileName">Carregando...</h5>
                 <p class="mb-0 text-sm text-slate-600 dark:text-white/80" id="profileEmail">carregando@email.com</p>
-                <p class="mb-0 text-xs text-slate-500 dark:text-white/60" id="profileStatus">Status: Carregando...</p>
+                <p class="mb-0 text-xs text-slate-500 dark:text-white/60" id="profileStatus">Carregando...</p>
               </div>
             </div>
             <div class="w-full max-w-full px-3 mx-auto mt-4 sm:my-auto sm:mr-0 md:w-1/2 md:flex-none lg:w-4/12">
@@ -312,7 +299,7 @@
         
         if (profileStatusElement) {
           const status = usuario.ativo ? 'Ativo' : 'Inativo';
-          profileStatusElement.textContent = `Status: ${status}`;
+          profileStatusElement.textContent = `${status}`;
         }
         
         if (profileInitialsElement) {
