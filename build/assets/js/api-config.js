@@ -1,18 +1,18 @@
 // Configuração da API HyperEfficient
 const API_CONFIG = {
     // URL base da API - ajuste conforme sua configuração
-    BASE_URL: 'https://localhost:7001',
+    BASE_URL: 'http://localhost:5205',
     
     // Endpoints
     ENDPOINTS: {
-        LOGIN: '/api/usuarios/login',
-        CADASTRO: '/api/usuarios/cadastro',
-        USUARIOS: '/api/usuarios',
-        SETORES: '/api/setores',
-        CATEGORIAS: '/api/categorias',
-        EQUIPAMENTOS: '/api/equipamentos',
-        REGISTROS: '/api/registros',
-        RELATORIOS: '/api/relatorios'
+        LOGIN: '/usuarios/login',
+        CADASTRO: '/usuarios',
+        USUARIOS: '/usuarios',
+        SETORES: '/setores',
+        CATEGORIAS: '/categorias',
+        EQUIPAMENTOS: '/equipamentos',
+        REGISTROS: '/registros',
+        RELATORIOS: '/relatorios'
     },
     
     // Headers padrão
