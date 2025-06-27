@@ -1,18 +1,18 @@
 var page = window.location.pathname.split("/").pop().split(".")[0];
 var aux = window.location.pathname.split("/");
-var to_build = (aux.includes('pages') || aux.includes('docs') ?'../':'./');
+var to_build = (aux.includes('pages') || aux.includes('docs') ?'':'/');
 var root = window.location.pathname.split("/")
 if (!aux.includes("pages")) {
   page = "dashboard";
 }
 
 if (document.querySelector("[data-perfect-scrollbar]")) {
-  loadStylesheet(to_build + "../assets/css/perfect-scrollbar.css");
-  loadJS(to_build + "../assets/js/plugins/perfect-scrollbar.min.js", true);
+  loadStylesheet(to_build + "/assets/css/perfect-scrollbar.css");
+  loadJS(to_build + "/assets/js/plugins/perfect-scrollbar.min.js", true);
 }
 
 if (document.querySelector("canvas")) {
-  loadJS(to_build + "../assets/js/plugins/chartjs.min.js", true);
+  loadJS(to_build + "/assets/js/plugins/chartjs.min.js", true);
 }
 
 function loadJS(FILE_URL, async) {

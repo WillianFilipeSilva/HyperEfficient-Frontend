@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padrões de Código</title>
+    <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <style>
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        .syntax-keyword { color: #60a5fa; }
+        .syntax-string { color: #34d399; }
+        .syntax-comment { color: #6b7280; }
+        .syntax-type { color: #fbbf24; }
+        .nav-item.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        .section-content {
+            display: none;
+        }
+        .section-content.active {
+            display: block;
+        }
+        .pattern-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-left: 4px solid #3b82f6;
+        }
+        .example-good {
+            border-left: 4px solid #10b981;
+            background: #ecfdf5;
+        }
+        .example-bad {
+            border-left: 4px solid #ef4444;
+            background: #fef2f2;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 shadow-lg">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold">HyperEfficient</h1>
+                        <p class="text-blue-100 mt-2">Padrões de Código e Arquitetura</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" 
+                                   id="searchInput" 
+                                   placeholder="Buscar na documentação..." 
+                                   class="px-4 py-2 rounded-lg text-gray-800 w-64 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                   onkeyup="searchDocumentation(this.value)">
+                            <button onclick="clearSearch()" 
+                                    class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+                                ✕
+                            </button>
+                        </div>
+                        <button onclick="toggleDarkMode()" 
+                                class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg transition-colors">
+                            🌙
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <nav class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-4 sticky top-4">
+                        <h3 class="font-bold text-gray-800 mb-4">Navegação</h3>
+                        <ul class="space-y-2">
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors active" onclick="showSection('overview')">Visão Geral</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('backend')">Backend C#</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('frontend')">Frontend</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('database')">Database</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('api')">API REST</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('templates')">Templates</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('checklist')">Checklist</button></li>
+                            <li><button class="nav-item w-full text-left p-3 rounded-lg hover:bg-gray-100 transition-colors" onclick="showSection('projeto-atual')">Projeto Atual</button></li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <main class="lg:col-span-3">
+                    <div id="overview" class="section-content active">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Visão Geral da Arquitetura</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="pattern-card p-4 rounded-lg">
+                                    <h3 class="font-bold text-lg mb-2">Stack Tecnológica</h3>
+                                    <ul class="space-y-1 text-sm">
+                                        <li><span class="font-semibold">Backend:</span> C# + ASP.NET Core</li>
+                                        <li><span class="font-semibold">ORM:</span> Dapper</li>
+                                        <li><span class="font-semibold">Database:</span> MySQL</li>
+                                        <li><span class="font-semibold">Frontend:</span> HTML + TailwindCSS + JavaScript</li>
+                                        <li><span class="font-semibold">Auth:</span> JWT</li>
+                                        <li><span class="font-semibold">Arquitetura:</span> DDD</li>
+                                    </ul>
+                                </div>
+                                <div class="pattern-card p-4 rounded-lg">
+                                    <h3 class="font-bold text-lg mb-2">Estrutura de Pastas</h3>
+                                    <div class="text-sm font-mono">
+                                        <div>📁 Contracts/</div>
+                                        <div>📁 Controllers/</div>
+                                        <div>📁 Dtos/</div>
+                                        <div>📁 Entities/</div>
+                                        <div>📁 Infrastructure/</div>
+                                        <div>📁 Repositories/</div>
+                                        <div>📁 Services/</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Princípios Fundamentais</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="border-l-4 border-green-500 pl-4">
+                                    <h4 class="font-bold text-green-700">Clean Code</h4>
+                                    <p class="text-sm text-gray-600">Código limpo, sem comentários desnecessários</p>
+                                </div>
+                                <div class="border-l-4 border-blue-500 pl-4">
+                                    <h4 class="font-bold text-blue-700">DDD</h4>
+                                    <p class="text-sm text-gray-600">Separação clara de responsabilidades</p>
+                                </div>
+                                <div class="border-l-4 border-purple-500 pl-4">
+                                    <h4 class="font-bold text-purple-700">Consistência</h4>
+                                    <p class="text-sm text-gray-600">Padrões uniformes em todo o projeto</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="backend" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Padrões Backend C#</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Nomenclatura</h3>
+                                <div class="space-y-4">
+                                    <div class="example-good p-4 rounded-lg">
+                                        <h4 class="font-semibold text-green-700 mb-2">✅ Correto</h4>
+                                        <pre class="code-block p-3 rounded text-sm">
+<span class="syntax-keyword">public class</span> <span class="syntax-type">UsuarioEntity</span> : <span class="syntax-type">EntityBase</span>
+<span class="syntax-keyword">public class</span> <span class="syntax-type">UsuarioRepository</span> : <span class="syntax-type">IUsuarioRepository</span>
+<span class="syntax-keyword">public class</span> <span class="syntax-type">UsuarioService</span> : <span class="syntax-type">IUsuarioService</span>
+<span class="syntax-keyword">public class</span> <span class="syntax-type">UsuarioController</span> : <span class="syntax-type">ControllerBase</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Estrutura de Entidades</h3>
+                                <div class="relative">
+                                    <button onclick="copyCode(this.parentElement)" 
+                                            class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                                        📋 Copiar
+                                    </button>
+                                    <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">public class</span> <span class="syntax-type">EquipamentoEntity</span> : <span class="syntax-type">EntityBase</span>
+{
+    <span class="syntax-keyword">public string</span> Nome { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+    <span class="syntax-keyword">public string</span> Descricao { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+    <span class="syntax-keyword">public decimal</span> Gastokwh { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+    <span class="syntax-keyword">public int</span> CategoriaId { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+    <span class="syntax-keyword">public int</span> SetorId { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+    <span class="syntax-keyword">public bool</span> Ativo { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+}</pre>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Padrão Repository</h3>
+                                <div class="space-y-4">
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold mb-2">Métodos Padrão</h4>
+                                        <ul class="text-sm space-y-1">
+                                            <li>• <code>Task&lt;int&gt; Insert(TEntity entity)</code></li>
+                                            <li>• <code>Task&lt;int&gt; Update(TEntity entity)</code></li>
+                                            <li>• <code>Task&lt;int&gt; Delete(int id)</code></li>
+                                            <li>• <code>Task&lt;IEnumerable&lt;TEntity&gt;&gt; GetAll()</code></li>
+                                            <li>• <code>Task&lt;TEntity?&gt; GetById(int id)</code></li>
+                                            <li>• <code>Task&lt;IEnumerable&lt;TEntity&gt;&gt; GetPaged(int page, int pageSize)</code></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Padrão Service</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">MessageResponse</span>&gt; Insert(<span class="syntax-type">UsuarioInsertDto</span> dto)
+{
+    <span class="syntax-keyword">if</span> (<span class="syntax-keyword">await</span> _usuarioRepository.Insert(_map.Map&lt;<span class="syntax-type">UsuarioEntity</span>&gt;(dto)) &lt;= <span class="syntax-string">0</span>)
+        <span class="syntax-keyword">throw new</span> <span class="syntax-type">KeyNotFoundException</span>(<span class="syntax-string">$"Não foi possível cadastrar o usuário {dto.Nome}!"</span>);
+
+    <span class="syntax-keyword">return new</span> <span class="syntax-type">MessageResponse</span> { Message = <span class="syntax-string">"Usuário cadastrado com sucesso!"</span> };
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="frontend" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Padrões Frontend</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Estrutura HTML + TailwindCSS</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"</span><span class="syntax-keyword">&gt;</span>
+    <span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="bg-white rounded-lg shadow-md p-6"</span><span class="syntax-keyword">&gt;</span>
+        <span class="syntax-keyword">&lt;h3</span> <span class="syntax-string">class="text-lg font-bold text-gray-800 mb-4"</span><span class="syntax-keyword">&gt;</span>Título<span class="syntax-keyword">&lt;/h3&gt;</span>
+        <span class="syntax-keyword">&lt;p</span> <span class="syntax-string">class="text-gray-600"</span><span class="syntax-keyword">&gt;</span>Conteúdo<span class="syntax-keyword">&lt;/p&gt;</span>
+    <span class="syntax-keyword">&lt;/div&gt;</span>
+<span class="syntax-keyword">&lt;/div&gt;</span></pre>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Componentes Reutilizáveis</h3>
+                                <div class="space-y-4">
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold mb-2">Modal Padrão</h4>
+                                        <pre class="code-block p-3 rounded text-sm">
+<span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"</span><span class="syntax-keyword">&gt;</span>
+    <span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="bg-white rounded-lg p-6 w-full max-w-md mx-4"</span><span class="syntax-keyword">&gt;</span>
+        <span class="syntax-keyword">&lt;h2</span> <span class="syntax-string">class="text-xl font-bold mb-4"</span><span class="syntax-keyword">&gt;</span>Título<span class="syntax-keyword">&lt;/h2&gt;</span>
+        <span class="syntax-comment">&lt;!-- Conteúdo --&gt;</span>
+    <span class="syntax-keyword">&lt;/div&gt;</span>
+<span class="syntax-keyword">&lt;/div&gt;</span></pre>
+                                    </div>
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold mb-2">Botão Padrão</h4>
+                                        <pre class="code-block p-3 rounded text-sm">
+<span class="syntax-keyword">&lt;button</span> <span class="syntax-string">class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"</span><span class="syntax-keyword">&gt;</span>
+    Ação
+<span class="syntax-keyword">&lt;/button&gt;</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">JavaScript - Padrões de API</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">const</span> apiCall = <span class="syntax-keyword">async</span> (endpoint, method = <span class="syntax-string">'GET'</span>, data = <span class="syntax-keyword">null</span>) => {
+    <span class="syntax-keyword">const</span> config = {
+        method,
+        headers: {
+            <span class="syntax-string">'Content-Type'</span>: <span class="syntax-string">'application/json'</span>,
+            <span class="syntax-string">'Authorization'</span>: <span class="syntax-string">`Bearer ${localStorage.getItem('token')}`</span>
+        }
+    };
+    
+    <span class="syntax-keyword">if</span> (data) config.body = JSON.stringify(data);
+    
+    <span class="syntax-keyword">const</span> response = <span class="syntax-keyword">await</span> fetch(<span class="syntax-string">`/api/${endpoint}`</span>, config);
+    <span class="syntax-keyword">return await</span> response.json();
+};</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="database" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Padrões Database</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Convenções de Nomenclatura</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="example-good p-4 rounded-lg">
+                                        <h4 class="font-semibold text-green-700 mb-2">✅ Tabelas</h4>
+                                        <ul class="text-sm space-y-1">
+                                            <li>• PascalCase singular</li>
+                                            <li>• Usuario (não Users)</li>
+                                            <li>• Equipamento</li>
+                                            <li>• Categoria</li>
+                                        </ul>
+                                    </div>
+                                    <div class="example-good p-4 rounded-lg">
+                                        <h4 class="font-semibold text-green-700 mb-2">✅ Colunas</h4>
+                                        <ul class="text-sm space-y-1">
+                                            <li>• PascalCase</li>
+                                            <li>• Id (chave primária)</li>
+                                            <li>• CategoriaId (FK)</li>
+                                            <li>• CriadoEm</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Padrão de Queries</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">SELECT</span> ID <span class="syntax-keyword">AS</span> {<span class="syntax-keyword">nameof</span>(<span class="syntax-type">UsuarioEntity</span>.Id)},
+       NOME <span class="syntax-keyword">AS</span> {<span class="syntax-keyword">nameof</span>(<span class="syntax-type">UsuarioEntity</span>.Nome)},
+       EMAIL <span class="syntax-keyword">AS</span> {<span class="syntax-keyword">nameof</span>(<span class="syntax-type">UsuarioEntity</span>.Email)},
+       ATIVO <span class="syntax-keyword">AS</span> {<span class="syntax-keyword">nameof</span>(<span class="syntax-type">UsuarioEntity</span>.Ativo)}
+<span class="syntax-keyword">FROM</span> USUARIO
+<span class="syntax-keyword">WHERE</span> ID = @id</pre>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Tipos de Dados Padrão</h3>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <h4 class="font-semibold mb-2">IDs e Números</h4>
+                                            <ul class="space-y-1">
+                                                <li>• <code>INT AUTO_INCREMENT</code> - IDs</li>
+                                                <li>• <code>DECIMAL(10,2)</code> - Valores monetários</li>
+                                                <li>• <code>TINYINT</code> - Booleanos</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Textos e Datas</h4>
+                                            <ul class="space-y-1">
+                                                <li>• <code>VARCHAR(100)</code> - Nomes</li>
+                                                <li>• <code>VARCHAR(300)</code> - Descrições</li>
+                                                <li>• <code>DATETIME</code> - Timestamps</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="api" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Padrões API REST</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Rotas Padrão</h3>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <h4 class="font-semibold mb-2">CRUD Básico</h4>
+                                            <ul class="space-y-1 font-mono">
+                                                <li>• <span class="text-green-600">GET</span> /usuarios</li>
+                                                <li>• <span class="text-green-600">GET</span> /usuarios/{id}</li>
+                                                <li>• <span class="text-blue-600">POST</span> /usuarios</li>
+                                                <li>• <span class="text-yellow-600">PUT</span> /usuarios</li>
+                                                <li>• <span class="text-red-600">DELETE</span> /usuarios/{id}</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold mb-2">Ações Especiais</h4>
+                                            <ul class="space-y-1 font-mono">
+                                                <li>• <span class="text-blue-600">POST</span> /usuarios/login</li>
+                                                <li>• <span class="text-green-600">GET</span> /relatorios/empresa</li>
+                                                <li>• <span class="text-green-600">GET</span> /equipamentos/setor/{id}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Estrutura de Controller</h3>
+                                <pre class="code-block p-4 rounded">
+[<span class="syntax-type">ApiController</span>]
+[<span class="syntax-type">Route</span>(<span class="syntax-string">"equipamentos"</span>)]
+<span class="syntax-keyword">public class</span> <span class="syntax-type">EquipamentoController</span> : <span class="syntax-type">ControllerBase</span>
+{
+    <span class="syntax-keyword">private readonly</span> <span class="syntax-type">IEquipamentoService</span> _equipamentoService;
+
+    [<span class="syntax-type">HttpPost</span>]
+    [<span class="syntax-type">Authorize</span>]
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">ActionResult</span>&lt;<span class="syntax-type">MessageResponse</span>&gt;&gt; Insert([<span class="syntax-type">FromBody</span>] <span class="syntax-type">EquipamentoInsertDto</span> dto)
+    {
+        <span class="syntax-keyword">return</span> Ok(<span class="syntax-keyword">await</span> _equipamentoService.Insert(dto));
+    }
+}</pre>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Códigos de Status</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border-l-4 border-green-500 pl-4">
+                                        <h4 class="font-bold text-green-700">Sucesso</h4>
+                                        <ul class="text-sm space-y-1">
+                                            <li>• 200 OK - GET, PUT</li>
+                                            <li>• 201 Created - POST</li>
+                                            <li>• 204 No Content - DELETE</li>
+                                        </ul>
+                                    </div>
+                                    <div class="border-l-4 border-red-500 pl-4">
+                                        <h4 class="font-bold text-red-700">Erro</h4>
+                                        <ul class="text-sm space-y-1">
+                                            <li>• 400 Bad Request</li>
+                                            <li>• 401 Unauthorized</li>
+                                            <li>• 404 Not Found</li>
+                                            <li>• 500 Internal Server Error</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="templates" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Templates de Código</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Template Entity</h3>
+                                <div class="relative">
+                                    <button onclick="copyCode(this.parentElement)" 
+                                            class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                                        📋 Copiar
+                                    </button>
+                                    <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">using</span> HyperEfficient.Entities.Base;
+
+<span class="syntax-keyword">namespace</span> HyperEfficient.Entities;
+
+<span class="syntax-keyword">public class</span> <span class="syntax-type">[NOME]Entity</span> : <span class="syntax-type">EntityBase</span>
+{
+    <span class="syntax-keyword">public string</span> Nome { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; }
+    <span class="syntax-keyword">public bool</span> Ativo { <span class="syntax-keyword">get</span>; <span class="syntax-keyword">set</span>; } = <span class="syntax-keyword">true</span>;
+}</pre>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Template Repository</h3>
+                                <div class="relative">
+                                    <button onclick="copyCode(this.parentElement)" 
+                                            class="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs transition-colors">
+                                        📋 Copiar
+                                    </button>
+                                    <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">using</span> HyperEfficient.Contracts.Infrastructure;
+<span class="syntax-keyword">using</span> HyperEfficient.Contracts.Repositories;
+<span class="syntax-keyword">using</span> HyperEfficient.Entities;
+
+<span class="syntax-keyword">namespace</span> HyperEfficient.Repositories;
+
+<span class="syntax-keyword">public class</span> <span class="syntax-type">[NOME]Repository</span> : <span class="syntax-type">I[NOME]Repository</span>
+{
+    <span class="syntax-keyword">private readonly</span> <span class="syntax-type">IConnection</span> _connection;
+
+    <span class="syntax-keyword">public</span> <span class="syntax-type">[NOME]Repository</span>(<span class="syntax-type">IConnection</span> connection)
+    {
+        _connection = connection;
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-keyword">int</span>&gt; Insert(<span class="syntax-type">[NOME]Entity</span> entity)
+    {
+        <span class="syntax-keyword">var</span> sql = <span class="syntax-string">@"
+            INSERT INTO [TABELA] (NOME, ATIVO)
+                VALUES (@Nome, @Ativo);"</span>;
+
+        <span class="syntax-keyword">return await</span> _connection.ExecuteAsync(sql, entity);
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-keyword">int</span>&gt; Update(<span class="syntax-type">[NOME]Entity</span> entity)
+    {
+        <span class="syntax-keyword">var</span> sql = <span class="syntax-string">@"
+            UPDATE [TABELA]
+                SET NOME = @Nome,
+                    ATIVO = @Ativo
+            WHERE ID = @Id"</span>;
+
+        <span class="syntax-keyword">return await</span> _connection.ExecuteAsync(sql, entity);
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-keyword">int</span>&gt; Delete(<span class="syntax-keyword">int</span> id)
+    {
+        <span class="syntax-keyword">return await</span> _connection.ExecuteAsync(<span class="syntax-string">"DELETE FROM [TABELA] WHERE ID = @id"</span>, <span class="syntax-keyword">new</span> { id });
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">IEnumerable</span>&lt;<span class="syntax-type">[NOME]Entity</span>&gt;&gt; GetAll()
+    {
+        <span class="syntax-keyword">var</span> sql = <span class="syntax-string">$@"
+            SELECT ID AS {nameof([NOME]Entity.Id)},
+                   NOME AS {nameof([NOME]Entity.Nome)},
+                   ATIVO AS {nameof([NOME]Entity.Ativo)}
+            FROM [TABELA]"</span>;
+
+        <span class="syntax-keyword">return await</span> _connection.ExecuteQueryAsync&lt;<span class="syntax-type">[NOME]Entity</span>&gt;(sql);
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">[NOME]Entity</span>?&gt; GetById(<span class="syntax-keyword">int</span> id)
+    {
+        <span class="syntax-keyword">var</span> sql = <span class="syntax-string">$@"
+            SELECT ID AS {nameof([NOME]Entity.Id)},
+                   NOME AS {nameof([NOME]Entity.Nome)},
+                   ATIVO AS {nameof([NOME]Entity.Ativo)}
+            FROM [TABELA]
+            WHERE ID = @id"</span>;
+
+        <span class="syntax-keyword">return await</span> _connection.ExecuteQueryFirstAsync&lt;<span class="syntax-type">[NOME]Entity</span>&gt;(sql, <span class="syntax-keyword">new</span> { id });
+    }
+}</pre>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Template Service</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">using</span> AutoMapper;
+<span class="syntax-keyword">using</span> HyperEfficient.Contracts.Repositories;
+<span class="syntax-keyword">using</span> HyperEfficient.Contracts.Services;
+<span class="syntax-keyword">using</span> HyperEfficient.Dtos.MessageResponse;
+<span class="syntax-keyword">using</span> HyperEfficient.Dtos.[NOME];
+<span class="syntax-keyword">using</span> HyperEfficient.Entities;
+
+<span class="syntax-keyword">namespace</span> HyperEfficient.Services;
+
+<span class="syntax-keyword">public class</span> <span class="syntax-type">[NOME]Service</span> : <span class="syntax-type">I[NOME]Service</span>
+{
+    <span class="syntax-keyword">private readonly</span> <span class="syntax-type">I[NOME]Repository</span> _repository;
+    <span class="syntax-keyword">private readonly</span> <span class="syntax-type">IMapper</span> _map;
+
+    <span class="syntax-keyword">public</span> <span class="syntax-type">[NOME]Service</span>(<span class="syntax-type">I[NOME]Repository</span> repository, <span class="syntax-type">IMapper</span> map)
+    {
+        _repository = repository;
+        _map = map;
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">MessageResponse</span>&gt; Insert(<span class="syntax-type">[NOME]InsertDto</span> dto)
+    {
+        <span class="syntax-keyword">if</span> (<span class="syntax-keyword">await</span> _repository.Insert(_map.Map&lt;<span class="syntax-type">[NOME]Entity</span>&gt;(dto)) &lt;= <span class="syntax-string">0</span>)
+            <span class="syntax-keyword">throw new</span> <span class="syntax-type">KeyNotFoundException</span>(<span class="syntax-string">$"Não foi possível cadastrar {dto.Nome}!"</span>);
+
+        <span class="syntax-keyword">return new</span> <span class="syntax-type">MessageResponse</span> { Message = <span class="syntax-string">"Cadastrado com sucesso!"</span> };
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">MessageResponse</span>&gt; Update(<span class="syntax-type">[NOME]Entity</span> entity)
+    {
+        <span class="syntax-keyword">if</span> (<span class="syntax-keyword">await</span> _repository.Update(entity) &lt;= <span class="syntax-string">0</span>)
+            <span class="syntax-keyword">throw new</span> <span class="syntax-type">KeyNotFoundException</span>(<span class="syntax-string">$"Não foi possível editar: {entity.Nome}!"</span>);
+
+        <span class="syntax-keyword">return new</span> <span class="syntax-type">MessageResponse</span> { Message = <span class="syntax-string">"Editado com sucesso!"</span> };
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">MessageResponse</span>&gt; Delete(<span class="syntax-keyword">int</span> id)
+    {
+        <span class="syntax-keyword">if</span> (<span class="syntax-keyword">await</span> _repository.Delete(id) &lt;= <span class="syntax-string">0</span>)
+            <span class="syntax-keyword">throw new</span> <span class="syntax-type">KeyNotFoundException</span>(<span class="syntax-string">$"Não foi encontrado com o id: {id}"</span>);
+
+        <span class="syntax-keyword">return new</span> <span class="syntax-type">MessageResponse</span> { Message = <span class="syntax-string">"Deletado com sucesso!"</span> };
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">[NOME]GetAllResponse</span>&gt; GetAll()
+    {
+        <span class="syntax-keyword">return new</span> <span class="syntax-type">[NOME]GetAllResponse</span> { Data = <span class="syntax-keyword">await</span> _repository.GetAll() ?? <span class="syntax-keyword">new</span> <span class="syntax-type">List</span>&lt;<span class="syntax-type">[NOME]Entity</span>&gt;() };
+    }
+
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">[NOME]Dto</span>&gt; GetById(<span class="syntax-keyword">int</span> id)
+    {
+        <span class="syntax-keyword">return</span> _map.Map&lt;<span class="syntax-type">[NOME]Dto</span>?&gt;(_repository.GetById(id))
+            ?? <span class="syntax-keyword">throw new</span> <span class="syntax-type">KeyNotFoundException</span>(<span class="syntax-string">"Não encontrado!"</span>);
+    }
+}</pre>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Template Controller</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">using</span> HyperEfficient.Contracts.Services;
+<span class="syntax-keyword">using</span> HyperEfficient.Dtos.MessageResponse;
+<span class="syntax-keyword">using</span> HyperEfficient.Dtos.[NOME];
+<span class="syntax-keyword">using</span> HyperEfficient.Entities;
+<span class="syntax-keyword">using</span> Microsoft.AspNetCore.Authorization;
+<span class="syntax-keyword">using</span> Microsoft.AspNetCore.Mvc;
+
+<span class="syntax-keyword">namespace</span> HyperEfficient.Controllers;
+
+[<span class="syntax-type">ApiController</span>]
+[<span class="syntax-type">Route</span>(<span class="syntax-string">"[ROTA]"</span>)]
+<span class="syntax-keyword">public class</span> <span class="syntax-type">[NOME]Controller</span> : <span class="syntax-type">ControllerBase</span>
+{
+    <span class="syntax-keyword">private readonly</span> <span class="syntax-type">I[NOME]Service</span> _service;
+
+    <span class="syntax-keyword">public</span> <span class="syntax-type">[NOME]Controller</span>(<span class="syntax-type">I[NOME]Service</span> service)
+    {
+        _service = service;
+    }
+
+    [<span class="syntax-type">HttpPost</span>]
+    [<span class="syntax-type">Authorize</span>]
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">ActionResult</span>&lt;<span class="syntax-type">MessageResponse</span>&gt;&gt; Insert([<span class="syntax-type">FromBody</span>] <span class="syntax-type">[NOME]InsertDto</span> dto)
+    {
+        <span class="syntax-keyword">return</span> Ok(<span class="syntax-keyword">await</span> _service.Insert(dto));
+    }
+
+    [<span class="syntax-type">HttpPut</span>]
+    [<span class="syntax-type">Authorize</span>]
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">ActionResult</span>&lt;<span class="syntax-type">MessageResponse</span>&gt;&gt; Update([<span class="syntax-type">FromBody</span>] <span class="syntax-type">[NOME]Entity</span> entity)
+    {
+        <span class="syntax-keyword">return</span> Ok(<span class="syntax-keyword">await</span> _service.Update(entity));
+    }
+
+    [<span class="syntax-type">HttpDelete</span>(<span class="syntax-string">"{id}"</span>)]
+    [<span class="syntax-type">Authorize</span>]
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">ActionResult</span>&lt;<span class="syntax-type">MessageResponse</span>&gt;&gt; Delete(<span class="syntax-keyword">int</span> id)
+    {
+        <span class="syntax-keyword">return</span> Ok(<span class="syntax-keyword">await</span> _service.Delete(id));
+    }
+
+    [<span class="syntax-type">HttpGet</span>]
+    [<span class="syntax-type">Authorize</span>]
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">ActionResult</span>&lt;<span class="syntax-type">[NOME]GetAllResponse</span>&gt;&gt; GetAll()
+    {
+        <span class="syntax-keyword">return</span> Ok(<span class="syntax-keyword">await</span> _service.GetAll());
+    }
+
+    [<span class="syntax-type">HttpGet</span>(<span class="syntax-string">"{id}"</span>)]
+    [<span class="syntax-type">Authorize</span>]
+    <span class="syntax-keyword">public async</span> <span class="syntax-type">Task</span>&lt;<span class="syntax-type">ActionResult</span>&lt;<span class="syntax-type">[NOME]Dto</span>&gt;&gt; GetById(<span class="syntax-keyword">int</span> id)
+    {
+        <span class="syntax-keyword">return</span> Ok(<span class="syntax-keyword">await</span> _service.GetById(id));
+    }
+}</pre>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">Template HTML - Página CRUD</h3>
+                                <pre class="code-block p-4 rounded">
+<span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="container mx-auto px-4 py-8"</span><span class="syntax-keyword">&gt;</span>
+    <span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="bg-white rounded-lg shadow-md p-6"</span><span class="syntax-keyword">&gt;</span>
+        <span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="flex justify-between items-center mb-6"</span><span class="syntax-keyword">&gt;</span>
+            <span class="syntax-keyword">&lt;h1</span> <span class="syntax-string">class="text-2xl font-bold text-gray-800"</span><span class="syntax-keyword">&gt;</span>[TITULO]<span class="syntax-keyword">&lt;/h1&gt;</span>
+            <span class="syntax-keyword">&lt;button</span> <span class="syntax-string">class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"</span>
+                    <span class="syntax-string">onclick="abrirModal()"</span><span class="syntax-keyword">&gt;</span>
+                Novo [ITEM]
+            <span class="syntax-keyword">&lt;/button&gt;</span>
+        <span class="syntax-keyword">&lt;/div&gt;</span>
+
+        <span class="syntax-keyword">&lt;div</span> <span class="syntax-string">class="overflow-x-auto"</span><span class="syntax-keyword">&gt;</span>
+            <span class="syntax-keyword">&lt;table</span> <span class="syntax-string">class="w-full table-auto"</span><span class="syntax-keyword">&gt;</span>
+                <span class="syntax-keyword">&lt;thead</span> <span class="syntax-string">class="bg-gray-50"</span><span class="syntax-keyword">&gt;</span>
+                    <span class="syntax-keyword">&lt;tr&gt;</span>
+                        <span class="syntax-keyword">&lt;th</span> <span class="syntax-string">class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase"</span><span class="syntax-keyword">&gt;</span>Nome<span class="syntax-keyword">&lt;/th&gt;</span>
+                        <span class="syntax-keyword">&lt;th</span> <span class="syntax-string">class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase"</span><span class="syntax-keyword">&gt;</span>Status<span class="syntax-keyword">&lt;/th&gt;</span>
+                        <span class="syntax-keyword">&lt;th</span> <span class="syntax-string">class="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase"</span><span class="syntax-keyword">&gt;</span>Ações<span class="syntax-keyword">&lt;/th&gt;</span>
+                    <span class="syntax-keyword">&lt;/tr&gt;</span>
+                <span class="syntax-keyword">&lt;/thead&gt;</span>
+                <span class="syntax-keyword">&lt;tbody</span> <span class="syntax-string">id="tabela-dados"</span> <span class="syntax-string">class="bg-white divide-y divide-gray-200"</span><span class="syntax-keyword">&gt;</span>
+                <span class="syntax-keyword">&lt;/tbody&gt;</span>
+            <span class="syntax-keyword">&lt;/table&gt;</span>
+        <span class="syntax-keyword">&lt;/div&gt;</span>
+    <span class="syntax-keyword">&lt;/div&gt;</span>
+<span class="syntax-keyword">&lt;/div&gt;</span></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="checklist" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Checklist de Desenvolvimento</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">📋 Backend - Nova Funcionalidade</h3>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Criar Entity com herança de EntityBase</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Criar interface IRepository com métodos padrão</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Implementar Repository com queries usando nameof()</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Criar interface IService</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Implementar Service com AutoMapper e tratamento de erros</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Criar DTOs (Insert, Update, GetAll, etc.)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Criar Controller com rotas padronizadas</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Configurar injeção de dependência</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Criar AutoMapper Profile</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">🎨 Frontend - Nova Página</h3>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Estrutura HTML com grid responsivo</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Tabela com classes TailwindCSS padrão</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Modal para inserção/edição</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Funções JavaScript para CRUD</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Integração com API usando fetch()</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Tratamento de erros e loading</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Responsividade em diferentes telas</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">🗄️ Database - Nova Tabela</h3>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Nome da tabela em PascalCase singular</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Coluna Id INT AUTO_INCREMENT PRIMARY KEY</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Colunas com nomes em PascalCase</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Foreign Keys com CASCADE/NO ACTION apropriados</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Índices nas colunas de busca frequente</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Coluna Ativo TINYINT DEFAULT 1 quando aplicável</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">🔍 Code Review</h3>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Nomes de métodos e variáveis mantidos</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Sem comentários desnecessários no código</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Seguindo padrões Clean Code</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Tratamento de erros implementado</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Async/await usado corretamente</span>
+                                    </label>
+                                    <label class="flex items-center space-x-3">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded">
+                                        <span class="text-sm">Autorização configurada nos endpoints</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-blue-700">
+                                            <strong>Lembre-se:</strong> Sempre que tiver dúvida sobre implementação, pergunte antes de desenvolver. Prefira clareza à suposição!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="projeto-atual" class="section-content">
+                        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">📊 Estado Atual do Projeto HyperEfficient</h2>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+                                    <h3 class="font-bold text-green-700 mb-2">✅ Backend - Concluído</h3>
+                                    <ul class="text-sm space-y-1 text-green-600">
+                                        <li>• API REST completa com ASP.NET Core 7</li>
+                                        <li>• Autenticação JWT implementada</li>
+                                        <li>• CRUD completo para todos os módulos</li>
+                                        <li>• Swagger para documentação da API</li>
+                                        <li>• Arquitetura DDD com injeção de dependência</li>
+                                        <li>• Banco MySQL com Dapper ORM</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded-lg">
+                                    <h3 class="font-bold text-yellow-700 mb-2">⚠️ Frontend - Em Preparação</h3>
+                                    <ul class="text-sm space-y-1 text-yellow-600">
+                                        <li>• TailwindCSS configurado</li>
+                                        <li>• Estrutura de pastas organizada</li>
+                                        <li>• Páginas HTML precisam ser criadas</li>
+                                        <li>• JavaScript para integração com API</li>
+                                        <li>• Interface de usuário a ser desenvolvida</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">🎯 Funcionalidades Implementadas</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-blue-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold text-blue-700 mb-2">Gestão de Equipamentos</h4>
+                                        <ul class="text-sm space-y-1 text-blue-600">
+                                            <li>• Cadastro de equipamentos industriais</li>
+                                            <li>• Controle de consumo energético</li>
+                                            <li>• Categorização por setores</li>
+                                            <li>• Status ativo/inativo</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-purple-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold text-purple-700 mb-2">Controle de Setores</h4>
+                                        <ul class="text-sm space-y-1 text-purple-600">
+                                            <li>• Organização hierárquica</li>
+                                            <li>• Relacionamento com equipamentos</li>
+                                            <li>• Gestão de categorias</li>
+                                            <li>• Relatórios por setor</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="bg-indigo-50 p-4 rounded-lg">
+                                        <h4 class="font-semibold text-indigo-700 mb-2">Sistema de Registros</h4>
+                                        <ul class="text-sm space-y-1 text-indigo-600">
+                                            <li>• Períodos de uso dos equipamentos</li>
+                                            <li>• Cálculo de consumo energético</li>
+                                            <li>• Histórico de operação</li>
+                                            <li>• Base para relatórios</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-6">
+                                <h3 class="text-lg font-bold mb-3">🚀 Próximos Passos</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-2xl">1️⃣</span>
+                                        <div>
+                                            <h4 class="font-semibold">Desenvolver Interface Frontend</h4>
+                                            <p class="text-sm text-gray-600">Criar páginas HTML com TailwindCSS para todas as funcionalidades</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-2xl">2️⃣</span>
+                                        <div>
+                                            <h4 class="font-semibold">Implementar JavaScript</h4>
+                                            <p class="text-sm text-gray-600">Integração com API REST e funcionalidades CRUD no frontend</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-2xl">3️⃣</span>
+                                        <div>
+                                            <h4 class="font-semibold">Sistema de Relatórios</h4>
+                                            <p class="text-sm text-gray-600">Gráficos e exportação de dados para análise de consumo</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                                        <span class="text-2xl">4️⃣</span>
+                                        <div>
+                                            <h4 class="font-semibold">Alertas Automáticos</h4>
+                                            <p class="text-sm text-gray-600">Notificações de excesso de consumo ou equipamentos ociosos</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg">
+                                <h3 class="text-xl font-bold mb-3">💡 Resumo Executivo</h3>
+                                <p class="text-blue-100 mb-4">
+                                    O HyperEfficient é um sistema completo para gestão de consumo energético industrial. 
+                                    O backend está 100% funcional com uma arquitetura robusta baseada em DDD, oferecendo 
+                                    APIs REST para todas as operações necessárias. O frontend está preparado com TailwindCSS 
+                                    e aguarda a implementação das interfaces de usuário.
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">ASP.NET Core 7</span>
+                                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">MySQL + Dapper</span>
+                                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">JWT Authentication</span>
+                                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">TailwindCSS</span>
+                                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">DDD Architecture</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Função para copiar código para clipboard
+        function copyCode(element) {
+            const codeBlock = element.querySelector('pre');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                // Feedback visual
+                const originalText = element.textContent;
+                element.textContent = 'Copiado!';
+                element.classList.add('bg-green-100', 'text-green-700');
+                
+                setTimeout(() => {
+                    element.textContent = originalText;
+                    element.classList.remove('bg-green-100', 'text-green-700');
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar: ', err);
+            });
+        }
+
+        // Função para expandir/colapsar seções de código
+        function toggleCodeSection(button) {
+            const content = button.nextElementSibling;
+            const isHidden = content.style.display === 'none';
+            
+            content.style.display = isHidden ? 'block' : 'none';
+            button.textContent = isHidden ? 'Ocultar Código' : 'Mostrar Código';
+        }
+
+        // Função para marcar/desmarcar todos os checkboxes de uma seção
+        function toggleAllCheckboxes(sectionId) {
+            const section = document.getElementById(sectionId);
+            const checkboxes = section.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
+        }
+
+        // Função para salvar progresso dos checkboxes no localStorage
+        function saveChecklistProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            const progress = {};
+            
+            checkboxes.forEach((checkbox, index) => {
+                progress[index] = checkbox.checked;
+            });
+            
+            localStorage.setItem('hyperEfficientChecklist', JSON.stringify(progress));
+        }
+
+        // Função para carregar progresso dos checkboxes
+        function loadChecklistProgress() {
+            const saved = localStorage.getItem('hyperEfficientChecklist');
+            if (saved) {
+                const progress = JSON.parse(saved);
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                
+                checkboxes.forEach((checkbox, index) => {
+                    if (progress[index] !== undefined) {
+                        checkbox.checked = progress[index];
+                    }
+                });
+            }
+        }
+
+        // Função para buscar na documentação
+        function searchDocumentation(query) {
+            const sections = document.querySelectorAll('.section-content');
+            const searchTerm = query.toLowerCase().trim();
+            
+            // Se a busca estiver vazia, mostrar todas as seções
+            if (!searchTerm) {
+                sections.forEach(section => {
+                    section.style.display = 'block';
+                });
+                // Remover destaques
+                document.querySelectorAll('mark').forEach(mark => {
+                    mark.outerHTML = mark.innerHTML;
+                });
+                return;
+            }
+            
+            sections.forEach(section => {
+                const content = section.textContent.toLowerCase();
+                const hasMatch = content.includes(searchTerm);
+                
+                if (hasMatch) {
+                    section.style.display = 'block';
+                    // Destacar termos encontrados
+                    highlightText(section, searchTerm);
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        // Função para destacar texto encontrado
+        function highlightText(element, searchTerm) {
+            const walker = document.createTreeWalker(
+                element,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+            );
+            
+            const textNodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                textNodes.push(node);
+            }
+            
+            textNodes.forEach(textNode => {
+                const text = textNode.textContent;
+                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                const highlightedText = text.replace(regex, '<mark class="bg-yellow-200">$1</mark>');
+                
+                if (highlightedText !== text) {
+                    const span = document.createElement('span');
+                    span.innerHTML = highlightedText;
+                    textNode.parentNode.replaceChild(span, textNode);
+                }
+            });
+        }
+
+        // Função para exportar checklist como PDF (simulação)
+        function exportChecklist() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            let completed = 0;
+            let total = checkboxes.length;
+            
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) completed++;
+            });
+            
+            const progress = Math.round((completed / total) * 100);
+            alert(`Progresso do Checklist: ${completed}/${total} (${progress}%)\n\nEsta funcionalidade seria implementada com uma biblioteca de PDF como jsPDF.`);
+        }
+
+        // Função para resetar checklist
+        function resetChecklist() {
+            if (confirm('Tem certeza que deseja resetar todo o progresso do checklist?')) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                localStorage.removeItem('hyperEfficientChecklist');
+            }
+        }
+
+        // Adicionar event listeners quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar progresso salvo
+            loadChecklistProgress();
+            
+            // Adicionar listeners para salvar progresso
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', saveChecklistProgress);
+            });
+            
+            // Adicionar botões de ação ao checklist
+            const checklistSection = document.getElementById('checklist');
+            if (checklistSection) {
+                const actionButtons = document.createElement('div');
+                actionButtons.className = 'flex gap-4 mt-6 p-4 bg-gray-50 rounded-lg';
+                actionButtons.innerHTML = `
+                    <button onclick="exportChecklist()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        📊 Exportar Progresso
+                    </button>
+                    <button onclick="resetChecklist()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        🔄 Resetar Checklist
+                    </button>
+                `;
+                checklistSection.querySelector('.bg-white').appendChild(actionButtons);
+            }
+        });
+
+        // Função para mostrar tooltip com informações adicionais
+        function showTooltip(element, message) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'absolute z-50 bg-gray-900 text-white text-sm px-2 py-1 rounded shadow-lg';
+            tooltip.textContent = message;
+            tooltip.style.left = element.offsetLeft + 'px';
+            tooltip.style.top = (element.offsetTop - 30) + 'px';
+            
+            document.body.appendChild(tooltip);
+            
+            setTimeout(() => {
+                document.body.removeChild(tooltip);
+            }, 3000);
+        }
+
+        // Função para alternar modo escuro (simulação)
+        function toggleDarkMode() {
+            const body = document.body;
+            const isDark = body.classList.contains('dark');
+            
+            if (isDark) {
+                body.classList.remove('dark');
+                localStorage.setItem('darkMode', 'false');
+            } else {
+                body.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
+        }
+
+        // Verificar preferência de modo escuro
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark');
+        }
+
+        // Função para limpar busca
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            searchDocumentation('');
+        }
+    </script>
+</body>
+</html>

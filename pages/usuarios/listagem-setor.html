@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/logo.svg" />
+    <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
+    <title>HyperEfficient - Setores</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <link href="/assets/css/dashboard-tailwind.css" rel="stylesheet" />
+  </head>
+
+  <body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
+    <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
+
+    <!-- SIDEBAR será inserida aqui pelo JS -->
+
+    <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
+      <!-- Navbar -->
+      <nav class="relative flex flex-wrap items-center justify-between px-0 py-2 mx-6 transition-all ease-in shadow-none duration-250 rounded-2xl lg:flex-nowrap lg:justify-start" navbar-main navbar-scroll="false">
+        <div class="flex items-center justify-between w-full mx-auto flex-wrap-inherit">
+          <nav>
+            <ol class="flex flex-wrap pt-1 mr-12 bg-transparent rounded-lg sm:mr-16">
+              <li class="text-sm leading-normal">
+                <a class="text-white opacity-50" href="javascript:;">Páginas</a>
+              </li>
+              <li class="text-sm pl-2 capitalize leading-normal text-white before:float-left before:pr-2 before:text-white before:content-['/']" aria-current="page">Setores</li>
+            </ol>
+            <h6 class="mb-0 font-bold text-white capitalize">Setores</h6>
+          </nav>
+
+          <div class="flex items-center mt-2 grow sm:mt-0 sm:mr-6 md:mr-0 lg:flex lg:basis-auto">
+            <div class="flex items-center md:ml-auto">
+              <div class="relative flex flex-wrap items-stretch w-full transition-all rounded-lg ease">
+                <span class="text-sm ease leading-5.6 absolute z-50 -ml-px flex h-full items-center whitespace-nowrap rounded-lg rounded-tr-none rounded-br-none border border-r-0 border-transparent bg-transparent py-2 px-2.5 text-center font-normal text-slate-500 transition-all">
+                  <i class="fas fa-search"></i>
+                </span>
+                <input type="text" id="searchInput" class="pl-9 text-sm focus:shadow-primary-outline ease w-1/100 leading-5.6 relative -ml-px block min-w-0 flex-auto rounded-lg border border-solid border-gray-300 dark:bg-slate-850 dark:text-white bg-white bg-clip-padding py-2 pr-3 text-gray-700 transition-all placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:transition-shadow" placeholder="Buscar setores..." />
+              </div>
+              
+              <!-- Botão Adicionar Setor -->
+              <button id="addSetorBtn" class="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <i class="fas fa-plus mr-2"></i>Novo Setor
+              </button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="w-full px-6 py-6 mx-auto">
+        <!-- Loading -->
+        <div id="loadingContainer" class="flex justify-center items-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <span class="ml-2 text-slate-600">Carregando setores...</span>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorContainer" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <span id="errorMessage"></span>
+        </div>
+
+        <!-- table -->
+        <div id="tableContainer" class="hidden flex flex-wrap -mx-3">
+          <div class="flex-none w-full max-w-full px-3">
+            <div class="relative flex flex-col min-w-0 mb-6 break-words bg-white border-0 border-transparent border-solid shadow-xl dark:bg-slate-850 dark:shadow-dark-xl rounded-2xl bg-clip-border">
+              <div class="p-6 pb-0 mb-0 border-b-0 border-b-solid rounded-t-2xl border-b-transparent">
+                <h6 class="dark:text-white">Tabela de Setores</h6>
+              </div>
+
+              <div class="flex-auto px-0 pt-0 pb-2">
+                <div class="p-0 overflow-x-auto">
+                  <table class="items-center w-full mb-0 align-top border-collapse dark:border-white/40 text-slate-500">
+                    <thead class="align-bottom">
+                      <tr>
+                        <th class="px-6 py-3 font-bold text-left uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Nome do Setor</th>
+                        <th class="px-6 py-3 font-bold text-center uppercase align-middle bg-transparent border-b border-collapse shadow-none dark:border-white/40 dark:text-white text-xxs border-b-solid tracking-none whitespace-nowrap text-slate-400 opacity-70">Gasto Geral</th>
+                        <th class="px-6 py-3 font-semibold capitalize align-middle bg-transparent border-b border-collapse border-solid shadow-none dark:border-white/40 dark:text-white tracking-none whitespace-nowrap text-slate-400 opacity-70">Ações</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="setoresTableBody">
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyContainer" class="hidden text-center py-8">
+          <i class="fas fa-building text-4xl text-slate-400 mb-4"></i>
+          <h3 class="text-lg font-semibold text-slate-600 mb-2">Nenhum setor encontrado</h3>
+          <p class="text-slate-500 mb-4">Comece adicionando o primeiro setor ao sistema.</p>
+          <button id="addFirstSetorBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+            <i class="fas fa-plus mr-2"></i>Adicionar Setor
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal de Confirmação -->
+      <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div class="flex items-center mb-4">
+            <div class="flex-shrink-0">
+              <i id="modalIcon" class="fas fa-exclamation-triangle text-yellow-500 text-2xl"></i>
+            </div>
+            <div class="ml-3">
+              <h3 id="modalTitle" class="text-lg font-medium text-gray-900">Confirmar Ação</h3>
+            </div>
+          </div>
+          <div class="mb-6">
+            <p id="modalMessage" class="text-sm text-gray-500">
+              Tem certeza que deseja realizar esta ação?
+            </p>
+          </div>
+          <div class="flex justify-end space-x-3">
+            <button id="modalCancelBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+              Cancelar
+            </button>
+            <button id="modalConfirmBtn" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors">
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de Edição/Criação -->
+      <div id="setorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div class="flex items-center justify-between mb-4">
+            <h3 id="setorModalTitle" class="text-lg font-medium text-gray-900">Novo Setor</h3>
+            <button id="closeSetorModal" class="text-gray-400 hover:text-gray-600">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <form id="setorForm">
+            <div class="mb-4">
+              <label for="setorNome" class="block text-sm font-medium text-gray-700 mb-2">Nome do Setor</label>
+              <input type="text" id="setorNome" name="nome" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            </div>
+            <div id="setorFormError" class="mb-4 text-red-500 text-sm hidden"></div>
+            <div class="flex justify-end space-x-3">
+              <button type="button" id="cancelSetorBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                Cancelar
+              </button>
+              <button type="submit" id="saveSetorBtn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+                <span id="saveSetorBtnText">Salvar</span>
+                <span id="saveSetorBtnLoading" class="hidden">Salvando...</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <footer class="pt-4">
+        <div class="w-full px-6 mx-auto">
+          <div class="text-sm leading-normal text-center text-slate-500 lg:text-left">
+            © 2025
+            feito <i class="fa fa-heart"></i> por
+            <span class="font-semibold text-slate-700 dark:text-white" target="_blank">HyperEfficient</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- SCRIPTS NA ORDEM CORRETA -->
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/apiconfig.js"></script>
+    <script src="/pages/shared/services/api.js"></script>
+    <script src="/pages/shared/components/sidebar.js"></script>
+    <script src="/assets/js/plugins/perfect-scrollbar.min.js" async></script>
+    <script src="/pages/dashboard/components/dashboard-cards.js?v=1.0.1" async></script>
+    
+    <script>
+      // Variáveis globais
+      let setores = [];
+      let setorEmEdicao = null;
+      let filtroAtual = '';
+
+      // AGUARDAR CARREGAMENTO DOS SCRIPTS NECESSÁRIOS
+      function waitForDependencies() {
+        return new Promise((resolve) => {
+          const checkDeps = () => {
+            if (window.Utils && window.API_CONFIG) {
+              resolve();
+            } else {
+              setTimeout(checkDeps, 50);
+            }
+          };
+          checkDeps();
+        });
+      }
+
+      // Proteção de rotas - verificar se o usuário está logado
+      document.addEventListener('DOMContentLoaded', async function() {
+        await waitForDependencies();
+        
+        // DESATIVADO TEMPORARIAMENTE: Verificar se o usuário está logado
+        // if (!AuthUtils.isLoggedIn()) {
+        //   Utils.redirect('../login.html');
+        //   return;
+        // }
+        
+        carregarSetores();
+        configurarEventListeners();
+      });
+
+      // Função para carregar setores
+      async function carregarSetores() {
+        try {
+          Utils.showElement('loadingContainer');
+          Utils.hideElement('tableContainer');
+          Utils.hideElement('emptyContainer');
+          Utils.hideElement('errorContainer');
+
+          const data = await API_CONFIG.authenticatedRequest(API_CONFIG.ENDPOINTS.SETORES, {
+            method: 'GET'
+          });
+
+          setores = data || [];
+          renderizarTabela();
+          
+        } catch (error) {
+          console.error('Erro ao carregar setores:', error);
+          const errorContainer = document.getElementById('errorContainer');
+          const errorMessage = document.getElementById('errorMessage');
+          errorMessage.textContent = error.message || 'Erro ao carregar setores';
+          Utils.showElement('errorContainer');
+        } finally {
+          Utils.hideElement('loadingContainer');
+        }
+      }
+
+      // Função para renderizar tabela
+      function renderizarTabela() {
+        const tbody = document.getElementById('setoresTableBody');
+        const setoresFiltrados = filtrarSetores(setores, filtroAtual);
+
+        if (setoresFiltrados.length === 0) {
+          Utils.showElement('emptyContainer');
+          Utils.hideElement('tableContainer');
+          return;
+        }
+
+        Utils.showElement('tableContainer');
+        Utils.hideElement('emptyContainer');
+
+        tbody.innerHTML = setoresFiltrados.map(setor => `
+          <tr>
+            <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+              <div class="flex px-2 py-1">
+                <div>
+                  <div class="inline-flex items-center justify-center mr-4 text-sm text-white transition-all duration-200 ease-in-out h-9 w-9 rounded-xl bg-blue-500">
+                    <i class="fas fa-building"></i>
+                  </div>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <h6 class="mb-0 text-sm leading-normal dark:text-white">${setor.nome}</h6>
+                  <p class="mb-0 text-xs leading-tight dark:text-white dark:opacity-80 text-slate-400">ID: ${setor.id}</p>
+                </div>
+              </div>
+            </td>
+            <td class="p-2 text-center align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+              <span class="text-sm font-semibold leading-tight dark:text-white dark:opacity-80">
+                ${Utils.formatCurrency ? Utils.formatCurrency(setor.gastoGeral || 0) : 'R$ ' + (setor.gastoGeral || 0).toFixed(2)}
+              </span>
+            </td>
+            <td class="p-2 align-middle bg-transparent border-b dark:border-white/40 whitespace-nowrap shadow-transparent">
+              <div class="flex space-x-2">
+                <button onclick="editarSetor(${setor.id})" class="text-xs font-semibold leading-tight text-blue-600 hover:text-blue-800 transition-colors">
+                  <i class="fas fa-edit mr-1"></i>Editar
+                </button>
+                <button onclick="deletarSetor(${setor.id})" class="text-xs font-semibold leading-tight text-red-600 hover:text-red-800 transition-colors">
+                  <i class="fas fa-trash mr-1"></i>Deletar
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      // Resto do código permanece igual...
+      function filtrarSetores(setores, filtro) {
+        if (!filtro) return setores;
+        return setores.filter(setor => 
+          setor.nome.toLowerCase().includes(filtro.toLowerCase())
+        );
+      }
+
+      function configurarEventListeners() {
+        // Busca
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+          filtroAtual = e.target.value;
+          renderizarTabela();
+        });
+
+        // Botões de adicionar
+        document.getElementById('addSetorBtn').addEventListener('click', () => abrirModalSetor());
+        document.getElementById('addFirstSetorBtn').addEventListener('click', () => abrirModalSetor());
+
+        // Modal de confirmação
+        document.getElementById('modalCancelBtn').addEventListener('click', fecharModalConfirmacao);
+        document.getElementById('modalConfirmBtn').addEventListener('click', confirmarAcao);
+
+        // Modal de setor
+        document.getElementById('closeSetorModal').addEventListener('click', fecharModalSetor);
+        document.getElementById('cancelSetorBtn').addEventListener('click', fecharModalSetor);
+        document.getElementById('setorForm').addEventListener('submit', salvarSetor);
+
+        // Fechar modais ao clicar fora
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+          if (e.target.id === 'confirmModal') fecharModalConfirmacao();
+        });
+        document.getElementById('setorModal').addEventListener('click', (e) => {
+          if (e.target.id === 'setorModal') fecharModalSetor();
+        });
+      }
+
+      function abrirModalSetor(setor = null) {
+        setorEmEdicao = setor;
+        const modal = document.getElementById('setorModal');
+        const title = document.getElementById('setorModalTitle');
+        const nomeInput = document.getElementById('setorNome');
+
+        if (setor) {
+          title.textContent = 'Editar Setor';
+          nomeInput.value = setor.nome;
+        } else {
+          title.textContent = 'Novo Setor';
+          nomeInput.value = '';
+        }
+
+        Utils.showElement('setorModal');
+        Utils.hideElement('setorFormError');
+      }
+
+      function fecharModalSetor() {
+        Utils.hideElement('setorModal');
+        setorEmEdicao = null;
+        document.getElementById('setorForm').reset();
+        Utils.hideElement('setorFormError');
+      }
+
+      async function salvarSetor(e) {
+        e.preventDefault();
+        
+        const nome = document.getElementById('setorNome').value.trim();
+        
+        if (!nome) {
+          const errorDiv = document.getElementById('setorFormError');
+          errorDiv.textContent = 'Por favor, preencha o nome do setor';
+          Utils.showElement('setorFormError');
+          return;
+        }
+
+        const saveBtn = document.getElementById('saveSetorBtn');
+        const saveText = document.getElementById('saveSetorBtnText');
+        const saveLoading = document.getElementById('saveSetorBtnLoading');
+        
+        saveText.classList.add('hidden');
+        saveLoading.classList.remove('hidden');
+        saveBtn.disabled = true;
+
+        try {
+          if (setorEmEdicao) {
+            await API_CONFIG.authenticatedRequest(`${API_CONFIG.ENDPOINTS.SETORES}/${setorEmEdicao.id}`, {
+              method: 'PUT',
+              body: JSON.stringify({ nome })
+            });
+            if (Utils.showToast) Utils.showToast('Setor atualizado com sucesso!', 'success');
+          } else {
+            await API_CONFIG.authenticatedRequest(API_CONFIG.ENDPOINTS.SETORES, {
+              method: 'POST',
+              body: JSON.stringify({ nome })
+            });
+            if (Utils.showToast) Utils.showToast('Setor criado com sucesso!', 'success');
+          }
+
+          fecharModalSetor();
+          carregarSetores();
+          
+        } catch (error) {
+          console.error('Erro ao salvar setor:', error);
+          const errorDiv = document.getElementById('setorFormError');
+          errorDiv.textContent = error.message || 'Erro ao salvar setor';
+          Utils.showElement('setorFormError');
+        } finally {
+          saveText.classList.remove('hidden');
+          saveLoading.classList.add('hidden');
+          saveBtn.disabled = false;
+        }
+      }
+
+      function editarSetor(id) {
+        const setor = setores.find(s => s.id === id);
+        if (setor) {
+          abrirModalSetor(setor);
+        }
+      }
+
+      function deletarSetor(id) {
+        const setor = setores.find(s => s.id === id);
+        if (setor) {
+          if (confirm(`Tem certeza que deseja excluir o setor "${setor.nome}"?`)) {
+            executarDeletarSetor(id);
+          }
+        }
+      }
+
+      async function executarDeletarSetor(id) {
+        try {
+          await API_CONFIG.authenticatedRequest(`${API_CONFIG.ENDPOINTS.SETORES}/${id}`, {
+            method: 'DELETE'
+          });
+          
+          if (Utils.showToast) Utils.showToast('Setor excluído com sucesso!', 'success');
+          carregarSetores();
+          
+        } catch (error) {
+          console.error('Erro ao deletar setor:', error);
+          if (Utils.showToast) {
+            Utils.showToast(error.message || 'Erro ao deletar setor', 'error');
+          } else {
+            alert(error.message || 'Erro ao deletar setor');
+          }
+        }
+      }
+
+      function abrirModalConfirmacao(config) {
+        const modal = document.getElementById('confirmModal');
+        const title = document.getElementById('modalTitle');
+        const message = document.getElementById('modalMessage');
+        const icon = document.getElementById('modalIcon');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+
+        title.textContent = config.title;
+        message.textContent = config.message;
+        icon.className = config.icon;
+        confirmBtn.textContent = config.confirmText;
+        confirmBtn.className = `px-4 py-2 text-sm font-medium text-white rounded-md transition-colors ${config.confirmClass}`;
+        
+        modal.dataset.onConfirm = config.onConfirm;
+        Utils.showElement('confirmModal');
+      }
+
+      function fecharModalConfirmacao() {
+        Utils.hideElement('confirmModal');
+      }
+
+      function confirmarAcao() {
+        const modal = document.getElementById('confirmModal');
+        const onConfirm = modal.dataset.onConfirm;
+        
+        if (onConfirm) {
+          eval(onConfirm);
+        }
+        
+        fecharModalConfirmacao();
+      }
+    </script>
+  </body>
+</html>

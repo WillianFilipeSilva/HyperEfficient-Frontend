@@ -85,7 +85,7 @@ const AuthUtils = {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
         // Redirecionar para login se não autenticado
-        window.location.href = '../login.html';
+        window.location.href = '/pages/auth/login.html';
     },
     
     // Verificar se o token expirou (implementação básica)

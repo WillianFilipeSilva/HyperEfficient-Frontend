@@ -1,7 +1,7 @@
 // Sidebar inteligente HyperEfficient
 (function() {
   // Caminho absoluto do componente (sempre a partir da raiz do projeto)
-  const sidebarPath = '/build/assets/components/sidebar.html';
+  const sidebarPath = '/pages/shared/components/sidebar.html';
 
   // Função para inserir sidebar
   fetch(sidebarPath)
@@ -56,7 +56,7 @@
               } else {
                 // fallback
                 localStorage.clear();
-                window.location.href = '/build/pages/login.html';
+                window.location.href = '/pages/auth/login.html';
               }
             }
           });
