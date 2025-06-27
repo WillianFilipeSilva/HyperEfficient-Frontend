@@ -1,0 +1,755 @@
+# Prompt Completo Sistema HyperEfficient - Versão Atualizada 2025
+
+## Visão Geral do Projeto
+HyperEfficient é um sistema completo de gestão de gastos elétricos empresariais desenvolvido como projeto acadêmico para o curso Entra21 (turma C). O sistema permite monitorar equipamentos, registrar consumo energético, gerar relatórios e controlar custos por setor com uma arquitetura moderna e modular.
+
+## Arquitetura e Stack Tecnológica
+
+**Sempre seguir princípios DRY (Don't Repeat Yourself) - sempre fazer código para reutilizar**
+
+### Backend - API REST
+- **Framework:** ASP.NET Core (C#)
+- **Arquitetura:** Domain Driven Design (DDD) organizado por pastas
+- **ORM:** Dapper (microORM com SQL nativo)
+- **Banco:** MySQL 8.0+ com charset utf8mb4_unicode_ci
+- **Autenticação:** JWT Bearer Token
+- **Criptografia:** PBKDF2 para senhas
+- **Padrões:** Repository Pattern + Service Layer
+- **Logs:** ILogger integrado
+- **Validação:** Data Annotations nos DTOs
+
+### Frontend - SPA Vanilla
+- **Core:** HTML5 + Vanilla JavaScript + Tailwind CSS
+- **Layout:** CSS Grid responsivo e componentizado
+- **Build:** Arquivos estáticos servidos diretamente (sem bundlers)
+- **Componentes:** Modulares reutilizáveis em JavaScript
+- **Estado:** localStorage para JWT + variáveis globais
+- **HTTP:** Fetch API nativo para comunicação com backend
+- **Utilitários:** Biblioteca Utils.js com funções auxiliares extensivas
+- **Autenticação:** Sistema AuthGuard centralizado para proteção de rotas
+
+### Banco de Dados - MySQL
+- **Schema:** `hyperefficient`
+- **Engine:** InnoDB
+- **Versionamento:** Scripts SQL manuais (sem migrations)
+- **Convenções:** Tabelas/campos UPPERCASE, entidades PascalCase
+
+## Estrutura Completa do Backend
+
+### Organização de Pastas
+
+```
+HyperEfficient/ (Pasta raiz do backend)
+├── Contracts/ (Interfaces e contratos)
+│   ├── Infrastructure/
+│   │   ├── IConnection.cs
+│   │   └── IAutentication.cs
+│   ├── Repositories/
+│   │   ├── IUsuarioRepository.cs
+│   │   ├── ICategoriaRepository.cs
+│   │   ├── IEquipamentoRepository.cs
+│   │   ├── ISetorRepository.cs
+│   │   └── IRegistroRepository.cs
+│   └── Services/
+│       ├── IUsuarioService.cs
+│       ├── ICategoriaService.cs
+│       ├── IEquipamentoService.cs
+│       ├── ISetorService.cs
+│       ├── IRegistroService.cs
+│       └── IRelatorioService.cs
+├── Controllers/ (Endpoints da API)
+│   ├── UsuarioController.cs
+│   ├── CategoriaController.cs
+│   ├── EquipamentoController.cs
+│   ├── SetorController.cs
+│   ├── RegistroController.cs
+│   └── RelatorioController.cs
+├── Dtos/ (Data Transfer Objects)
+│   ├── Base/
+│   │   ├── BaseDto.cs
+│   │   └── GetAllResponseBase.cs
+│   ├── Usuario/
+│   │   ├── UsuarioDto.cs
+│   │   ├── UsuarioInsertDto.cs
+│   │   ├── UsuarioLoginDto.cs
+│   │   ├── UsuarioLoginTokenDto.cs
+│   │   └── UsuarioGetAllResponse.cs
+│   ├── Categoria/
+│   ├── Equipamento/
+│   ├── Setor/
+│   ├── Registro/
+│   ├── Relatorios/
+│   └── MessageResponse/
+│       └── MessageResponse.cs
+├── Entities/ (Modelos de domínio)
+│   ├── Base/
+│   │   └── EntityBase.cs
+│   ├── UsuarioEntity.cs
+│   ├── CategoriaEntity.cs
+│   ├── EquipamentoEntity.cs
+│   ├── SetorEntity.cs
+│   └── RegistroEntity.cs
+├── Infrastructure/ (Infraestrutura técnica)
+│   ├── Authentication/
+│   │   └── Autentication.cs
+│   ├── Connection/
+│   │   └── Connection.cs
+│   ├── Criptography/
+│   │   └── Criptography.cs
+│   ├── DatabaseInitializer/
+│   │   └── DatabaseInitializer.cs
+│   ├── Extensions/
+│   │   └── ServiceCollectionExtensions.cs
+│   ├── Mapping/
+│   │   ├── UsuarioProfile.cs
+│   │   └── [outros profiles AutoMapper]
+│   └── Middleware/
+│       ├── ErrorHandlingMiddleware.cs
+│       └── ErrorResponse.cs
+├── Repositories/ (Acesso a dados)
+│   ├── UsuarioRepository.cs
+│   ├── CategoriaRepository.cs
+│   ├── EquipamentoRepository.cs
+│   ├── SetorRepository.cs
+│   └── RegistroRepository.cs
+├── Services/ (Lógica de negócio)
+│   ├── UsuarioService.cs
+│   ├── CategoriaService.cs
+│   ├── EquipamentoService.cs
+│   ├── SetorService.cs
+│   ├── RegistroService.cs
+│   └── RelatorioService.cs
+├── appsettings.json
+├── Program.cs
+└── [arquivos de configuração]
+```
+
+## Estrutura Frontend Detalhada
+
+### Estrutura de Arquivos Atualizada
+
+```
+HyperEfficient-frontEnd/
+├── assets/
+│   ├── css/
+│   │   ├── dashboard-tailwind.css (Estilos principais)
+│   │   ├── nucleo-icons.css (Ícones)
+│   │   ├── nucleo-svg.css (SVG icons)
+│   │   ├── perfect-scrollbar.css (Scrollbar customizada)
+│   │   └── styles.css (Estilos personalizados)
+│   ├── fonts/ (Nucleo icons + outras fontes)
+│   ├── img/
+│   │   └── logo.svg
+│   └── js/
+│       └── plugins/
+│           ├── chartjs.min.js (Charts)
+│           └── perfect-scrollbar.min.js (Scrollbar)
+├── pages/
+│   ├── auth/
+│   │   └── login.html (Página de login)
+│   ├── dashboard/
+│   │   ├── components/
+│   │   │   └── dashboard-cards.js
+│   │   ├── dashboard.html (Dashboard principal)
+│   │   └── relatorios-dashboard.html (Relatórios)
+│   ├── shared/
+│   │   ├── components/
+│   │   │   ├── modal.js
+│   │   │   ├── sidebar.html
+│   │   │   └── sidebar.js
+│   │   └── services/
+│   │       ├── api.js (Configuração da API)
+│   │       ├── utils.js (Utilitários gerais - CRÍTICO)
+│   │       └── auth-guard.js (Sistema de autenticação - NOVO)
+│   ├── usuarios/
+│   │   ├── setores.html (Gestão de setores)
+│   │   ├── perfil.html (Perfil do usuário)
+│   │   ├── usuario-form.html (Cadastro de usuários)
+│   │   └── usuarios.html (Listagem de usuários)
+│   └── teste.html (Documentação do projeto)
+├── Backend/ (Pasta do backend)
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+├── README-API.md
+└── .gitignore
+```
+
+## Sistema de Autenticação Frontend - AuthGuard (NOVO)
+
+### Arquivo: `pages/shared/services/auth-guard.js`
+
+Sistema centralizado de proteção de rotas que substitui código duplicado em todas as páginas:
+
+```javascript
+// Inicialização automática
+initAuthGuard();
+
+// Funcionalidades:
+- Detecção automática de páginas públicas vs protegidas
+- Validação de token em tempo real
+- Redirecionamento inteligente baseado no status de autenticação
+- Verificação periódica de expiração do token
+- Mensagens de feedback para o usuário
+- Configuração flexível por página
+
+// Páginas públicas (não precisam de autenticação):
+- /pages/auth/login.html
+- /pages/usuarios/usuario-form.html
+
+// Páginas protegidas (precisam de autenticação):
+- /pages/dashboard/
+- /pages/usuarios/ (exceto usuario-form.html)
+```
+
+## Biblioteca Utils.js - Componente Crítico
+
+### Funcionalidades Principais
+A biblioteca `utils.js` é o coração do frontend, fornecendo:
+
+#### 1. Validações Robustas
+```javascript
+// Validações específicas
+Utils.isValidEmail(email)            // Regex para email
+Utils.isValidPassword(senha)         // Mínimo 6 caracteres
+Utils.isValidName(nome)             // Mínimo 2 caracteres
+Utils.isRequired(value)             // Campo obrigatório
+
+// Validação de formulários completos
+Utils.validateForm(formData, validations)
+```
+
+#### 2. UI/UX Avançada
+```javascript
+// Gerenciamento de estados visuais
+Utils.showError(elementId, message)
+Utils.hideError(elementId)
+Utils.showButtonLoading(buttonId, loadingText)
+Utils.hideButtonLoading(buttonId)
+
+// Sistema de notificações Toast
+Utils.showToast(message, type, duration)
+// Tipos: 'success', 'error', 'warning', 'info'
+```
+
+#### 3. Modal System Genérico
+```javascript
+Utils.showModal({
+    message: 'Confirma exclusão?',
+    title: 'Confirmação',
+    onConfirm: () => { /* ação */ },
+    onCancel: () => { /* cancelar */ }
+})
+```
+
+#### 4. Formatação de Dados
+```javascript
+Utils.formatDate(date, 'dd/mm/yyyy')
+Utils.formatCurrency(value, 'R$')      // R$ 1.234,56
+Utils.formatNumber(value, decimals)      // 1.234,56
+```
+
+#### 5. Manipulação DOM
+```javascript
+Utils.showElement(elementId)
+Utils.hideElement(elementId)
+Utils.toggleElement(elementId)
+```
+
+#### 6. Utilidades de String
+```javascript
+Utils.capitalize(str)                  // Primeira letra maiúscula
+Utils.getInitials(name, maxLength)     // Iniciais do nome
+Utils.truncate(str, maxLength)         // Truncar texto
+Utils.removeAccents(str)               // Remove acentos
+```
+
+#### 7. Manipulação de Arrays/Objetos
+```javascript
+Utils.filterByProperty(array, property, value)
+Utils.sortByProperty(array, property, ascending)
+```
+
+#### 8. Storage Management
+```javascript
+Utils.saveToStorage(key, value)        // localStorage
+Utils.loadFromStorage(key, defaultValue)
+Utils.removeFromStorage(key)
+```
+
+#### 9. Performance Optimization
+```javascript
+Utils.debounce(func, wait)             // Debounce de funções
+Utils.throttle(func, limit)            // Throttle de funções
+```
+
+#### 10. Navegação
+```javascript
+Utils.redirect(url, delay)
+Utils.isCurrentPage(pageName)
+```
+
+## Configuração da API - api.js (NOVO)
+
+### Arquivo: `pages/shared/services/api.js`
+
+```javascript
+const API_CONFIG = {
+    BASE_URL: 'http://localhost:5205',
+    ENDPOINTS: {
+        LOGIN: '/usuarios/login',
+        CADASTRO: '/usuarios',
+        USUARIOS: '/usuarios',
+        SETORES: '/setores',
+        CATEGORIAS: '/categorias',
+        EQUIPAMENTOS: '/equipamentos',
+        REGISTROS: '/registros',
+        RELATORIOS: '/relatorios'
+    },
+    
+    // Funções para requisições autenticadas e públicas
+    authenticatedRequest(url, options)
+    publicRequest(url, options)
+}
+
+const AuthUtils = {
+    isLoggedIn()
+    getCurrentUser()
+    logout()
+    isTokenExpired()
+}
+```
+
+## Modelo de Dados Completo
+
+### Tabelas e Relacionamentos
+```sql
+-- USUARIO (Autenticação e controle de acesso)
+Usuario {
+  Id: INT PRIMARY KEY AUTO_INCREMENT
+  Nome: VARCHAR(100) NOT NULL
+  CriadoEm: DATETIME NOT NULL
+  Senha: VARCHAR(255)  -- Hash PBKDF2
+  Email: VARCHAR(150) UNIQUE
+  Ativo: TINYINT DEFAULT 1
+}
+
+-- CATEGORIA (Classificação de equipamentos)
+Categoria {
+  Id: INT PRIMARY KEY AUTO_INCREMENT
+  Nome: VARCHAR(100) NOT NULL
+}
+
+-- SETOR (Divisões da empresa)
+Setor {
+  Id: INT PRIMARY KEY AUTO_INCREMENT
+  GastoGeral: DECIMAL(10,2)
+  Nome: VARCHAR(100)
+}
+
+-- EQUIPAMENTO (Dispositivos monitorados)
+Equipamento {
+  Id: INT PRIMARY KEY AUTO_INCREMENT
+  Nome: VARCHAR(100) NOT NULL
+  Descricao: VARCHAR(300)
+  Gastokwh: DECIMAL(10,2) NOT NULL  -- Consumo por hora
+  CategoriaId: INT FK > Categoria.Id
+  SetorId: INT FK > Setor.Id
+  Ativo: TINYINT DEFAULT 1
+}
+
+-- REGISTRO (Histórico de uso dos equipamentos)
+Registro {
+  Id: INT PRIMARY KEY AUTO_INCREMENT
+  DataInicial: DATETIME NOT NULL
+  DataFinal: DATETIME  -- Null = ainda em uso
+  EquipamentoId: INT FK > Equipamento.Id
+}
+```
+
+## Padrões de Código e Convenções
+
+### Controllers (Endpoints da API)
+```csharp
+[ApiController]
+[Route("usuarios")]  // Sempre plural, lowercase
+public class UsuarioController : ControllerBase
+{
+    // Padrão: Apenas delegam para Services
+    // Sempre retornam Ok(resultado)
+    // DTOs para entrada, Entities/DTOs para saída
+    // [Authorize] em tudo, exceto [AllowAnonymous] no login
+    
+    [HttpPost] public Task<ActionResult<MessageResponse>> Insert([FromBody] UsuarioInsertDto dto)
+    [HttpPut] public Task<ActionResult<MessageResponse>> Update([FromBody] UsuarioEntity entity)
+    [HttpDelete("{id}")] public Task<ActionResult<MessageResponse>> Delete(int id)
+    [HttpGet] public Task<ActionResult<UsuarioGetAllResponse>> GetAll()
+    [HttpGet("{id}")] public Task<ActionResult<UsuarioDto>> GetById(int id)
+}
+```
+
+### Services (Lógica de Negócio)
+```csharp
+public class UsuarioService : IUsuarioService
+{
+    // Responsabilidades:
+    // - Validações de negócio
+    // - Criptografia de senhas (PBKDF2)
+    // - Mapeamento com AutoMapper
+    // - Chamadas aos Repositories
+    // - Geração de tokens JWT
+    // - Tratamento de exceções (KeyNotFoundException)
+    
+    // Padrão de retorno:
+    // - MessageResponse para Insert/Update/Delete
+    // - DTOs/Entities para consultas
+    // - Sempre async Task<T>
+}
+```
+
+### Repositories (Acesso a Dados)
+```csharp
+public class UsuarioRepository : IUsuarioRepository
+{
+    // Métodos padrão:
+    // Insert(entity) > int (affected rows)
+    // Update(entity) > int
+    // Delete(id) > int  
+    // GetAll() > IEnumerable<Entity>
+    // GetPaged(page, pageSize) > IEnumerable<Entity>
+    // GetById(id) > Entity?
+    
+    // SQL sempre nativo com Dapper
+    // Campos DB em UPPERCASE, propriedades em PascalCase
+    // Parâmetros sempre nomeados (@param)
+}
+```
+
+### DTOs (Transferência de Dados)
+```csharp
+// InsertDto: Criação (com DataAnnotations)
+public class UsuarioInsertDto
+{
+    [Required][StringLength(100)] public string Nome { get; set; }
+    [EmailAddress][Required] public string Email { get; set; }
+    [Required][MinLength(6)] public string Senha { get; set; }
+}
+
+// Dto: Consulta (sem campos sensíveis)
+public class UsuarioDto : BaseDto
+{
+    public string Nome { get; set; }
+    public string Email { get; set; }
+    public bool Ativo { get; set; }
+    // Sem Senha!
+}
+
+// LoginDto: Autenticação
+// GetAllResponse: Listagens
+// LoginTokenDto: Resposta do login (token + usuário)
+```
+
+## Configuração e Inicialização
+
+### appsettings.json
+```json
+{
+  "ConnectionStrings": {
+    "Default": "Server=localhost;Port=3306;Database=hyperefficient;User=root;Password=root"
+  },
+  "JwtSettings": {
+    "SecretKey": "zjcvbnoDmkKeugcBfkoxcmZCqDbBlWJw"
+  }
+}
+```
+
+### Program.cs - Pipeline Completo
+```csharp
+// 1. Services registration
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(/* JWT Bearer config */);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+builder.Services.AddSingleton<IConnection, Connection>();
+builder.Services.AddScoped<IAutentication, Autentication>();
+builder.Services.AddCamadaInfra().AddCamadaAplicacao();  // Extension methods
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// 2. Database initialization
+EnsureDatabaseAndTablesCreated(connection, configuration);
+
+// 3. Middleware pipeline
+app.UseHttpsRedirection();
+app.UseMiddleware<ErrorHandlingMiddleware>();  // Custom error handling
+app.UseAuthentication();  // ANTES do Authorization!
+app.UseAuthorization();
+app.MapControllers();
+```
+
+## Funcionalidades do Sistema
+
+### Módulo de Usuários
+- Cadastro com validação de email único
+- Login com JWT (24h de validade)
+- CRUD completo com soft delete (campo Ativo)
+- Criptografia PBKDF2 para senhas
+
+### Módulo de Equipamentos
+- Cadastro com categoria e setor obrigatórios
+- Campo Gastokwh para cálculo de consumo
+- Relacionamento com Categoria e Setor
+- Status ativo/inativo
+
+### Módulo de Registros
+- Início/fim de uso de equipamentos
+- DataFinal null = equipamento ainda em uso
+- Base para cálculos de consumo e relatórios
+
+### Módulo de Relatórios
+- Consumo por setor
+- Consumo por equipamento
+- Histórico de registros
+- Cálculos de custo energético
+
+### Módulo de Setores (NOVO)
+- Gestão de setores da empresa
+- Cálculo de gasto geral por setor
+- Interface de listagem e edição
+
+## Tratamento de Erros
+
+### ErrorHandlingMiddleware
+```csharp
+// Tipos de exceção mapeados:
+// KeyNotFoundException > 404 Not Found
+// ArgumentException > 400 Bad Request  
+// UnauthorizedAccessException > 401 Unauthorized
+// InvalidOperationException > 400 Bad Request
+// Exception (genérica) > 500 Internal Server Error
+
+// Formato de resposta:
+{
+  "statusCode": 404,
+  "message": "Usuário não encontrado!",
+  "details": "Recurso não encontrado", 
+  "timestamp": "2025-01-26T..."
+}
+```
+
+## Frontend - Arquitetura de Componentes
+
+### Estrutura Modular
+```javascript
+// Componentes reutilizáveis
+const Modal = {
+    show: (content) => {},
+    hide: () => {},
+    confirm: (message, callback) => {}
+};
+
+const Table = {
+    render: (data, columns, actions) => {},
+    paginate: (data, page, size) => {}
+};
+
+// Services para API
+const ApiService = {
+    baseURL: 'http://localhost:5205',
+    token: localStorage.getItem('token'),
+    get: (endpoint) => {},
+    post: (endpoint, data) => {},
+    put: (endpoint, data) => {},
+    delete: (endpoint) => {}
+};
+```
+
+### Sistema de Autenticação Frontend
+```javascript
+// AuthGuard.js (NOVO)
+const AuthGuard = {
+    init: (options) => {},
+    checkAuth: () => {},
+    checkAuthPublic: () => {},
+    redirectToLogin: () => {},
+    redirectToDashboard: () => {},
+    handleTokenExpired: () => {},
+    startTokenCheck: () => {}
+};
+
+// AuthUtils.js
+const AuthUtils = {
+    login: async (email, senha) => {
+        // POST /usuarios/login
+        // Salva token no localStorage
+        // Redireciona para dashboard
+    },
+    logout: () => {
+        // Remove token
+        // Redireciona para login
+    },
+    isAuthenticated: () => {
+        // Verifica se token existe e é válido
+    },
+    getUser: () => {
+        // Decode JWT payload
+    }
+};
+```
+
+## Padrões de Desenvolvimento Frontend
+
+### Uso da Biblioteca Utils.js
+```javascript
+// SEMPRE usar Utils.js para:
+// 1. Validações de formulário
+const validation = Utils.validateForm(formData, {
+    nome: { required: true, minLength: 2 },
+    email: { required: true, email: true },
+    senha: { required: true, minLength: 6 }
+});
+
+// 2. Feedback visual
+Utils.showToast('Usuário criado com sucesso!', 'success');
+Utils.showButtonLoading('btnSalvar', 'Salvando...');
+
+// 3. Confirmações
+Utils.showModal({
+    message: 'Deseja excluir este usuário?',
+    title: 'Confirmar Exclusão',
+    onConfirm: () => deleteUser(id)
+});
+
+// 4. Formatação de dados
+Utils.formatCurrency(consumo * tarifa);
+Utils.formatDate(registro.dataInicial);
+```
+
+### Estrutura de Páginas HTML
+```html
+<!-- Sempre incluir na ordem: -->
+<link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
+<link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
+<link href="/assets/css/dashboard-tailwind.css" rel="stylesheet" />
+
+<!-- Scripts sempre no final: -->
+<script src="/pages/shared/services/utils.js"></script>
+<script src="/pages/shared/services/api.js"></script>
+<script src="/pages/shared/services/auth-guard.js"></script>
+<script src="/pages/shared/components/sidebar.js"></script>
+<script src="/pages/dashboard/components/dashboard-cards.js"></script>
+
+<!-- Inicialização: -->
+<script>
+    initAuthGuard();
+    // Resto do código da página
+</script>
+```
+
+## Regras de Desenvolvimento
+
+### Código Limpo (Clean Code)
+- Nomes descritivos e em português para domínio de negócio
+- Métodos pequenos com responsabilidade única
+- NUNCA alterar nomes de métodos/variáveis existentes
+- Evitar comentários óbvios no código
+- Preferir composição sobre herança
+- SEMPRE usar Utils.js para operações comuns
+- SEMPRE usar AuthGuard para proteção de rotas
+
+### Padrões de Resposta
+- Sempre código completo quando solicitado
+- Questionar quando algo não for possível
+- Sugerir alternativas corretas
+- Manter consistência com padrões existentes
+- Integrar Utils.js em qualquer código frontend
+- Usar AuthGuard para todas as páginas
+
+### Validações
+- Data Annotations nos DTOs de entrada
+- Validações de negócio nos Services
+- Controllers apenas delegam (não validam)
+- Frontend usa Utils.validateForm() obrigatoriamente
+- Exceções específicas para cada tipo de erro
+
+### Segurança
+- JWT em todos os endpoints (exceto login)
+- Senhas sempre hasheadas (PBKDF2)
+- CORS configurado apropriadamente
+- Input sanitization via Data Annotations
+- Token JWT gerenciado via Utils.js storage functions
+- AuthGuard para proteção automática de rotas
+
+## Observações Específicas
+
+### Ambiente de Desenvolvimento
+- Visual Studio ou VS Code
+- MySQL Workbench para banco
+- Postman/Insomnia para testes de API
+- Browser Developer Tools para frontend
+- Live Server ou similar para servir arquivos estáticos
+
+### Deploy e Build
+- Backend: dotnet publish
+- Frontend: arquivos estáticos (sem build process)
+- Banco: scripts manuais de criação/atualização
+- CSS: Tailwind via CDN (sem compilação)
+
+### Extensibilidade Futura
+- Estrutura preparada para adicionar novos módulos
+- Padrões consistentes facilitam manutenção
+- Separação clara entre camadas
+- Frontend modular permite crescimento
+- Utils.js extensível para novas funcionalidades
+- AuthGuard centralizado facilita adição de novas páginas
+
+## Características Técnicas Críticas
+
+### Frontend
+- Sem transpilação: JavaScript vanilla ES6+
+- Tailwind CSS: Via CDN, sem build process
+- Componentes: Modulares em arquivos separados
+- Estado: localStorage + variáveis globais
+- Utils.js: Biblioteca central obrigatória para todas as operações
+- AuthGuard: Sistema de autenticação centralizado obrigatório
+
+### Backend
+- Dapper: SQL nativo, sem ORM complexo
+- DDD: Organização por domínio, não por tipo
+- JWT: Autenticação stateless
+- AutoMapper: Mapeamento automático entre camadas
+- Middleware: Tratamento global de erros
+
+### Integração
+- API REST: Comunicação via JSON
+- CORS: Configurado para desenvolvimento local
+- Swagger: Documentação automática da API
+- Logging: ILogger para rastreamento
+
+## Melhorias Implementadas (2025)
+
+### Sistema de Autenticação Centralizado
+- ✅ AuthGuard.js: Proteção automática de rotas
+- ✅ Eliminação de código duplicado
+- ✅ Detecção inteligente de páginas públicas vs protegidas
+- ✅ Verificação periódica de token
+- ✅ Redirecionamento automático
+
+### Estrutura de Pastas Reorganizada
+- ✅ Organização por funcionalidade (pages/auth, pages/dashboard, etc.)
+- ✅ Serviços centralizados em pages/shared/services
+- ✅ Componentes reutilizáveis em pages/shared/components
+- ✅ Caminhos absolutos para evitar problemas de referência
+
+### Biblioteca Utils.js Aprimorada
+- ✅ Funções de formatação de moeda
+- ✅ Sistema de toast notifications
+- ✅ Validações robustas de formulários
+- ✅ Manipulação avançada de DOM
+- ✅ Utilitários de performance (debounce, throttle)
+
+### Configuração de API Centralizada
+- ✅ api.js: Configuração unificada da API
+- ✅ AuthUtils: Utilitários de autenticação
+- ✅ Endpoints organizados e documentados
+- ✅ Tratamento de erros padronizado
+
+Este prompt captura completamente a essência, estrutura, padrões e especificidades técnicas do projeto HyperEfficient, incluindo a importância crítica da biblioteca Utils.js no frontend, o novo sistema AuthGuard para autenticação centralizada, e todos os detalhes arquiteturais necessários para compreensão integral do sistema.

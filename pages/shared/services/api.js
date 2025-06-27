@@ -22,7 +22,11 @@ const API_CONFIG = {
     
     // Função para obter headers com autenticação
     getAuthHeaders: function() {
-        const token = localStorage.getItem('token');
+        let token = localStorage.getItem('token');
+        if (token) {
+            // Remove aspas duplas do início/fim, se existirem
+            token = token.replace(/^"|"$/g, '');
+        }
         return {
             ...this.DEFAULT_HEADERS,
             'Authorization': token ? `Bearer ${token}` : ''
@@ -71,7 +75,9 @@ const API_CONFIG = {
 const AuthUtils = {
     // Verificar se o usuário está logado
     isLoggedIn: function() {
-        return !!localStorage.getItem('token');
+        const token = localStorage.getItem('token');
+        if (!token) return false;
+        return !this.isTokenExpired();
     },
     
     // Obter dados do usuário logado
@@ -84,22 +90,28 @@ const AuthUtils = {
     logout: function() {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
-        // Redirecionar para login se não autenticado
-        window.location.href = '/pages/auth/login.html';
+        // Só redireciona se não estiver já na tela de login
+        if (!window.location.pathname.includes('/pages/auth/login.html')) {
+            window.location.href = '/pages/auth/login.html';
+        }
     },
     
-    // Verificar se o token expirou (implementação básica)
+    // Verificar se o token expirou (implementação robusta)
     isTokenExpired: function() {
         const token = localStorage.getItem('token');
         if (!token) return true;
-        
         try {
-            // Decodificar o token JWT (parte payload)
             const payload = JSON.parse(atob(token.split('.')[1]));
             const currentTime = Math.floor(Date.now() / 1000);
-            
-            return payload.exp < currentTime;
+            if (payload.exp < currentTime) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                return true;
+            }
+            return false;
         } catch (error) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
             return true;
         }
     }

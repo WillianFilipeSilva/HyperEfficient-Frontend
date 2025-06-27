@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
     <title>HyperEfficient - Perfil</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
     <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
     <script src="https://unpkg.com/@popperjs/core@2"></script>
@@ -18,6 +18,9 @@
     <div class="absolute bg-y-50 w-full top-0 min-h-75">
       <span class="absolute top-0 left-0 w-full h-full bg-blue-500 opacity-60"></span>
     </div>
+    <script src="/pages/shared/services/utils.js"></script>
+    <script src="/pages/shared/services/api.js"></script>
+    <script src="/pages/shared/services/auth-guard.js"></script>
     <script src="/pages/shared/components/sidebar.js"></script>
 
     <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
@@ -138,7 +141,7 @@
           <div class="w-full px-6 mx-auto">
             <div class="text-sm leading-normal text-center text-slate-500 lg:text-left">
               © 2025
-              feito <i class="fa fa-heart"></i> por
+              feito com  <i class="fa fa-heart"></i> por
               <span class="font-semibold text-slate-700 dark:text-white" target="_blank">HyperEfficient</span>
             </div>
           </div>
@@ -149,22 +152,11 @@
   
   <script src="/assets/js/plugins/perfect-scrollbar.min.js" async></script>
   <script src="/pages/dashboard/components/dashboard-cards.js?v=1.0.1" async></script>
-  <script src="/pages/shared/services/api.js"></script>
-  <script src="/pages/shared/services/utils.js"></script>
   
   <script>
-    // Proteção de rotas - verificar se o usuário está logado
+    initAuthGuard();
+    // Carregar dados quando a página estiver pronta
     document.addEventListener('DOMContentLoaded', function() {
-      // DESATIVADO TEMPORARIAMENTE: Verificar se o usuário está logado
-      // if (!AuthUtils.isLoggedIn()) {
-      //   Utils.redirect('../login.html');
-      //   return;
-      // }
-      // if (AuthUtils.isTokenExpired()) {
-      //   Utils.showToast('Sua sessão expirou. Faça login novamente.', 'warning');
-      //   AuthUtils.logout();
-      //   return;
-      // }
       carregarInformacoesUsuario();
       configurarBotoes();
     });

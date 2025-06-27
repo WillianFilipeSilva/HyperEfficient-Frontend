@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
     <title>HyperEfficient - Listagem</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
     <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
     <link href="/assets/css/dashboard-tailwind.css" rel="stylesheet" />
@@ -16,6 +16,9 @@
 
   <body class="m-0 font-sans text-base antialiased font-normal dark:bg-slate-900 leading-default bg-gray-50 text-slate-500">
     <div class="absolute w-full bg-blue-500 dark:hidden min-h-75"></div>
+    <script src="/pages/shared/services/utils.js"></script>
+    <script src="/pages/shared/services/api.js"></script>
+    <script src="/pages/shared/services/auth-guard.js"></script>
     <script src="/pages/shared/components/sidebar.js"></script>
 
     <main class="relative h-full max-h-screen transition-all duration-200 ease-in-out xl:ml-68 rounded-xl">
@@ -474,35 +477,8 @@
   </body>
   <script src="/assets/js/plugins/perfect-scrollbar.min.js" async></script>
   <script src="/pages/dashboard/components/dashboard-cards.js?v=1.0.1" async></script>
-  <script src="/pages/shared/services/utils.js"></script>
   <script>
-    // Proteção de rotas - verificar se o usuário está logado
-    document.addEventListener('DOMContentLoaded', function() {
-      // DESATIVADO TEMPORARIAMENTE: Verificar se o usuário está logado
-      // if (!AuthUtils.isLoggedIn()) {
-      //   Utils.redirect('login.html');
-      //   return;
-      // }
-      // if (AuthUtils.isTokenExpired()) {
-      //   Utils.showToast('Sua sessão expirou. Faça login novamente.', 'warning');
-      //   AuthUtils.logout();
-      //   return;
-      // }
-      // ... restante do código ...
-    });
-
-    // Botão de logout
-    document.addEventListener('DOMContentLoaded', function() {
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (confirm('Tem certeza que deseja sair?')) {
-            Utils.showToast('Logout realizado com sucesso!', 'info');
-            AuthUtils.logout();
-          }
-        });
-      }
-    });
+    initAuthGuard();
+    // Resto do código da página
   </script>
 </html>
