@@ -240,11 +240,17 @@
       // Função para renderizar tabela
       function renderizarTabela() {
         const tbody = document.getElementById('setoresTableBody');
-        const setoresFiltrados = filtrarSetores(setores, filtroAtual);
+        let setoresFiltrados = filtrarSetores(setores, filtroAtual);
+
+        // Garante que é array
+        if (!Array.isArray(setoresFiltrados)) {
+          setoresFiltrados = [];
+        }
 
         if (setoresFiltrados.length === 0) {
           Utils.showElement('emptyContainer');
           Utils.hideElement('tableContainer');
+          tbody.innerHTML = '';
           return;
         }
 
