@@ -752,4 +752,23 @@ Utils.formatDate(registro.dataInicial);
 - ✅ Endpoints organizados e documentados
 - ✅ Tratamento de erros padronizado
 
+## Funcionalidades e Endpoints Adicionados (2025)
+
+### Backend
+- **Endpoint `/usuarios/handshake`**: Permite ao frontend validar se o token JWT ainda é aceito pelo backend (usado para handshake/autenticação).
+- **Login com campo `lembrarDeMim`**: O endpoint de login agora aceita o campo `lembrarDeMim` (boolean). Se true, o backend gera um token JWT com expiração maior (ex: 30 dias); se false, expiração padrão (ex: 2 horas).
+
+### Frontend
+- **Armazenamento do token**: O frontend salva o token e o usuário apenas no `localStorage`, independente do checkbox "Lembrar de mim".
+- **Verificação periódica de token**: O frontend verifica a validade do token a cada 1 minuto usando o AuthGuard e o endpoint `/usuarios/handshake`.
+- **Logout global**: O logout remove sempre o token/usuário do localStorage e redireciona para a tela de login.
+
+Essas mudanças garantem maior segurança, controle de sessão e alinhamento entre frontend e backend para autenticação e expiração de sessão.
+
 Este prompt captura completamente a essência, estrutura, padrões e especificidades técnicas do projeto HyperEfficient, incluindo a importância crítica da biblioteca Utils.js no frontend, o novo sistema AuthGuard para autenticação centralizada, e todos os detalhes arquiteturais necessários para compreensão integral do sistema.
+
+### Organização dos Scripts de Login e Cadastro (2025)
+- Todos os scripts de lógica de login e cadastro foram movidos para arquivos JavaScript externos:
+  - `pages/auth/login.js` para o login
+  - `pages/usuarios/usuario-form.js` para o cadastro
+- Não há mais nenhum script inline nos arquivos HTML dessas telas, seguindo boas práticas de separação de responsabilidades e facilitando manutenção e versionamento.

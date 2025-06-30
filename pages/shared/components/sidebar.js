@@ -50,14 +50,21 @@
             message: 'Tem certeza que deseja sair da sua conta?',
             title: 'Sair',
             onConfirm: function() {
-              if (window.Utils && window.Utils.showToast && window.AuthUtils && window.AuthUtils.logout) {
+              if (window.Utils && window.Utils.showToast) {
                 Utils.showToast('Logout realizado com sucesso!', 'info');
+              }
+              if (window.AuthUtils && typeof AuthUtils.logout === 'function') {
                 AuthUtils.logout();
+                setTimeout(function() { window.location.reload(); }, 500);
               } else {
                 // fallback
                 localStorage.clear();
+                sessionStorage.clear();
                 window.location.href = '/pages/auth/login.html';
               }
+              // Fechar modal se ainda estiver aberto
+              const overlay = document.getElementById('modalGenericOverlay');
+              if (overlay) overlay.classList.add('hidden');
             }
           });
         }

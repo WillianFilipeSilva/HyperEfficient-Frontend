@@ -20,11 +20,21 @@ const API_CONFIG = {
         'Content-Type': 'application/json'
     },
     
+    // Função para obter token do localStorage
+    getToken: function() {
+        return localStorage.getItem('token');
+    },
+    
+    // Função para obter usuário do localStorage
+    getUsuario: function() {
+        const userStr = localStorage.getItem('usuario');
+        return userStr ? JSON.parse(userStr) : null;
+    },
+    
     // Função para obter headers com autenticação
     getAuthHeaders: function() {
-        let token = localStorage.getItem('token');
+        let token = this.getToken();
         if (token) {
-            // Remove aspas duplas do início/fim, se existirem
             token = token.replace(/^"|"$/g, '');
         }
         return {
@@ -68,29 +78,39 @@ const API_CONFIG = {
         }
         
         return response.json();
+    },
+    
+    // Função para verificar handshake do token
+    async handshake() {
+        try {
+            await this.authenticatedRequest('/usuarios/handshake', { method: 'GET' });
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 };
 
 // Funções utilitárias para autenticação
 const AuthUtils = {
-    // Verificar se o usuário está logado
-    isLoggedIn: function() {
-        const token = localStorage.getItem('token');
+    // Verificar se o usuário está logado (agora usando handshake)
+    isLoggedIn: async function() {
+        const token = API_CONFIG.getToken();
         if (!token) return false;
-        return !this.isTokenExpired();
+        if (this.isTokenExpired()) return false;
+        // Verifica no backend se o token é válido
+        return await API_CONFIG.handshake();
     },
     
     // Obter dados do usuário logado
     getCurrentUser: function() {
-        const userStr = localStorage.getItem('usuario');
-        return userStr ? JSON.parse(userStr) : null;
+        return API_CONFIG.getUsuario();
     },
     
     // Fazer logout
     logout: function() {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
-        // Só redireciona se não estiver já na tela de login
         if (!window.location.pathname.includes('/pages/auth/login.html')) {
             window.location.href = '/pages/auth/login.html';
         }
@@ -98,7 +118,7 @@ const AuthUtils = {
     
     // Verificar se o token expirou (implementação robusta)
     isTokenExpired: function() {
-        const token = localStorage.getItem('token');
+        const token = API_CONFIG.getToken();
         if (!token) return true;
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
