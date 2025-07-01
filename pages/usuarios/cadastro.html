@@ -6,88 +6,170 @@
   <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/logo.svg" />
   <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
   <title>HyperEfficient - Cadastro</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link href="/assets/css/nucleo-icons.css" rel="stylesheet" />
-  <link href="/assets/css/nucleo-svg.css" rel="stylesheet" />
-  <link href="/assets/css/dashboard-tailwind.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary: #FFCA1C;
+      --primary-dark: #E6B325;
+      --dark-bg: #0A0B0F;
+      --dark-surface: #1A1B23;
+    }
+
+    * { font-family: 'Inter', sans-serif; }
+    body { 
+      background: linear-gradient(135deg, var(--dark-bg) 0%, #1A1B23 100%);
+      color: #FFFFFF;
+      min-height: 100vh;
+    }
+
+    .glass {
+      background: rgba(26, 27, 35, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--dark-bg);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(255, 202, 28, 0.4);
+    }
+
+    @keyframes fadeInUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
+
+    .input-field {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 202, 28, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+    }
+  </style>
 </head>
-
-<body class="m-0 font-sans antialiased font-normal bg-white text-start text-base leading-default text-slate-500">
-
-  <nav class="absolute top-0 z-30 flex flex-wrap items-center justify-center w-full px-4 py-2 mt-6 mb-4 shadow-none lg:flex-nowrap lg:justify-start">
-    <div class="container flex items-center justify-center flex-wrap-inherit">
-        <img src="/assets/img/logo.svg" alt="Logo"/>
-        <h1 class="mb-2">HyperEfficient</h1>
+<body class="flex items-center justify-center min-h-screen p-4">
+  
+  <!-- Logo Header -->
+  <div class="absolute top-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-3 animate-fade-in-up">
+    <img src="/assets/img/logo.svg" alt="HyperEfficient" class="w-12 h-12" />
+    <div>
+      <h1 class="text-2xl font-bold text-white">HyperEfficient</h1>
+      <p class="text-sm text-gray-400">Sistema de Gestão</p>
     </div>
-  </nav>
+  </div>
 
-  <main class="mt-0 transition-all duration-200 ease-in-out">
-    <section class="min-h-screen">
-      <div class="bg-top relative flex items-start pt-12 pb-56 m-4 overflow-hidden bg-cover min-h-50-screen rounded-xl">
-        <span class="absolute top-0 left-0 w-full h-full bg-center bg-cover bg-gradient-to-tl from-zinc-800 to-zinc-700 opacity-60"></span>
-        <div class="container z-10">
-          <div class="flex flex-wrap justify-center -mx-3">
-            <div class="w-full max-w-full px-3 mx-auto mt-0 text-center lg:flex-0 shrink-0 lg:w-5/12">
-              <h3 class="mt-12 mb-2 text-white">Bem vindo!</h3>
-              <p class="text-white">Crie sua conta para acessar nosso sistema</p>
-            </div>
-          </div>
-        </div>
+  <!-- Main Card -->
+  <div class="glass rounded-2xl w-full max-w-md p-8 animate-fade-in-up" style="animation-delay: 0.2s;">
+    <div class="text-center mb-8">
+      <h2 class="text-2xl font-bold text-white mb-2">Criar Conta</h2>
+      <p class="text-gray-400">Preencha os dados para começar</p>
+    </div>
+
+    <form id="cadastroForm" class="space-y-6">
+      <div>
+        <label for="nome" class="block text-sm font-medium text-gray-300 mb-2">
+          Nome Completo
+        </label>
+        <input 
+          type="text" 
+          id="nome" 
+          name="nome"
+          class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 focus:outline-none"
+          placeholder="Digite seu nome completo"
+          required 
+        />
       </div>
-      <div class="container">
-        <div class="flex flex-wrap -mx-3 -mt-48 md:-mt-56 lg:-mt-48">
-          <div class="w-full max-w-full px-3 mx-auto mt-0 md:flex-0 shrink-0 md:w-7/12 lg:w-5/12 xl:w-4/12">
-            <div class="relative z-0 flex flex-col min-w-0 break-words bg-white border-0 shadow-xl rounded-2xl bg-clip-border">
-              <div class="p-6 pb-0 mb-0">
-                <h4 class="font-bold">Cadastro</h4>
-                <p class="mb-0">Preencha os dados para criar sua conta</p>
-              </div>
-              <div class="flex-auto p-6">
-                <form id="cadastroForm" role="form">
-                  <div class="mb-4">
-                    <input type="text" id="nome" placeholder="Nome completo" class="focus:shadow-primary-outline dark:bg-gray-950 dark:placeholder:text-white/80 dark:text-white/80 text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding p-3 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none" required />
-                  </div>
-                  <div class="mb-4">
-                    <input type="email" id="email" placeholder="Email" class="focus:shadow-primary-outline dark:bg-gray-950 dark:placeholder:text-white/80 dark:text-white/80 text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding p-3 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none" required />
-                  </div>
-                  <div class="mb-4">
-                    <input type="password" id="senha" placeholder="Senha" class="focus:shadow-primary-outline dark:bg-gray-950 dark:placeholder:text-white/80 dark:text-white/80 text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding p-3 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none" required />
-                  </div>
-                  <div class="mb-4">
-                    <input type="password" id="confirmarSenha" placeholder="Confirmar senha" class="focus:shadow-primary-outline dark:bg-gray-950 dark:placeholder:text-white/80 dark:text-white/80 text-sm leading-5.6 ease block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding p-3 font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-fuchsia-300 focus:outline-none" required />
-                  </div>
-                  <div id="errorMessage" class="mb-4 text-red-500 text-sm hidden"></div>
-                  <div class="text-center">
-                    <button type="submit" id="cadastroButton" class="inline-block w-full px-16 py-3.5 mt-6 mb-0 font-bold leading-normal text-center text-white align-middle transition-all bg-blue-500 border-0 rounded-lg cursor-pointer hover:-translate-y-px active:opacity-85 hover:shadow-xs text-sm ease-in tracking-tight-rem shadow-md bg-150 bg-x-25">
-                      <span id="cadastroButtonText">Confirmar</span>
-                      <span id="cadastroButtonLoading" class="hidden">Criando conta...</span>
-                    </button>
-                  </div>
-                </form>
-              </div>
-              <div class="border-black/12.5 rounded-b-2xl border-t-0 border-solid p-6 text-center pt-0 px-1 sm:px-6">
-                <p class="mx-auto mb-6 leading-normal text-sm">Já tem uma conta? <a href="/pages/auth/login.html" class="font-semibold text-transparent bg-clip-text bg-gradient-to-tl from-blue-500 to-violet-500">Fazer login</a></p>
-              </div>
-            </div>
-          </div>
-        </div>
+
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+          Email
+        </label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email"
+          class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 focus:outline-none"
+          placeholder="Digite seu email"
+          required 
+        />
       </div>
-    </section>
-    <footer class="pt-4">
-      <div class="w-full px-6 mx-auto">
-        <div class="text-sm leading-normal text-center text-slate-500 lg:text-left">
-          © 2025
-          feito com  <i class="fa fa-heart"></i> por
-          <span class="font-semibold text-slate-700 dark:text-white" target="_blank">HyperEfficient</span>
-        </div>
+
+      <div>
+        <label for="senha" class="block text-sm font-medium text-gray-300 mb-2">
+          Senha
+        </label>
+        <input 
+          type="password" 
+          id="senha" 
+          name="senha"
+          class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 focus:outline-none"
+          placeholder="Digite sua senha"
+          required 
+        />
       </div>
-    </footer>
-  </main>
+
+      <div>
+        <label for="confirmarSenha" class="block text-sm font-medium text-gray-300 mb-2">
+          Confirmar Senha
+        </label>
+        <input 
+          type="password" 
+          id="confirmarSenha" 
+          name="confirmarSenha"
+          class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-gray-400 focus:outline-none"
+          placeholder="Confirme sua senha"
+          required 
+        />
+      </div>
+
+      <div id="errorMessage" class="hidden bg-red-500/20 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl text-sm"></div>
+
+      <button 
+        type="submit" 
+        id="cadastroButton" 
+        class="btn-primary w-full py-3 rounded-xl font-semibold flex items-center justify-center space-x-2"
+      >
+        <i class="fas fa-user-plus"></i>
+        <span id="cadastroButtonText">Criar Conta</span>
+        <span id="cadastroButtonLoading" class="hidden">Criando conta...</span>
+      </button>
+    </form>
+
+    <div class="mt-8 text-center">
+      <p class="text-gray-400">
+        Já tem uma conta? 
+        <a href="/pages/auth/login.html" class="text-yellow-400 hover:text-yellow-300 font-medium transition-colors">
+          Fazer login
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center animate-fade-in-up" style="animation-delay: 0.4s;">
+    <p class="text-sm text-gray-400">
+      © 2025 feito com <i class="fas fa-heart text-red-500"></i> por 
+      <span class="font-semibold text-yellow-400">HyperEfficient</span>
+    </p>
+  </div>
+
+  <script src="/pages/shared/services/utils.js"></script>
+  <script src="/pages/shared/services/api.js"></script>
+  <script src="cadastro.js"></script>
 </body>
-<script src="/assets/js/plugins/perfect-scrollbar.min.js" async></script>
-<script src="/pages/dashboard/components/dashboard-cards.js?v=1.0.1" async></script>
-<script src="/pages/shared/services/utils.js"></script>
-<script src="/pages/shared/services/api.js"></script>
-<script src="/pages/usuarios/cadastro.js"></script>
-</html> 
+</html>

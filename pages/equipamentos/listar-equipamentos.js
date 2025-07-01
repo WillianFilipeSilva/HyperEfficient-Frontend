@@ -1,231 +1,228 @@
-// ========================================
-// PÁGINA DE EQUIPAMENTOS - Usando Tabela Genérica
-// ========================================
-
 class EquipamentosPage {
   constructor() {
     this.currentPage = 1
     this.searchTerm = ""
     this.editingItem = null
     this.table = null
-    
-    // Garantir modal fechada e listeners únicos
-    const modal = document.getElementById("modalEquipamento");
+
+    const modal = document.getElementById("modalEquipamento")
     if (modal && !modal.classList.contains("hidden")) {
-      modal.classList.add("hidden");
+      modal.classList.add("hidden")
     }
-    const btnCancelar = document.getElementById("btnCancelar");
-    if (btnCancelar) btnCancelar.onclick = () => this.closeModal();
-    if (modal) {
-      modal.onclick = (e) => {
-        if (e.target === modal) this.closeModal();
-      };
-    }
-    
+
     this.init()
   }
-  
+
   init() {
     this.setupEventListeners()
     this.createTable()
     this.loadData()
   }
-  
+
   createTable() {
-    const self = this;
     const tableConfig = {
       containerId: "equipamentosTableContainer",
       title: "Listagem de Equipamentos",
-      
+
       columns: [
         { field: "id", label: "ID" },
         { field: "nome", label: "Nome" },
         { field: "categoria", label: "Categoria" },
         { field: "setor", label: "Setor" },
-        { 
-          field: "gastokwh", 
+        {
+          field: "gastokwh",
           label: "Gasto kW/h",
-          format: (value) => value ? `${value} kW/h` : '-'
+          format: (value) => (value ? `${value} kW/h` : "-"),
         },
-        { 
-          field: "ativo", 
+        {
+          field: "ativo",
           label: "Status",
-          format: (value) => value ? 
-            '<span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Ativo</span>' : 
-            '<span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">Inativo</span>'
+          format: (value) =>
+            value
+              ? '<span class="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded-full">Ativo</span>'
+              : '<span class="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded-full">Inativo</span>',
         },
-        { field: "patrimonio", label: "Patrimônio" },
-        { field: "dataAquisicao", label: "Data de Aquisição" }
       ],
-      
+
       data: [],
       loading: true,
-      
+
       pagination: {
         enabled: true,
         currentPage: 1,
         totalPages: 1,
         totalItems: 0,
         pageSize: 10,
-        onPageChange: (page) => this.handlePageChange(page)
+        onPageChange: (page) => this.handlePageChange(page),
       },
-      
+
       addButton: {
         enabled: true,
-        label: "Cadastrar",
-        onClick: () => window.equipamentosPage && window.equipamentosPage.openAddModal()
+        label: "Novo Equipamento",
+        onClick: () => this.openAddModal(),
       },
-      
+
       search: {
         enabled: true,
         placeholder: "Buscar equipamentos...",
-        onSearch: (term) => this.handleSearch(term)
+        onSearch: (term) => this.handleSearch(term),
       },
-      
+
       actions: {
         enabled: true,
         edit: {
           enabled: true,
           label: "Editar",
           icon: "fas fa-edit",
-          onClick: (item) => this.openEditModal(item)
+          onClick: (item) => this.openEditModal(item),
         },
         delete: {
           enabled: true,
           label: "Excluir",
           icon: "fas fa-trash",
-          onClick: (item) => this.handleDelete(item)
-        }
+          onClick: (item) => this.handleDelete(item),
+        },
       },
-      
+
       styling: {
         striped: true,
         hover: true,
-        responsive: true
-      }
+        responsive: true,
+      },
     }
-    
-    this.table = new GenericTable(tableConfig)
+
+    this.table = new ModernEquipamentosTable(tableConfig)
   }
-  
+
   setupEventListeners() {
-    // Botão adicionar
-    const btnAdicionar = document.getElementById("btnAdicionarEquipamento")
-    if (btnAdicionar) {
-      btnAdicionar.addEventListener("click", () => this.openAddModal())
-    }
-    
-    // Modal
     this.setupModalListeners()
+    this.setupLogout()
   }
-  
+
+  setupLogout() {
+    const logoutBtn = document.getElementById("logoutBtn")
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault()
+        if (confirm("Tem certeza que deseja sair?")) {
+          this.showToast("Logout realizado com sucesso!", "info")
+          setTimeout(() => {
+            window.location.href = "/pages/auth/login.html"
+          }, 1000)
+        }
+      })
+    }
+  }
+
   setupModalListeners() {
     const modal = document.getElementById("modalEquipamento")
-    const btnClose = document.getElementById("modalClose")
     const btnCancelar = document.getElementById("btnCancelar")
     const form = document.getElementById("formEquipamento")
-    
-    if (btnClose) {
-      btnClose.addEventListener("click", () => this.closeModal())
-    }
-    
+
     if (btnCancelar) {
       btnCancelar.addEventListener("click", () => this.closeModal())
     }
-    
+
     if (modal) {
       modal.addEventListener("click", (e) => {
         if (e.target === e.currentTarget) this.closeModal()
       })
     }
-    
+
     if (form) {
       form.addEventListener("submit", (e) => this.handleSubmit(e))
     }
   }
-  
+
   async loadData() {
     try {
       this.table.setLoading(true)
-      
+
       let url = `${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/paged?page=${this.currentPage}&pageSize=10`
       if (this.searchTerm) {
         url += `&search=${encodeURIComponent(this.searchTerm)}`
       }
-      
+
       const response = await window.API_CONFIG.authenticatedRequest(url)
-      
-      // Processar dados para exibir nomes de categoria e setor
-      const data = (response.Data || response.data || []).map(item => ({
+
+      const data = (response.Data || response.data || []).map((item) => ({
         ...item,
-        categoria: item.categoriaId === 1 ? "Industrial" : 
-                  item.categoriaId === 2 ? "Comercial" : 
-                  item.categoriaId === 3 ? "Residencial" : "N/A",
-        setor: item.setorId === 1 ? "Produção" : 
-               item.setorId === 2 ? "Administrativo" : 
-               item.setorId === 3 ? "Manutenção" : "N/A"
+        categoria:
+          item.categoriaId === 1
+            ? "Industrial"
+            : item.categoriaId === 2
+              ? "Comercial"
+              : item.categoriaId === 3
+                ? "Residencial"
+                : "N/A",
+        setor:
+          item.setorId === 1
+            ? "Produção"
+            : item.setorId === 2
+              ? "Administrativo"
+              : item.setorId === 3
+                ? "Manutenção"
+                : "N/A",
       }))
-      
-      // Atualizar tabela
+
       this.table.updateData(data)
       this.table.updatePagination({
         currentPage: response.Page || this.currentPage,
         totalPages: response.TotalPages || response.totalPages || 1,
-        totalItems: response.TotalItems || response.totalItems || data.length
+        totalItems: response.TotalItems || response.totalItems || data.length,
       })
-      
     } catch (error) {
       console.error("Erro ao carregar equipamentos:", error)
-      window.Utils?.showToast("Erro ao carregar equipamentos", "error")
+      this.showToast("Erro ao carregar equipamentos", "error")
     } finally {
       this.table.setLoading(false)
     }
   }
-  
+
   handlePageChange(page) {
     this.currentPage = page
     this.loadData()
   }
-  
+
   handleSearch(term) {
     this.searchTerm = term
-    this.currentPage = 1 // Voltar para primeira página
+    this.currentPage = 1
     this.loadData()
   }
-  
+
   openAddModal() {
     this.editingItem = null
-    this.updateModalTitle("Cadastrar Equipamento")
+    this.updateModalTitle("Novo Equipamento")
     this.clearForm()
     this.openModal()
   }
-  
+
   openEditModal(item) {
     this.editingItem = item
     this.updateModalTitle("Editar Equipamento")
     this.fillForm(item)
     this.openModal()
   }
-  
+
   openModal() {
     const modal = document.getElementById("modalEquipamento")
     modal?.classList.remove("hidden")
   }
-  
+
   closeModal() {
     const modal = document.getElementById("modalEquipamento")
     modal?.classList.add("hidden")
     this.editingItem = null
     this.clearForm()
   }
-  
+
   updateModalTitle(title) {
     const modalTitle = document.getElementById("modalTitle")
     if (modalTitle) {
       modalTitle.textContent = title
     }
   }
-  
+
   fillForm(item) {
     const form = document.getElementById("formEquipamento")
     if (form && item) {
@@ -236,87 +233,82 @@ class EquipamentosPage {
       form.descricao.value = item.descricao || ""
     }
   }
-  
+
   clearForm() {
     const form = document.getElementById("formEquipamento")
     if (form) {
       form.reset()
     }
   }
-  
+
   async handleSubmit(e) {
     e.preventDefault()
-    
+
     const formData = new FormData(e.target)
     const data = {
       nome: formData.get("nome"),
-      categoriaId: parseInt(formData.get("categoriaId")),
-      setorId: parseInt(formData.get("setorId")),
-      gastokwh: parseFloat(formData.get("gastokwh")),
+      categoriaId: Number.parseInt(formData.get("categoriaId")),
+      setorId: Number.parseInt(formData.get("setorId")),
+      gastokwh: Number.parseFloat(formData.get("gastokwh")),
       descricao: formData.get("descricao"),
-      ativo: true
+      ativo: true,
     }
-    
-    // Validação básica
+
     if (!data.nome || !data.categoriaId || !data.setorId || !data.gastokwh) {
-      window.Utils?.showToast("Preencha todos os campos obrigatórios", "error")
+      this.showToast("Preencha todos os campos obrigatórios", "error")
       return
     }
-    
+
     try {
       this.showButtonLoading(true)
-      
+
       if (this.editingItem) {
-        // Atualizar
         await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS, {
           method: "PUT",
-          body: JSON.stringify({ ...data, id: this.editingItem.id })
+          body: JSON.stringify({ ...data, id: this.editingItem.id }),
         })
-        window.Utils?.showToast("Equipamento atualizado com sucesso!", "success")
+        this.showToast("Equipamento atualizado com sucesso!", "success")
       } else {
-        // Criar
         await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS, {
           method: "POST",
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         })
-        window.Utils?.showToast("Equipamento criado com sucesso!", "success")
+        this.showToast("Equipamento criado com sucesso!", "success")
       }
-      
+
       this.closeModal()
       this.loadData()
-      
     } catch (error) {
       console.error("Erro ao salvar equipamento:", error)
-      window.Utils?.showToast("Erro ao salvar equipamento", "error")
+      this.showToast("Erro ao salvar equipamento", "error")
     } finally {
       this.showButtonLoading(false)
     }
   }
-  
+
   async handleDelete(item) {
-    if (!confirm(`Deseja excluir o equipamento "${item.nome}"?`)) {
+    if (!confirm(`Deseja excluir o equipamento "${item.nome}"?\n\nEsta ação não pode ser desfeita.`)) {
       return
     }
-    
+
     try {
       await window.API_CONFIG.authenticatedRequest(`${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/${item.id}`, {
-        method: "DELETE"
+        method: "DELETE",
       })
-      
-      window.Utils?.showToast("Equipamento excluído com sucesso!", "success")
+
+      this.showToast("Equipamento excluído com sucesso!", "success")
       this.loadData()
-      
     } catch (error) {
       console.error("Erro ao excluir equipamento:", error)
-      window.Utils?.showToast("Erro ao excluir equipamento", "error")
+      this.showToast("Erro ao excluir equipamento", "error")
     }
   }
-  
+
   showButtonLoading(show) {
     const btn = document.getElementById("btnSalvar")
     const textSpan = btn?.querySelector("[data-text]")
     const loadingSpan = btn?.querySelector("[data-loading]")
-    
+
     if (show) {
       textSpan?.classList.add("hidden")
       loadingSpan?.classList.remove("hidden")
@@ -327,21 +319,262 @@ class EquipamentosPage {
       btn?.removeAttribute("disabled")
     }
   }
+
+  showToast(message, type = "info") {
+    const toast = document.createElement("div")
+    toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+
+    const colors = {
+      success: "bg-green-500/90 text-white",
+      error: "bg-red-500/90 text-white",
+      warning: "bg-yellow-500/90 text-black",
+      info: "bg-blue-500/90 text-white",
+    }
+
+    toast.className += ` ${colors[type] || colors.info}`
+    toast.innerHTML = `
+      <div class="flex items-center space-x-2">
+        <i class="fas ${this.getToastIcon(type)}"></i>
+        <span>${message}</span>
+      </div>
+    `
+
+    document.body.appendChild(toast)
+    setTimeout(() => toast.classList.remove("translate-x-full"), 100)
+    setTimeout(() => {
+      toast.classList.add("translate-x-full")
+      setTimeout(() => toast.remove(), 300)
+    }, 3000)
+  }
+
+  getToastIcon(type) {
+    const icons = {
+      success: "fa-check-circle",
+      error: "fa-exclamation-circle",
+      warning: "fa-exclamation-triangle",
+      info: "fa-info-circle",
+    }
+    return icons[type] || icons.info
+  }
 }
 
-// Inicializar quando DOM carregar
-let equipamentosPage
-window.addEventListener("DOMContentLoaded", function() {
-  setTimeout(function() {
-    var modal = document.getElementById("modalEquipamento");
-    if (modal && !modal.classList.contains("hidden")) {
-      modal.classList.add("hidden");
+// Tabela moderna customizada para equipamentos
+class ModernEquipamentosTable {
+  constructor(config) {
+    this.config = config
+    this.render()
+  }
+
+  render() {
+    const container = document.getElementById(this.config.containerId)
+    if (!container) return
+
+    container.innerHTML = `
+      <div class="glass rounded-2xl overflow-hidden">
+        <div class="p-6 border-b border-white/10">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-white">${this.config.title}</h2>
+              <p class="text-gray-400 text-sm mt-1">Gerencie seus equipamentos</p>
+            </div>
+            <div class="flex items-center space-x-4">
+              <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input 
+                  type="text" 
+                  id="tableSearch"
+                  placeholder="${this.config.search.placeholder}" 
+                  class="pl-10 pr-4 py-3 w-80 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all"
+                />
+              </div>
+              <button 
+                id="tableAddBtn"
+                class="btn-primary px-6 py-3 rounded-xl flex items-center space-x-2 hover-lift"
+              >
+                <i class="fas fa-plus"></i>
+                <span>${this.config.addButton.label}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="tableContent" class="min-h-96">
+          <div id="loadingState" class="p-12 text-center">
+            <div class="inline-flex items-center space-x-3">
+              <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+              <span class="text-gray-300">Carregando equipamentos...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+
+    this.setupEventListeners()
+  }
+
+  setupEventListeners() {
+    const searchInput = document.getElementById("tableSearch")
+    const addBtn = document.getElementById("tableAddBtn")
+
+    if (searchInput) {
+      let timeout
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(timeout)
+        timeout = setTimeout(() => this.config.search.onSearch(e.target.value), 300)
+      })
     }
-    // Patch: garantir listeners corretos
-    var btnCancelar = document.getElementById("btnCancelar");
-    if (btnCancelar) btnCancelar.onclick = function() { modal.classList.add("hidden"); };
-    modal && modal.addEventListener("click", function(e) {
-      if (e.target === e.currentTarget) modal.classList.add("hidden");
-    });
-  }, 100);
-}); 
+
+    if (addBtn && this.config.addButton.onClick) {
+      addBtn.addEventListener("click", this.config.addButton.onClick)
+    }
+  }
+
+  updateData(data) {
+    this.config.data = data
+    this.renderTable()
+  }
+
+  renderTable() {
+    const content = document.getElementById("tableContent")
+    if (!content) return
+
+    if (this.config.data.length === 0) {
+      content.innerHTML = `
+        <div class="p-12 text-center">
+          <i class="fas fa-cogs text-4xl text-gray-500 mb-4"></i>
+          <h3 class="text-lg font-semibold text-white mb-2">Nenhum equipamento encontrado</h3>
+          <p class="text-gray-400">Comece criando seu primeiro equipamento</p>
+        </div>
+      `
+      return
+    }
+
+    content.innerHTML = `
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/10">
+              ${this.config.columns
+                .map(
+                  (col) => `
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  ${col.label}
+                </th>
+              `,
+                )
+                .join("")}
+              <th class="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Ações
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5">
+            ${this.config.data
+              .map(
+                (item, index) => `
+              <tr class="hover:bg-white/5 transition-all duration-200" style="animation-delay: ${index * 0.05}s;">
+                ${this.config.columns
+                  .map(
+                    (col) => `
+                  <td class="px-6 py-4">
+                    ${
+                      col.field === "nome"
+                        ? `
+                      <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                          <i class="fas fa-cogs text-white"></i>
+                        </div>
+                        <div>
+                          <div class="text-white font-medium">${item[col.field]}</div>
+                          <div class="text-xs text-gray-400">Equipamento • ID: ${item.id}</div>
+                        </div>
+                      </div>
+                    `
+                        : col.format
+                          ? col.format(item[col.field])
+                          : `
+                      <span class="text-gray-300">${item[col.field] || "-"}</span>
+                    `
+                    }
+                  </td>
+                `,
+                  )
+                  .join("")}
+                <td class="px-6 py-4">
+                  <div class="flex items-center justify-center space-x-2">
+                    <button 
+                      onclick="equipamentosPage.openEditModal(${JSON.stringify(item).replace(/"/g, "&quot;")})"
+                      class="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 hover:text-blue-300 transition-all"
+                      title="Editar equipamento"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button 
+                      onclick="equipamentosPage.handleDelete(${JSON.stringify(item).replace(/"/g, "&quot;")})"
+                      class="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 hover:text-red-300 transition-all"
+                      title="Excluir equipamento"
+                    >
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="px-6 py-4 border-t border-white/10 bg-white/5">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-400">
+            <span>${this.config.data.length}</span> equipamentos encontrados
+          </div>
+          <div class="text-xs text-gray-500">
+            Última atualização: ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+          </div>
+        </div>
+      </div>
+    `
+  }
+
+  setLoading(loading) {
+    const content = document.getElementById("tableContent")
+    if (!content) return
+
+    if (loading) {
+      content.innerHTML = `
+        <div class="p-12 text-center">
+          <div class="inline-flex items-center space-x-3">
+            <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-gray-300">Carregando equipamentos...</span>
+          </div>
+        </div>
+      `
+    }
+  }
+
+  updatePagination(data) {
+    // Implementar paginação se necessário
+  }
+}
+
+let equipamentosPage
+window.addEventListener("DOMContentLoaded", async () => {
+  const modal = document.getElementById("modalEquipamento")
+  if (modal && !modal.classList.contains("hidden")) {
+    modal.classList.add("hidden")
+  }
+
+  const checkDependencies = () => {
+    if (window.Utils && window.API_CONFIG) {
+      window.initAuthGuard()
+      equipamentosPage = new EquipamentosPage()
+      window.equipamentosPage = equipamentosPage
+    } else {
+      setTimeout(checkDependencies, 100)
+    }
+  }
+  checkDependencies()
+})
