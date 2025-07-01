@@ -93,13 +93,34 @@ const API_CONFIG = {
 
 // Funções utilitárias para autenticação
 const AuthUtils = {
-    // Verificar se o usuário está logado (agora usando handshake)
+    // Cache para o resultado do handshake
+    _handshakeCache: {
+        result: null,
+        timestamp: 0,
+        ttl: 30000 // 30 segundos
+    },
+
+    // Verificar se o usuário está logado (agora usando handshake com cache)
     isLoggedIn: async function() {
         const token = API_CONFIG.getToken();
         if (!token) return false;
         if (this.isTokenExpired()) return false;
+        
+        // Verificar cache
+        const now = Date.now();
+        if (this._handshakeCache.result !== null && 
+            (now - this._handshakeCache.timestamp) < this._handshakeCache.ttl) {
+            return this._handshakeCache.result;
+        }
+        
         // Verifica no backend se o token é válido
-        return await API_CONFIG.handshake();
+        const result = await API_CONFIG.handshake();
+        
+        // Atualizar cache
+        this._handshakeCache.result = result;
+        this._handshakeCache.timestamp = now;
+        
+        return result;
     },
     
     // Obter dados do usuário logado
@@ -111,6 +132,9 @@ const AuthUtils = {
     logout: function() {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
+        // Limpar cache do handshake
+        this._handshakeCache.result = null;
+        this._handshakeCache.timestamp = 0;
         if (!window.location.pathname.includes('/pages/auth/login.html')) {
             window.location.href = '/pages/auth/login.html';
         }

@@ -1,0 +1,101 @@
+/* Estilos personalizados para modais */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  background: rgba(30, 30, 40, 0.55); /* Fundo escuro e translúcido */
+  backdrop-filter: blur(4px) saturate(1.2);
+  transition: background 0.2s;
+}
+
+.modal-content {
+  animation: modalSlideIn 0.3s ease-out;
+  background: rgba(255,255,255,0.97) !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+  border-radius: 1.25rem;
+  margin: 0 auto;
+  max-width: 100vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content.show {
+  transform: scale(1) !important;
+  opacity: 1 !important;
+}
+
+.modal-content.hide {
+  transform: scale(0.95) !important;
+  opacity: 0 !important;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Melhorias nos inputs dos modais */
+.modal-input {
+  transition: all 0.2s ease;
+}
+
+.modal-input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Efeito hover nos botões */
+.modal-btn {
+  transition: all 0.2s ease;
+}
+
+.modal-btn:hover {
+  transform: translateY(-1px);
+}
+
+.modal-btn:active {
+  transform: translateY(0);
+}
+
+/* Scrollbar personalizada para modais */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 3px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* Garante que .hidden sempre vença para backdrop de modal */
+.modal-backdrop.hidden {
+  display: none !important;
+} 

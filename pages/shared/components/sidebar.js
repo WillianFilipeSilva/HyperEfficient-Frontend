@@ -23,15 +23,36 @@
   // Destacar item ativo
   function highlightActiveSidebar() {
     const sidebarLinks = document.querySelectorAll('[data-sidebar]');
-    const page = window.location.pathname.split('/').pop().replace('.html', '');
+    const currentPath = window.location.pathname;
+    
     sidebarLinks.forEach(link => {
       const key = link.getAttribute('data-sidebar');
-      if (
-        (key === 'dashboard' && page === 'dashboard') ||
-        (key === 'listagem' && page === 'listagem') ||
-        (key === 'setores' && page.includes('setor')) ||
-        (key === 'perfil' && page === 'perfil')
-      ) {
+      const linkHref = link.getAttribute('href');
+      
+      // Verificar se o link atual corresponde à página atual
+      let isActive = false;
+      
+      switch(key) {
+        case 'dashboard':
+          isActive = currentPath.includes('/dashboard/dashboard.html');
+          break;
+        case 'usuarios':
+          isActive = currentPath.includes('/usuarios/listar-usuarios.html');
+          break;
+        case 'equipamentos':
+          isActive = currentPath.includes('/equipamentos/listar-equipamentos.html');
+          break;
+        case 'setores':
+          isActive = currentPath.includes('/setores/listar-setores.html');
+          break;
+        case 'perfil':
+          isActive = currentPath.includes('/usuarios/perfil.html');
+          break;
+        default:
+          isActive = currentPath === linkHref;
+      }
+      
+      if (isActive) {
         link.classList.add('bg-blue-500/13', 'font-semibold', 'text-slate-700');
       } else {
         link.classList.remove('bg-blue-500/13', 'font-semibold', 'text-slate-700');
@@ -45,28 +66,19 @@
     if (btn) {
       btn.addEventListener('click', function(e) {
         e.preventDefault();
-        if (window.Utils && typeof Utils.showModal === 'function') {
-          Utils.showModal({
-            message: 'Tem certeza que deseja sair da sua conta?',
-            title: 'Sair',
-            onConfirm: function() {
-              if (window.Utils && window.Utils.showToast) {
-                Utils.showToast('Logout realizado com sucesso!', 'info');
-              }
-              if (window.AuthUtils && typeof AuthUtils.logout === 'function') {
-                AuthUtils.logout();
-                setTimeout(function() { window.location.reload(); }, 500);
-              } else {
-                // fallback
-                localStorage.clear();
-                sessionStorage.clear();
-                window.location.href = '/pages/auth/login.html';
-              }
-              // Fechar modal se ainda estiver aberto
-              const overlay = document.getElementById('modalGenericOverlay');
-              if (overlay) overlay.classList.add('hidden');
-            }
-          });
+        if (confirm('Tem certeza que deseja sair da sua conta?')) {
+          if (window.Utils && window.Utils.showToast) {
+            Utils.showToast('Logout realizado com sucesso!', 'info');
+          }
+          if (window.AuthUtils && typeof AuthUtils.logout === 'function') {
+            AuthUtils.logout();
+            setTimeout(function() { window.location.reload(); }, 500);
+          } else {
+            // fallback
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = '/pages/auth/login.html';
+          }
         }
       });
     }

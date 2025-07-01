@@ -12,19 +12,14 @@ const AuthGuard = {
     init: function(options = {}) {
         this.config = { ...this.config, ...options };
         
-        // Verificar autenticação quando a página carrega
-        document.addEventListener('DOMContentLoaded', () => {
-            this.checkAuth();
-        });
-
         // Verificar periodicamente se o token expirou
         this.startTokenCheck();
     },
 
     // Verificar autenticação
-    checkAuth: function() {
+    checkAuth: async function() {
         // Se não estiver logado, redirecionar para login
-        if (!AuthUtils.isLoggedIn()) {
+        if (!(await AuthUtils.isLoggedIn())) {
             this.redirectToLogin();
             return false;
         }
@@ -82,7 +77,9 @@ const AuthGuard = {
     // Iniciar verificação periódica do token
     startTokenCheck: function() {
         setInterval(() => {
-            if (AuthUtils.isLoggedIn() && AuthUtils.isTokenExpired()) {
+            // Só verificar se há token e se ele expirou localmente
+            // Não fazer handshake a cada verificação
+            if (API_CONFIG.getToken() && AuthUtils.isTokenExpired()) {
                 this.handleTokenExpired();
             }
         }, this.config.checkInterval);
@@ -100,7 +97,7 @@ const AuthGuard = {
         // Páginas públicas (não precisam de autenticação)
         const publicPages = [
             '/pages/auth/login.html',
-            '/pages/usuarios/usuario-form.html'
+            '/pages/usuarios/cadastro.html'
         ];
 
         // Páginas que precisam de autenticação
@@ -125,10 +122,10 @@ const AuthGuard = {
 };
 
 // Função de inicialização automática
-function initAuthGuard(options = {}) {
+async function initAuthGuard(options = {}) {
     const currentPath = window.location.pathname;
     const isLoginPage = currentPath.includes('/pages/auth/login.html');
-    const isLoggedIn = AuthUtils.isLoggedIn() && !AuthUtils.isTokenExpired();
+    const isLoggedIn = await AuthUtils.isLoggedIn() && !AuthUtils.isTokenExpired();
 
     if (isLoginPage) {
         // Se está na página de login
@@ -142,7 +139,7 @@ function initAuthGuard(options = {}) {
     } else {
         // Qualquer outra página
         AuthGuard.init(options);
-        AuthGuard.checkAuth();
+        await AuthGuard.checkAuth();
     }
 }
 

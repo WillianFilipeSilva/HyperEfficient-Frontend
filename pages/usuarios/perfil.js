@@ -7,7 +7,6 @@ window.addEventListener('DOMContentLoaded', function () {
   const profileInitials = document.getElementById('profileInitials');
   const profileName = document.getElementById('profileName');
   const profileEmail = document.getElementById('profileEmail');
-  const profileStatus = document.getElementById('profileStatus');
 
   const nameInput = document.getElementById('nameInput');
   const emailInput = document.getElementById('emailInput');
@@ -34,7 +33,6 @@ window.addEventListener('DOMContentLoaded', function () {
     // Header do Perfil
     profileName.textContent = usuario.nome;
     profileEmail.textContent = usuario.email;
-    profileStatus.textContent = usuario.ativo ? 'Ativo' : 'Inativo';
     profileInitials.textContent = Utils.getInitials(usuario.nome);
 
     // Campos do formulário

@@ -151,7 +151,7 @@ HyperEfficient-frontEnd/
 │   │   ├── components/
 │   │   │   └── dashboard-cards.js
 │   │   ├── dashboard.html (Dashboard principal)
-│   │   └── relatorios-dashboard.html (Relatórios)
+│   │   └── dashboard.html (Relatórios)
 │   ├── shared/
 │   │   ├── components/
 │   │   │   ├── modal.js
@@ -162,9 +162,9 @@ HyperEfficient-frontEnd/
 │   │       ├── utils.js (Utilitários gerais - CRÍTICO)
 │   │       └── auth-guard.js (Sistema de autenticação - NOVO)
 │   ├── usuarios/
-│   │   ├── setores.html (Gestão de setores)
+│   │   ├── listar-setores.html (Gestão de setores)
 │   │   ├── perfil.html (Perfil do usuário)
-│   │   ├── usuario-form.html (Cadastro de usuários)
+│   │   ├── cadastro.html (Cadastro de usuários)
 │   │   └── usuarios.html (Listagem de usuários)
 │   └── teste.html (Documentação do projeto)
 ├── Backend/ (Pasta do backend)
@@ -195,11 +195,11 @@ initAuthGuard();
 
 // Páginas públicas (não precisam de autenticação):
 - /pages/auth/login.html
-- /pages/usuarios/usuario-form.html
+- /pages/usuarios/cadastro.html
 
 // Páginas protegidas (precisam de autenticação):
 - /pages/dashboard/
-- /pages/usuarios/ (exceto usuario-form.html)
+- /pages/usuarios/ (exceto cadastro.html)
 ```
 
 ## Biblioteca Utils.js - Componente Crítico
@@ -770,5 +770,5 @@ Este prompt captura completamente a essência, estrutura, padrões e especificid
 ### Organização dos Scripts de Login e Cadastro (2025)
 - Todos os scripts de lógica de login e cadastro foram movidos para arquivos JavaScript externos:
   - `pages/auth/login.js` para o login
-  - `pages/usuarios/usuario-form.js` para o cadastro
+  - `pages/usuarios/cadastro.js` para o cadastro
 - Não há mais nenhum script inline nos arquivos HTML dessas telas, seguindo boas práticas de separação de responsabilidades e facilitando manutenção e versionamento.
