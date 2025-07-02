@@ -190,16 +190,56 @@ class EquipamentosPage {
     this.loadData()
   }
 
-  openAddModal() {
+  async fetchAndPopulateCategorias() {
+    const select = document.getElementById("categoriaId")
+    if (!select) return
+    select.innerHTML = '<option value="">Selecione uma categoria</option>'
+    try {
+      const response = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.CATEGORIAS)
+      const categorias = response.Data || response.data || []
+      categorias.forEach(cat => {
+        const option = document.createElement('option')
+        option.value = cat.id
+        option.textContent = cat.nome
+        select.appendChild(option)
+      })
+    } catch (e) {
+      this.showToast("Erro ao carregar categorias", "error")
+    }
+  }
+
+  async fetchAndPopulateSetores() {
+    const select = document.getElementById("setorId")
+    if (!select) return
+    select.innerHTML = '<option value="">Selecione um setor</option>'
+    try {
+      const response = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES)
+      const setores = response.Data || response.data || []
+      setores.forEach(setor => {
+        const option = document.createElement('option')
+        option.value = setor.id
+        option.textContent = setor.nome
+        select.appendChild(option)
+      })
+    } catch (e) {
+      this.showToast("Erro ao carregar setores", "error")
+    }
+  }
+
+  async openAddModal() {
     this.editingItem = null
     this.updateModalTitle("Novo Equipamento")
     this.clearForm()
+    await this.fetchAndPopulateCategorias()
+    await this.fetchAndPopulateSetores()
     this.openModal()
   }
 
-  openEditModal(item) {
+  async openEditModal(item) {
     this.editingItem = item
     this.updateModalTitle("Editar Equipamento")
+    await this.fetchAndPopulateCategorias()
+    await this.fetchAndPopulateSetores()
     this.fillForm(item)
     this.openModal()
   }

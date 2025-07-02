@@ -166,7 +166,7 @@ HyperEfficient-frontEnd/
 │   │   ├── perfil.html (Perfil do usuário)
 │   │   ├── cadastro.html (Cadastro de usuários)
 │   │   └── usuarios.html (Listagem de usuários)
-│   └── teste.html (Documentação do projeto)
+│   └── documentacao.html (Documentação do projeto)
 ├── Backend/ (Pasta do backend)
 ├── package.json
 ├── postcss.config.js
@@ -772,3 +772,40 @@ Este prompt captura completamente a essência, estrutura, padrões e especificid
   - `pages/auth/login.js` para o login
   - `pages/usuarios/cadastro.js` para o cadastro
 - Não há mais nenhum script inline nos arquivos HTML dessas telas, seguindo boas práticas de separação de responsabilidades e facilitando manutenção e versionamento.
+
+## 4. Entidades, Classes e Banco de Dados
+
+### Banco de Dados (MySQL) e Entidades (C#)
+
+- **Usuario / UsuarioEntity**
+  - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
+  - Nome: VARCHAR(100) / string
+  - CriadoEm: DATETIME / DateTime
+  - Senha: VARCHAR(255) / string
+  - Email: VARCHAR(150) / string
+  - Ativo: TINYINT / bool
+
+- **Categoria / CategoriaEntity**
+  - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
+  - Nome: VARCHAR(100) / string
+
+- **Setor / SetorEntity**
+  - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
+  - GastoGeral: DECIMAL(10,2) / decimal
+  - Nome: VARCHAR(100) / string
+  - Descricao: VARCHAR(300) / string
+
+- **Equipamento / EquipamentoEntity**
+  - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
+  - Nome: VARCHAR(100) / string
+  - Descricao: VARCHAR(300) / string
+  - Gastokwh: DECIMAL(10,2) / decimal
+  - CategoriaId: INT / int
+  - SetorId: INT / int
+  - Ativo: TINYINT / bool
+
+- **Registro / RegistroEntity**
+  - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
+  - DataInicial: DATETIME / DateTime
+  - DataFinal: DATETIME / DateTime
+  - EquipamentoId: INT / int
