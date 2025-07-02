@@ -34,9 +34,11 @@ const API_CONFIG = {
     // Função para obter headers com autenticação
     getAuthHeaders: function() {
         let token = this.getToken();
+        
         if (token) {
             token = token.replace(/^"|"$/g, '');
         }
+        
         return {
             ...this.DEFAULT_HEADERS,
             'Authorization': token ? `Bearer ${token}` : ''
@@ -46,20 +48,25 @@ const API_CONFIG = {
     // Função para fazer requisições autenticadas
     async authenticatedRequest(url, options = {}) {
         const headers = this.getAuthHeaders();
-        const response = await fetch(this.BASE_URL + url, {
-            ...options,
-            headers: {
-                ...headers,
-                ...options.headers
+        
+        try {
+            const response = await fetch(this.BASE_URL + url, {
+                ...options,
+                headers: {
+                    ...headers,
+                    ...options.headers
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Erro na requisição: ${response.status}`);
             }
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro na requisição: ${response.status}`);
+            
+            return await response.json();
+        } catch (error) {
+            throw error;
         }
-        
-        return response.json();
     },
     
     // Função para fazer requisições públicas

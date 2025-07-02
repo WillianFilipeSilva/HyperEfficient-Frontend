@@ -1,75 +1,132 @@
 // Script de login externo para HyperEfficient
 
-window.addEventListener('DOMContentLoaded', function() {
-  (async function() {
-    if (window.AuthUtils && await AuthUtils.isLoggedIn()) {
-      window.location.href = '/pages/dashboard/dashboard.html';
-      return;
+window.addEventListener("DOMContentLoaded", () => {
+  ;(async () => {
+    if (window.AuthUtils && (await AuthUtils.isLoggedIn())) {
+      window.location.href = "/pages/dashboard/dashboard.html"
+      return
     }
+
     // Elementos do DOM
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const senhaInput = document.getElementById('senha');
-    const loginButton = document.getElementById('loginButton');
-    const errorMessage = document.getElementById('errorMessage');
+    const loginForm = document.getElementById("loginForm")
+    const emailInput = document.getElementById("email")
+    const senhaInput = document.getElementById("senha")
+    const loginButton = document.getElementById("loginButton")
+    const errorMessage = document.getElementById("errorMessage")
+
     // Função para fazer login
     async function fazerLogin(email, senha) {
       try {
-        const lembrarDeMim = document.getElementById('rememberMe').checked;
+        const lembrarDeMim = document.getElementById("rememberMe").checked
         const data = await API_CONFIG.publicRequest(API_CONFIG.ENDPOINTS.LOGIN, {
-          method: 'POST',
+          method: "POST",
           body: JSON.stringify({
             email: email,
             senha: senha,
-            lembrarDeMim: lembrarDeMim
-          })
-        });
+            lembrarDeMim: lembrarDeMim,
+          }),
+        })
+
         // Sempre salvar no localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+        localStorage.setItem("token", data.token)
+        localStorage.setItem("usuario", JSON.stringify(data.usuario))
+
         // Mostrar sucesso e redirecionar
-        Utils.showToast('Login realizado com sucesso!', 'success');
-        Utils.redirect('/pages/dashboard/dashboard.html', 1000);
+        showToast("Login realizado com sucesso!", "success")
+        setTimeout(() => {
+          window.location.href = "/pages/dashboard/dashboard.html"
+        }, 1000)
       } catch (error) {
-        console.error('Erro no login:', error);
-        Utils.showError('errorMessage', error.message || 'Erro ao conectar com o servidor');
+        console.error("Erro no login:", error)
+        showError(error.message || "Erro ao conectar com o servidor")
       }
     }
+
     // Event listener para o formulário
-    loginForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const email = emailInput.value.trim();
-      const senha = senhaInput.value.trim();
-      // Validação usando Utils
-      const formData = { email, senha };
-      const validations = {
-        email: {
-          required: true,
-          requiredMessage: 'Por favor, preencha o email',
-          email: true,
-          emailMessage: 'Por favor, insira um email válido'
-        },
-        senha: {
-          required: true,
-          requiredMessage: 'Por favor, preencha a senha',
-          minLength: 6,
-          minLengthMessage: 'A senha deve ter pelo menos 6 caracteres'
-        }
-      };
-      const validation = Utils.validateForm(formData, validations);
-      if (!validation.isValid) {
-        // Mostrar primeiro erro encontrado
-        const firstError = Object.values(validation.errors)[0];
-        Utils.showError('errorMessage', firstError);
-        return;
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault()
+
+      const email = emailInput.value.trim()
+      const senha = senhaInput.value.trim()
+
+      // Validação básica
+      if (!email) {
+        showError("Por favor, preencha o email")
+        return
       }
-      Utils.hideError('errorMessage');
-      Utils.showButtonLoading('loginButton', 'Entrando...');
-      await fazerLogin(email, senha);
-      Utils.hideButtonLoading('loginButton');
-    });
+
+      if (!senha) {
+        showError("Por favor, preencha a senha")
+        return
+      }
+
+      if (senha.length < 6) {
+        showError("A senha deve ter pelo menos 6 caracteres")
+        return
+      }
+
+      hideError()
+      showButtonLoading(true)
+
+      await fazerLogin(email, senha)
+
+      showButtonLoading(false)
+    })
+
     // Limpar erro quando o usuário começar a digitar
-    emailInput.addEventListener('input', () => Utils.hideError('errorMessage'));
-    senhaInput.addEventListener('input', () => Utils.hideError('errorMessage'));
-  })();
-}); 
+    emailInput.addEventListener("input", () => hideError())
+    senhaInput.addEventListener("input", () => hideError())
+
+    // Funções auxiliares
+    function showError(message) {
+      errorMessage.textContent = message
+      errorMessage.classList.remove("hidden")
+    }
+
+    function hideError() {
+      errorMessage.classList.add("hidden")
+    }
+
+    function showButtonLoading(show) {
+      const loginButtonText = document.getElementById("loginButtonText")
+      const loginButtonLoading = document.getElementById("loginButtonLoading")
+
+      if (show) {
+        loginButtonText.classList.add("hidden")
+        loginButtonLoading.classList.remove("hidden")
+        loginButton.disabled = true
+      } else {
+        loginButtonText.classList.remove("hidden")
+        loginButtonLoading.classList.add("hidden")
+        loginButton.disabled = false
+      }
+    }
+
+    function showToast(message, type = "info") {
+      const toast = document.createElement("div")
+      toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+
+      const colors = {
+        success: "bg-green-500/90 text-white",
+        error: "bg-red-500/90 text-white",
+        warning: "bg-yellow-500/90 text-black",
+        info: "bg-blue-500/90 text-white",
+      }
+
+      toast.className += ` ${colors[type] || colors.info}`
+      toast.innerHTML = `
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-check-circle"></i>
+          <span>${message}</span>
+        </div>
+      `
+
+      document.body.appendChild(toast)
+      setTimeout(() => toast.classList.remove("translate-x-full"), 100)
+      setTimeout(() => {
+        toast.classList.add("translate-x-full")
+        setTimeout(() => toast.remove(), 300)
+      }, 3000)
+    }
+  })()
+})

@@ -25,8 +25,8 @@ class SetoresPage {
       title: "Listagem de Setores",
 
       columns: [
-        { field: "id", label: "ID" },
         { field: "nome", label: "Nome" },
+        { field: "descricao", label: "Descrição" },
       ],
 
       data: [],
@@ -176,6 +176,7 @@ class SetoresPage {
     const form = document.getElementById("formSetor")
     if (form && item) {
       form.nome.value = item.nome || ""
+      form.descricao.value = item.descricao || ""
     }
   }
 
@@ -192,11 +193,16 @@ class SetoresPage {
     const formData = new FormData(e.target)
     const data = {
       nome: formData.get("nome"),
-      ativo: true,
+      descricao: formData.get("descricao"),
     }
 
     if (!data.nome) {
       this.showToast("Nome é obrigatório", "error")
+      return
+    }
+
+    if (!data.descricao) {
+      this.showToast("Descrição é obrigatória", "error")
       return
     }
 
