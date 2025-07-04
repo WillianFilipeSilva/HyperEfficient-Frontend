@@ -1,0 +1,114 @@
+RF01 – Cadastrar usuário
+O sistema deve permitir que o visitante crie uma conta informando nome, e-mail e senha. Após validar unicidade do e-mail e formatos, a senha é hashada com PBKDF2 (10.000 iterações, salt 8 bytes) e salva na tabela Usuarios. Em caso de sucesso, responde HTTP 201 + MessageResponse “Usuário cadastrado com sucesso!”.
+
+RF02 – Autenticar usuário
+O sistema deve autenticar o usuário via e-mail e senha, validando credenciais e gerando JWT com expiração de 2h ou 30d (lembrar de mim). Em caso de sucesso, responde HTTP 200 + UsuarioLoginTokenDto.
+
+RF03 – Editar usuário
+O sistema deve permitir a edição dos dados do usuário, validando existência e formatos. Em caso de sucesso, responde HTTP 200 + MessageResponse “Usuário editado com sucesso!”.
+
+RF04 – Excluir usuário
+O sistema deve permitir a exclusão de usuário por ID, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Usuário deletado com sucesso!”.
+
+RF05 – Listar usuários
+O sistema deve listar todos os usuários cadastrados, retornando lista paginada ou completa. Em caso de sucesso, responde HTTP 200 + UsuarioGetAllResponse/GetPagedResponseBase<UsuarioDto>.
+
+RF06 – Buscar usuário por ID
+O sistema deve retornar os dados de um usuário pelo ID, validando existência. Em caso de sucesso, responde HTTP 200 + UsuarioDto.
+
+RF07 – Cadastrar categoria
+O sistema deve permitir o Cadastrar categoria informando nome, validando unicidade. Em caso de sucesso, responde HTTP 201 + MessageResponse “Categoria cadastrada com sucesso!”.
+
+RF08 – Editar categoria
+O sistema deve permitir a edição de categoria, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Categoria editada com sucesso!”.
+
+RF09 – Excluir categoria
+O sistema deve permitir a exclusão de categoria por ID, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Categoria deletada com sucesso!”.
+
+RF10 – Listar categorias
+O sistema deve listar todas as categorias cadastradas. Em caso de sucesso, responde HTTP 200 + CategoriaGetAllResponse.
+
+RF11 – Buscar categoria por ID
+O sistema deve retornar os dados de uma categoria pelo ID, validando existência. Em caso de sucesso, responde HTTP 200 + CategoriaEntity.
+
+RF12 – Cadastrar setor
+O sistema deve permitir o Cadastrar setor informando nome, validando unicidade. Em caso de sucesso, responde HTTP 201 + MessageResponse “Setor cadastrado com sucesso!”.
+
+RF13 – Editar setor
+O sistema deve permitir a edição de setor, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Setor editado com sucesso!”.
+
+RF14 – Excluir setor
+O sistema deve permitir a exclusão de setor por ID, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Setor deletado com sucesso!”.
+
+RF15 – Listar setores
+O sistema deve listar todos os setores cadastrados, retornando lista paginada ou completa. Em caso de sucesso, responde HTTP 200 + SetorGetAllResponse/GetPagedResponseBase<SetorEntity>.
+
+RF16 – Buscar setor por ID
+O sistema deve retornar os dados de um setor pelo ID, validando existência. Em caso de sucesso, responde HTTP 200 + SetorEntity.
+
+RF17 – Cadastrar equipamento
+O sistema deve permitir o Cadastrar equipamento informando nome, setor e categoria, validando unicidade. Em caso de sucesso, responde HTTP 201 + MessageResponse “Equipamento cadastrado com sucesso!”.
+
+RF18 – Editar equipamento
+O sistema deve permitir a edição de equipamento, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Equipamento editado com sucesso!”.
+
+RF19 – Excluir equipamento
+O sistema deve permitir a exclusão de equipamento por ID, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Equipamento deletado com sucesso!”.
+
+RF20 – Listar equipamentos
+O sistema deve listar todos os equipamentos cadastrados, retornando lista paginada ou completa. Em caso de sucesso, responde HTTP 200 + EquipamentoGetAllResponse/GetPagedResponseBase<EquipamentoEntity>.
+
+RF21 – Buscar equipamento por ID
+O sistema deve retornar os dados de um equipamento pelo ID, validando existência. Em caso de sucesso, responde HTTP 200 + EquipamentoEntity.
+
+RF22 – Cadastrar registro
+O sistema deve permitir o Cadastrar registro de uso de equipamento, informando datas e IDs relacionados. Em caso de sucesso, responde HTTP 201 + MessageResponse “Registro cadastrado com sucesso!”.
+
+RF23 – Editar registro
+O sistema deve permitir a edição de registro, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Registro editado com sucesso!”.
+
+RF24 – Excluir registro
+O sistema deve permitir a exclusão de registro por ID, validando existência. Em caso de sucesso, responde HTTP 200 + MessageResponse “Registro deletado com sucesso!”.
+
+RF25 – Listar registros
+O sistema deve listar todos os registros cadastrados, retornando lista paginada ou completa. Em caso de sucesso, responde HTTP 200 + RegistroGetAllResponse/GetPagedResponseBase<RegistroEntity>.
+
+RF26 – Buscar registro por ID
+O sistema deve retornar os dados de um registro pelo ID, validando existência. Em caso de sucesso, responde HTTP 200 + RegistroEntity.
+
+RF27 – Gerar relatório da empresa
+O sistema deve gerar relatório consolidado da empresa para um período, retornando totais de setores, equipamentos, tempo de uso e gasto energético. Em caso de sucesso, responde HTTP 200 + RelatorioEmpresaResponse.
+
+RF28 – Gerar relatório de setor
+O sistema deve gerar relatório de um setor para um período, retornando totais de equipamentos, tempo de uso e gasto energético. Em caso de sucesso, responde HTTP 200 + RelatorioSetorResponse.
+
+RF29 – Gerar relatório de equipamento
+O sistema deve gerar relatório de um equipamento para um período, retornando tempo de uso e gasto energético. Em caso de sucesso, responde HTTP 200 + RelatorioEquipamentoResponse.
+
+
+RNF01 – Autorização JWT obrigatória
+Todas as rotas protegidas devem exigir JWT válido no header Authorization, exceto Login e Cadastro.
+
+RNF02 – Hash de senha seguro
+Senhas devem ser armazenadas usando PBKDF2 com 10.000 iterações e salt de 8 bytes.
+
+RNF03 – Resposta em até 2s
+Todos os endpoints devem responder em até 2 segundos para 95% das requisições sob carga de 100 usuários simultâneos.
+
+RNF04 – Mensagens padronizadas
+Todas as respostas de sucesso ou erro devem seguir o padrão MessageResponse.
+
+RNF05 – Paginação padrão
+Listagens devem suportar paginação via parâmetros page e pageSize.
+
+RNF06 – Internacionalização
+Mensagens de erro e sucesso devem estar em português.
+
+RNF07 – Logs de erro
+Todas as exceções devem ser registradas em log persistente para auditoria.
+
+RNF08 – Proteção contra SQL Injection
+Todas as queries devem usar parâmetros para evitar injeção de SQL.
+
+RNF09 – HTTPS obrigatório
+Todas as comunicações devem ser feitas via HTTPS. 
