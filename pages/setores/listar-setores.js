@@ -4,6 +4,8 @@ class SetoresPage {
     this.searchTerm = ""
     this.editingItem = null
     this.table = null
+    this.setores = [] // Armazena setores localmente
+    this.filteredSetores = [] // Setores filtrados para busca
 
     const modal = document.getElementById("modalSetor")
     if (modal && !modal.classList.contains("hidden")) {
@@ -113,12 +115,14 @@ class SetoresPage {
       }
 
       const response = await window.API_CONFIG.authenticatedRequest(url)
+      this.setores = response.Data || response.data || []
+      this.filteredSetores = [...this.setores]
 
-      this.table.updateData(response.Data || response.data || [])
+      this.table.updateData(this.setores)
       this.table.updatePagination({
         currentPage: response.Page || this.currentPage,
         totalPages: response.TotalPages || response.totalPages || 1,
-        totalItems: response.TotalItems || response.totalItems || 0,
+        totalItems: response.TotalItems || response.totalItems || this.setores.length,
       })
     } catch (error) {
       console.error("Erro ao carregar setores:", error)
@@ -135,8 +139,16 @@ class SetoresPage {
 
   handleSearch(term) {
     this.searchTerm = term
-    this.currentPage = 1
-    this.loadData()
+    const searchTermLower = term.toLowerCase().trim()
+    if (!searchTermLower) {
+      this.filteredSetores = [...this.setores]
+    } else {
+      this.filteredSetores = this.setores.filter((setor) => 
+        setor.nome.toLowerCase().includes(searchTermLower) || 
+        setor.descricao.toLowerCase().includes(searchTermLower)
+      )
+    }
+    this.table.updateData(this.filteredSetores)
   }
 
   openAddModal() {
@@ -214,17 +226,31 @@ class SetoresPage {
           method: "PUT",
           body: JSON.stringify({ ...data, id: this.editingItem.id }),
         })
+        
+        // Atualiza o item localmente
+        const index = this.setores.findIndex((s) => s.id === this.editingItem.id)
+        if (index !== -1) {
+          this.setores[index] = { ...this.setores[index], ...data }
+        }
+        
         this.showToast("Setor atualizado com sucesso!", "success")
       } else {
-        await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES, {
+        const response = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES, {
           method: "POST",
           body: JSON.stringify(data),
         })
+        
+        const newSetor = response.data || response.Data || response
+        if (newSetor) {
+          this.setores.push(newSetor)
+        }
+        
         this.showToast("Setor criado com sucesso!", "success")
       }
 
+      this.filteredSetores = [...this.setores]
+      this.table.updateData(this.filteredSetores)
       this.closeModal()
-      this.loadData()
     } catch (error) {
       console.error("Erro ao salvar setor:", error)
       this.showToast(error.message || "Erro ao salvar setor", "error")
@@ -243,8 +269,12 @@ class SetoresPage {
         method: "DELETE",
       })
 
+      // Remove o item localmente
+      this.setores = this.setores.filter((s) => s.id !== item.id)
+      this.filteredSetores = this.filteredSetores.filter((s) => s.id !== item.id)
+      this.table.updateData(this.filteredSetores)
+
       this.showToast("Setor excluído com sucesso!", "success")
-      this.loadData()
     } catch (error) {
       console.error("Erro ao excluir setor:", error)
       this.showToast("Erro ao excluir setor", "error")

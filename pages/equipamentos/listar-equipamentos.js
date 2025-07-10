@@ -4,6 +4,8 @@ class EquipamentosPage {
     this.searchTerm = ""
     this.editingItem = null
     this.table = null
+    this.categorias = [] // Armazena categorias carregadas
+    this.setores = []    // Armazena setores carregados
 
     const modal = document.getElementById("modalEquipamento")
     if (modal && !modal.classList.contains("hidden")) {
@@ -13,10 +15,28 @@ class EquipamentosPage {
     this.init()
   }
 
-  init() {
+  async init() {
     this.setupEventListeners()
     this.createTable()
+    await this.loadCategoriasESetores()
     this.loadData()
+  }
+
+  async loadCategoriasESetores() {
+    // Busca categorias
+    try {
+      const catResp = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.CATEGORIAS)
+      this.categorias = catResp.Data || catResp.data || []
+    } catch (e) {
+      this.categorias = []
+    }
+    // Busca setores
+    try {
+      const setResp = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES)
+      this.setores = setResp.Data || setResp.data || []
+    } catch (e) {
+      this.setores = []
+    }
   }
 
   createTable() {
@@ -144,25 +164,10 @@ class EquipamentosPage {
       }
 
       const response = await window.API_CONFIG.authenticatedRequest(url)
-
       const data = (response.Data || response.data || []).map((item) => ({
         ...item,
-        categoria:
-          item.categoriaId === 1
-            ? "Industrial"
-            : item.categoriaId === 2
-              ? "Comercial"
-              : item.categoriaId === 3
-                ? "Residencial"
-                : "N/A",
-        setor:
-          item.setorId === 1
-            ? "Produção"
-            : item.setorId === 2
-              ? "Administrativo"
-              : item.setorId === 3
-                ? "Manutenção"
-                : "N/A",
+        categoria: this.categorias.find(cat => cat.id === item.categoriaId)?.nome || "N/A",
+        setor: this.setores.find(setor => setor.id === item.setorId)?.nome || "N/A",
       }))
 
       this.table.updateData(data)
