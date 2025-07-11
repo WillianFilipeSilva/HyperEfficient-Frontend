@@ -268,8 +268,20 @@ class SetoresPage {
   }
 
   showToast(message, type = "info") {
+    // Usar o sistema global de toasts se disponível
+    if (window.Utils && window.Utils.showToast) {
+      window.Utils.showToast(message, type)
+      return
+    }
+    
+    // Fallback local com posicionamento empilhado
+    const toastCounter = window.toastCounter || 0
+    window.toastCounter = toastCounter + 1
+    
     const toast = document.createElement("div")
-    toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    const topPosition = 24 + (toastCounter) * 80
+    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    toast.style.top = `${topPosition}px`
 
     const colors = {
       success: "bg-green-500/90 text-white",
@@ -290,7 +302,10 @@ class SetoresPage {
     setTimeout(() => toast.classList.remove("translate-x-full"), 100)
     setTimeout(() => {
       toast.classList.add("translate-x-full")
-      setTimeout(() => toast.remove(), 300)
+      setTimeout(() => {
+        toast.remove()
+        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1)
+      }, 300)
     }, 3000)
   }
 
@@ -322,7 +337,7 @@ class ModernTable {
           <div class="flex items-center justify-between">
             <div>
               <h2 class="text-xl font-semibold text-white">${this.config.title}</h2>
-              <p class="text-gray-400 text-sm mt-1">Gerencie seus dados</p>
+              <p class="text-gray-400 text-sm mt-1">Gerencie seus setores</p>
             </div>
             <div class="flex items-center space-x-4">
               <div class="relative">
@@ -345,7 +360,7 @@ class ModernTable {
           </div>
         </div>
 
-        <div id="tableContent" class="min-h-96">
+        <div id="tableContent">
           <div id="loadingState" class="p-12 text-center">
             <div class="inline-flex items-center space-x-3">
               <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>

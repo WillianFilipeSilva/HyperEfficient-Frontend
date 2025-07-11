@@ -77,22 +77,47 @@ const Utils = {
         }
     },
     
+    // Contador para posicionamento dos toasts
+    _toastCounter: 0,
+    
     // Mostrar toast/notificação
     showToast: function(message, type = 'info', duration = 3000) {
+        // Incrementar contador
+        this._toastCounter++;
+        const toastIndex = this._toastCounter;
+        
         // Criar elemento toast
         const toast = document.createElement('div');
-        toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+        toast.className = `fixed right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full backdrop-blur-lg`;
+        
+        // Calcular posição baseada no índice
+        const topPosition = 24 + (toastIndex - 1) * 80; // 24px inicial + 80px por toast
+        toast.style.top = `${topPosition}px`;
         
         // Definir cores baseadas no tipo
         const colors = {
-            success: 'bg-green-500 text-white',
-            error: 'bg-red-500 text-white',
-            warning: 'bg-yellow-500 text-black',
-            info: 'bg-blue-500 text-white'
+            success: 'bg-green-500/90 text-white',
+            error: 'bg-red-500/90 text-white',
+            warning: 'bg-yellow-500/90 text-black',
+            info: 'bg-blue-500/90 text-white'
         };
         
         toast.className += ` ${colors[type] || colors.info}`;
-        toast.textContent = message;
+        
+        // Adicionar ícone baseado no tipo
+        const icons = {
+            success: 'fas fa-check-circle',
+            error: 'fas fa-exclamation-circle',
+            warning: 'fas fa-exclamation-triangle',
+            info: 'fas fa-info-circle'
+        };
+        
+        toast.innerHTML = `
+            <div class="flex items-center space-x-2">
+                <i class="${icons[type] || icons.info}"></i>
+                <span>${message}</span>
+            </div>
+        `;
         
         // Adicionar ao DOM
         document.body.appendChild(toast);
@@ -109,6 +134,8 @@ const Utils = {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
+                // Decrementar contador quando o toast for removido
+                this._toastCounter = Math.max(0, this._toastCounter - 1);
             }, 300);
         }, duration);
     },

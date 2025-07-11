@@ -112,6 +112,26 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     const dataFim = document.getElementById("dataFim").value
     
     if (dataInicio && dataFim) {
+      // Validar período máximo
+      const dataInicioObj = new Date(dataInicio)
+      const dataFimObj = new Date(dataFim)
+      const diffEmDias = (dataFimObj - dataInicioObj) / (1000 * 60 * 60 * 24)
+      
+      const btnAtualizar = document.getElementById("btnAtualizarRelatorio")
+      
+      if (diffEmDias > 365) {
+        btnAtualizar.disabled = true
+        btnAtualizar.classList.add("opacity-50", "cursor-not-allowed")
+        showToast("Período máximo permitido é de 1 ano", "warning")
+      } else if (dataInicioObj > dataFimObj) {
+        btnAtualizar.disabled = true
+        btnAtualizar.classList.add("opacity-50", "cursor-not-allowed")
+        showToast("Data inicial deve ser anterior à data final", "error")
+      } else {
+        btnAtualizar.disabled = false
+        btnAtualizar.classList.remove("opacity-50", "cursor-not-allowed")
+      }
+      
       salvarFiltroPeriodo(dataInicio, dataFim)
     }
   }
@@ -159,6 +179,16 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       return
     }
 
+    // Validar período máximo de 1 ano
+    const dataInicioObj = new Date(dataInicio)
+    const dataFimObj = new Date(dataFim)
+    const diffEmDias = (dataFimObj - dataInicioObj) / (1000 * 60 * 60 * 24)
+    
+    if (diffEmDias > 365) {
+      showToast("Período máximo permitido é de 1 ano", "warning")
+      return
+    }
+
     // Atualizar filtro no sessionStorage
     salvarFiltroPeriodo(dataInicio, dataFim)
 
@@ -168,12 +198,7 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     showToast(`Atualizando dados: ${inicioFormatado} a ${fimFormatado}`, "info")
 
     try {
-      await Promise.all([
-        carregarRelatorioEmpresa(dataInicio, dataFim),
-        carregarEstatisticasSetores(dataInicio, dataFim),
-        carregarEstatisticasCategorias(dataInicio, dataFim),
-      ])
-
+      await carregarDashboard(dataInicio, dataFim)
       showToast("Relatórios atualizados com sucesso!", "success")
     } catch (error) {
       console.error("Erro ao atualizar relatórios:", error)
@@ -181,7 +206,7 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     }
   }
 
-  async function carregarRelatorioEmpresa(dataInicio, dataFim) {
+  async function carregarDashboard(dataInicio, dataFim) {
     try {
       const inicioISO = new Date(dataInicio + "T00:00:00").toISOString()
       const fimISO = new Date(dataFim + "T23:59:59").toISOString()
@@ -189,40 +214,55 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       const url = `/relatorios/empresa?dataInicio=${encodeURIComponent(inicioISO)}&dataFim=${encodeURIComponent(fimISO)}`
       const data = await window.API_CONFIG.authenticatedRequest(url)
 
-      // Animar os números
-      animateNumber("cardSetores", data.quantidadeSetores || 0)
-      animateNumber("cardEquipamentos", data.quantidadeEquipamentos || 0)
-      animateValue("cardTempoUso", data.tempoUsoTotal || 0, "h")
-      animateValue("cardGastoEnergetico", data.gastoEnergeticoTotal || 0, "kWh")
+      // Animar os totalizadores usando a nova estrutura
+      if (data.totalizadores) {
+        animateNumber("cardSetores", data.totalizadores.quantidadeSetores || 0)
+        animateNumber("cardEquipamentos", data.totalizadores.quantidadeEquipamentos || 0)
+        animateValue("cardTempoUso", data.totalizadores.tempoUsoTotal || 0, "h")
+        animateValue("cardGastoEnergetico", data.totalizadores.gastoEnergeticoTotal || 0, "kWh")
+      } else {
+        // Fallback para estrutura antiga
+        animateNumber("cardSetores", data.quantidadeSetores || 0)
+        animateNumber("cardEquipamentos", data.quantidadeEquipamentos || 0)
+        animateValue("cardTempoUso", data.tempoUsoTotal || 0, "h")
+        animateValue("cardGastoEnergetico", data.gastoEnergeticoTotal || 0, "kWh")
+      }
 
-      // Atualizar gráfico com dados reais
+      // Atualizar gráfico com dados dinâmicos
       atualizarGraficoComDadosReais(data, dataInicio, dataFim)
 
-      showToast("Dados gerais carregados com sucesso!", "success")
+      // Atualizar listas de setores e categorias se disponíveis
+      if (data.setores) {
+        atualizarListaSetores(data.setores)
+      }
+      
+      if (data.categorias) {
+        atualizarListaCategorias(data.categorias)
+      }
+
+      showToast("Dados do dashboard carregados com sucesso!", "success")
     } catch (error) {
-      console.error("Erro ao carregar relatório da empresa:", error)
+      console.error("Erro ao carregar dashboard:", error)
+      // Definir valores padrão em caso de erro
       document.getElementById("cardSetores").textContent = "0"
       document.getElementById("cardEquipamentos").textContent = "0"
       document.getElementById("cardTempoUso").textContent = "0h"
       document.getElementById("cardGastoEnergetico").textContent = "0 kWh"
-      showToast("Erro ao carregar dados gerais", "error")
+      showToast("Erro ao carregar dados do dashboard", "error")
     }
   }
 
-  async function carregarEstatisticasSetores(dataInicio, dataFim) {
+  function atualizarListaSetores(setores) {
     const setoresLoading = document.getElementById("setoresLoading")
     const setoresList = document.getElementById("setoresList")
 
-    try {
-      setoresLoading.classList.remove("hidden")
-      setoresList.classList.add("hidden")
+    if (!setoresList) return
 
-      // Buscar todos os setores
-      const setoresResponse = await window.API_CONFIG.authenticatedRequest("/setores")
-      const setores = setoresResponse.Data || setoresResponse.data || setoresResponse || []
+    setoresLoading?.classList.add("hidden")
+    setoresList.classList.remove("hidden")
 
-      if (!setores || setores.length === 0) {
-        setoresList.innerHTML = `
+    if (!setores || setores.length === 0) {
+      setoresList.innerHTML = `
         <div class="p-8 text-center">
           <div class="text-gray-400">
             <i class="fas fa-building text-2xl mb-2"></i>
@@ -230,50 +270,16 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
           </div>
         </div>
       `
-        setoresLoading.classList.add("hidden")
-        setoresList.classList.remove("hidden")
-        return
-      }
+      return
+    }
 
-      const inicioISO = new Date(dataInicio + "T00:00:00").toISOString()
-      const fimISO = new Date(dataFim + "T23:59:59").toISOString()
+    // Ordenar por gasto total (decrescente)
+    setores.sort((a, b) => b.gastoTotal - a.gastoTotal)
 
-      const setoresComGasto = []
-
-      // Buscar relatório de cada setor
-      for (const setor of setores) {
-        try {
-          const url = `/relatorios/setor/${setor.id}?dataInicio=${encodeURIComponent(inicioISO)}&dataFim=${encodeURIComponent(fimISO)}`
-          const relatorio = await window.API_CONFIG.authenticatedRequest(url)
-
-          setoresComGasto.push({
-            id: setor.id,
-            nome: setor.nome,
-            gastoTotal: relatorio.gastoEnergeticoTotal || 0,
-            quantidadeEquipamentos: relatorio.quantidadeEquipamentos || 0,
-            tempoUsoTotal: relatorio.tempoUsoTotal || 0,
-          })
-        } catch (err) {
-          console.error(`Erro ao carregar dados do setor ${setor.nome}:`, err)
-          // Incluir setor mesmo com erro, mas com valores zerados
-          setoresComGasto.push({
-            id: setor.id,
-            nome: setor.nome,
-            gastoTotal: 0,
-            quantidadeEquipamentos: 0,
-            tempoUsoTotal: 0,
-            erro: true,
-          })
-        }
-      }
-
-      // Ordenar por gasto total (decrescente)
-      setoresComGasto.sort((a, b) => b.gastoTotal - a.gastoTotal)
-
-      // Renderizar lista
-      setoresList.innerHTML = setoresComGasto
-        .map(
-          (setor, index) => `
+    // Renderizar lista
+    setoresList.innerHTML = setores
+      .map(
+        (setor, index) => `
         <div class="p-4 border-b border-white/5 hover:bg-white/5 transition-all duration-200 animate-fade-in-up" style="animation-delay: ${index * 0.1}s;">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -283,57 +289,31 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
               <div>
                 <div class="text-white font-medium">${setor.nome}</div>
                 <div class="text-xs text-gray-400">
-                  ${setor.quantidadeEquipamentos} equipamentos • ${setor.tempoUsoTotal.toFixed(1)}h uso
+                  ${setor.quantidadeEquipamentos} equipamentos • ${setor.tempoUsoTotal?.toFixed(1) || 0}h uso
                 </div>
               </div>
             </div>
             <div class="text-right">
-              <div class="text-white font-semibold">${setor.gastoTotal.toFixed(2)} kWh</div>
-              ${setor.erro ? '<div class="text-xs text-red-400">Dados indisponíveis</div>' : ""}
+              <div class="text-white font-semibold">${setor.gastoTotal?.toFixed(2) || 0} kWh</div>
             </div>
           </div>
         </div>
       `,
-        )
-        .join("")
-
-      showToast(`${setoresComGasto.length} setores carregados`, "success")
-    } catch (error) {
-      console.error("Erro ao carregar estatísticas dos setores:", error)
-      setoresList.innerHTML = `
-      <div class="p-8 text-center">
-        <div class="text-red-400">
-          <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-          <p>Erro ao carregar setores</p>
-        </div>
-      </div>
-    `
-      showToast("Erro ao carregar setores", "error")
-    } finally {
-      setoresLoading.classList.add("hidden")
-      setoresList.classList.remove("hidden")
-    }
+      )
+      .join("")
   }
 
-  async function carregarEstatisticasCategorias(dataInicio, dataFim) {
+  function atualizarListaCategorias(categorias) {
     const categoriasLoading = document.getElementById("categoriasLoading")
     const categoriasList = document.getElementById("categoriasList")
 
-    try {
-      categoriasLoading.classList.remove("hidden")
-      categoriasList.classList.add("hidden")
+    if (!categoriasList) return
 
-      // Buscar todas as categorias e equipamentos em paralelo
-      const [categoriasResponse, equipamentosResponse] = await Promise.all([
-        window.API_CONFIG.authenticatedRequest("/categorias"),
-        window.API_CONFIG.authenticatedRequest("/equipamentos"),
-      ])
+    categoriasLoading?.classList.add("hidden")
+    categoriasList.classList.remove("hidden")
 
-      const categorias = categoriasResponse.Data || categoriasResponse.data || categoriasResponse || []
-      const equipamentos = equipamentosResponse.Data || equipamentosResponse.data || equipamentosResponse || []
-
-      if (!categorias || categorias.length === 0) {
-        categoriasList.innerHTML = `
+    if (!categorias || categorias.length === 0) {
+      categoriasList.innerHTML = `
         <div class="p-8 text-center">
           <div class="text-gray-400">
             <i class="fas fa-tags text-2xl mb-2"></i>
@@ -341,54 +321,16 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
           </div>
         </div>
       `
-        categoriasLoading.classList.add("hidden")
-        categoriasList.classList.remove("hidden")
-        return
-      }
+      return
+    }
 
-      const inicioISO = new Date(dataInicio + "T00:00:00").toISOString()
-      const fimISO = new Date(dataFim + "T23:59:59").toISOString()
+    // Ordenar por gasto total (decrescente)
+    categorias.sort((a, b) => b.gastoTotal - a.gastoTotal)
 
-      const categoriasComGasto = []
-
-      for (const categoria of categorias) {
-        // Filtrar equipamentos desta categoria
-        const equipamentosCategoria = equipamentos.filter((eq) => eq.categoriaId === categoria.id && eq.ativo)
-
-        let gastoTotalCategoria = 0
-        let tempoUsoTotal = 0
-
-        // Para cada equipamento da categoria, buscar seu relatório individual
-        for (const equipamento of equipamentosCategoria) {
-          try {
-            const url = `/relatorios/equipamento/${equipamento.id}?dataInicio=${encodeURIComponent(inicioISO)}&dataFim=${encodeURIComponent(fimISO)}`
-            const relatorioEquip = await window.API_CONFIG.authenticatedRequest(url)
-
-            gastoTotalCategoria += relatorioEquip.gastoEnergeticoTotal || 0
-            tempoUsoTotal += relatorioEquip.tempoUsoTotal || 0
-          } catch (err) {
-            console.error(`Erro ao carregar dados do equipamento ${equipamento.nome}:`, err)
-            // Se não conseguir buscar o relatório, usar uma estimativa baseada no gasto kWh
-            gastoTotalCategoria += equipamento.gastokwh || 0
-          }
-        }
-
-        categoriasComGasto.push({
-          id: categoria.id,
-          nome: categoria.nome,
-          gastoTotal: gastoTotalCategoria,
-          quantidadeEquipamentos: equipamentosCategoria.length,
-          tempoUsoTotal: tempoUsoTotal,
-        })
-      }
-
-      // Ordenar por gasto total (decrescente)
-      categoriasComGasto.sort((a, b) => b.gastoTotal - a.gastoTotal)
-
-      // Renderizar lista
-      categoriasList.innerHTML = categoriasComGasto
-        .map(
-          (categoria, index) => `
+    // Renderizar lista
+    categoriasList.innerHTML = categorias
+      .map(
+        (categoria, index) => `
         <div class="p-4 border-b border-white/5 hover:bg-white/5 transition-all duration-200 animate-fade-in-up" style="animation-delay: ${index * 0.1}s;">
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -398,35 +340,18 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
               <div>
                 <div class="text-white font-medium">${categoria.nome}</div>
                 <div class="text-xs text-gray-400">
-                  ${categoria.quantidadeEquipamentos} equipamentos • ${categoria.tempoUsoTotal.toFixed(1)}h uso
+                  ${categoria.quantidadeEquipamentos} equipamentos • ${categoria.tempoUsoTotal?.toFixed(1) || 0}h uso
                 </div>
               </div>
             </div>
             <div class="text-right">
-              <div class="text-white font-semibold">${categoria.gastoTotal.toFixed(2)} kWh</div>
+              <div class="text-white font-semibold">${categoria.gastoTotal?.toFixed(2) || 0} kWh</div>
             </div>
           </div>
         </div>
       `,
-        )
-        .join("")
-
-      showToast(`${categoriasComGasto.length} categorias carregadas`, "success")
-    } catch (error) {
-      console.error("Erro ao carregar estatísticas das categorias:", error)
-      categoriasList.innerHTML = `
-      <div class="p-8 text-center">
-        <div class="text-red-400">
-          <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
-          <p>Erro ao carregar categorias</p>
-        </div>
-      </div>
-    `
-      showToast("Erro ao carregar categorias", "error")
-    } finally {
-      categoriasLoading.classList.add("hidden")
-      categoriasList.classList.remove("hidden")
-    }
+      )
+      .join("")
   }
 
   // Função para animar números
@@ -463,15 +388,20 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
 
   // Toast notification function
   function showToast(message, type = "info") {
-    // Se Utils estiver disponível, usar ele
+    // Usar o sistema global de toasts
     if (window.Utils && window.Utils.showToast) {
       window.Utils.showToast(message, type)
       return
     }
     
-    // Fallback local
+    // Fallback local com posicionamento empilhado
+    const toastCounter = window.toastCounter || 0
+    window.toastCounter = toastCounter + 1
+    
     const toast = document.createElement("div")
-    toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    const topPosition = 24 + (toastCounter) * 80
+    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    toast.style.top = `${topPosition}px`
 
     const colors = {
       success: "bg-green-500/90 text-white",
@@ -492,7 +422,10 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     setTimeout(() => toast.classList.remove("translate-x-full"), 100)
     setTimeout(() => {
       toast.classList.add("translate-x-full")
-      setTimeout(() => toast.remove(), 300)
+      setTimeout(() => {
+        toast.remove()
+        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1)
+      }, 300)
     }, 3000)
   }
 
@@ -524,7 +457,7 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     gradientStroke.addColorStop(0.2, "rgba(255, 202, 28, 0.1)")
     gradientStroke.addColorStop(0, "rgba(255, 202, 28, 0)")
 
-    // Gerar dados do gráfico baseado no período selecionado
+    // Usar dados do gráfico mensal do backend
     const dadosGrafico = gerarDadosGrafico(data, dataInicio, dataFim)
 
     window.dashboardChart = new Chart(ctx, {
@@ -600,8 +533,17 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     })
   }
 
-  // Função para gerar dados do gráfico baseado no período
+  // Função para gerar dados do gráfico baseado nos dados mensais do backend
   function gerarDadosGrafico(data, dataInicio, dataFim) {
+    // Se temos dados mensais do backend já ordenados, usar eles
+    if (data.dadosMensais && data.dadosMensais.length > 0) {
+      const labels = data.dadosMensais.map(item => item.mesAbreviado)
+      const dados = data.dadosMensais.map(item => item.consumoKwh || 0)
+      
+      return { labels, dados }
+    }
+    
+    // Fallback: se não temos dados do backend, gerar dados baseados no período
     const inicio = new Date(dataInicio)
     const fim = new Date(dataFim)
     
@@ -614,14 +556,15 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       while (dataAtual <= fim) {
         dias.push(dataAtual.getDate().toString().padStart(2, '0'))
         // Usar dados reais se disponíveis, senão usar uma distribuição do gasto total
-        const gastoDiario = data.gastoEnergeticoTotal ? (data.gastoEnergeticoTotal / (fim.getDate() - inicio.getDate() + 1)) : 0
+        const gastoDiario = data.gastoEnergeticoTotal ? 
+          (data.gastoEnergeticoTotal / (fim.getDate() - inicio.getDate() + 1)) : 0
         dados.push(gastoDiario)
         dataAtual.setDate(dataAtual.getDate() + 1)
       }
       
       return { labels: dias, dados: dados }
     } else {
-      // Se for período maior, mostrar meses
+      // Se for período maior, mostrar meses usando os campos de consumo mensal
       const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
       const dados = [
         data.consumoJan || 0,

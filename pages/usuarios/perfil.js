@@ -158,8 +158,20 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function showToast(message, type = "info") {
+    // Usar o sistema global de toasts se disponível
+    if (window.Utils && window.Utils.showToast) {
+      window.Utils.showToast(message, type)
+      return
+    }
+    
+    // Fallback local com posicionamento empilhado
+    const toastCounter = window.toastCounter || 0
+    window.toastCounter = toastCounter + 1
+    
     const toast = document.createElement("div")
-    toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    const topPosition = 24 + (toastCounter) * 80
+    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    toast.style.top = `${topPosition}px`
 
     const colors = {
       success: "bg-green-500/90 text-white",
@@ -168,10 +180,17 @@ window.addEventListener("DOMContentLoaded", () => {
       info: "bg-blue-500/90 text-white",
     }
 
+    const icons = {
+      success: "fas fa-check-circle",
+      error: "fas fa-exclamation-circle",
+      warning: "fas fa-exclamation-triangle",
+      info: "fas fa-info-circle",
+    }
+
     toast.className += ` ${colors[type] || colors.info}`
     toast.innerHTML = `
       <div class="flex items-center space-x-2">
-        <i class="fas fa-check-circle"></i>
+        <i class="${icons[type] || icons.info}"></i>
         <span>${message}</span>
       </div>
     `
@@ -180,7 +199,10 @@ window.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => toast.classList.remove("translate-x-full"), 100)
     setTimeout(() => {
       toast.classList.add("translate-x-full")
-      setTimeout(() => toast.remove(), 300)
+      setTimeout(() => {
+        toast.remove()
+        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1)
+      }, 300)
     }, 3000)
   }
 

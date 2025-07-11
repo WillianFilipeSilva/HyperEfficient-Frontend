@@ -25,10 +25,11 @@ class EquipamentosPage {
       title: "Listagem de Equipamentos",
 
       columns: [
-        { field: "id", label: "ID" },
         { field: "nome", label: "Nome" },
-        { field: "categoria", label: "Categoria" },
-        { field: "setor", label: "Setor" },
+        { field: "categoria", label: "Categoria",
+          format: v => v?.nome ?? "-" },
+        { field: "setor", label: "Setor",
+          format: v => v?.nome ?? "-" },
         {
           field: "gastokwh",
           label: "Gasto kW/h",
@@ -134,46 +135,28 @@ class EquipamentosPage {
     }
   }
 
-  async loadData() {
+async loadData () {
     try {
       this.table.setLoading(true)
-
       let url = `${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/paged?page=${this.currentPage}&pageSize=10`
-      if (this.searchTerm) {
-        url += `&search=${encodeURIComponent(this.searchTerm)}`
-      }
+      if (this.searchTerm) url += `&search=${encodeURIComponent(this.searchTerm)}`
 
       const response = await window.API_CONFIG.authenticatedRequest(url)
-
-      const data = (response.Data || response.data || []).map((item) => ({
+      const data = (response.Data || response.data || []).map(item => ({
         ...item,
-        categoria:
-          item.categoriaId === 1
-            ? "Industrial"
-            : item.categoriaId === 2
-              ? "Comercial"
-              : item.categoriaId === 3
-                ? "Residencial"
-                : "N/A",
-        setor:
-          item.setorId === 1
-            ? "Produção"
-            : item.setorId === 2
-              ? "Administrativo"
-              : item.setorId === 3
-                ? "Manutenção"
-                : "N/A",
+        categoriaId: item.categoriaId ?? item.categoria?.id ?? null,
+        setorId: item.setorId ?? item.setor?.id ?? null
       }))
 
       this.table.updateData(data)
       this.table.updatePagination({
         currentPage: response.Page || this.currentPage,
         totalPages: response.TotalPages || response.totalPages || 1,
-        totalItems: response.TotalItems || response.totalItems || data.length,
+        totalItems: response.TotalItems || response.totalItems || data.length
       })
     } catch (error) {
-      console.error("Erro ao carregar equipamentos:", error)
-      this.showToast("Erro ao carregar equipamentos", "error")
+      console.error('Erro ao carregar equipamentos:', error)
+      this.showToast('Erro ao carregar equipamentos', 'error')
     } finally {
       this.table.setLoading(false)
     }
@@ -361,8 +344,20 @@ class EquipamentosPage {
   }
 
   showToast(message, type = "info") {
+    // Usar o sistema global de toasts se disponível
+    if (window.Utils && window.Utils.showToast) {
+      window.Utils.showToast(message, type)
+      return
+    }
+    
+    // Fallback local com posicionamento empilhado
+    const toastCounter = window.toastCounter || 0
+    window.toastCounter = toastCounter + 1
+    
     const toast = document.createElement("div")
-    toast.className = `fixed top-6 right-6 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    const topPosition = 24 + (toastCounter) * 80
+    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
+    toast.style.top = `${topPosition}px`
 
     const colors = {
       success: "bg-green-500/90 text-white",
@@ -383,7 +378,10 @@ class EquipamentosPage {
     setTimeout(() => toast.classList.remove("translate-x-full"), 100)
     setTimeout(() => {
       toast.classList.add("translate-x-full")
-      setTimeout(() => toast.remove(), 300)
+      setTimeout(() => {
+        toast.remove()
+        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1)
+      }, 300)
     }, 3000)
   }
 
@@ -438,7 +436,7 @@ class ModernEquipamentosTable {
           </div>
         </div>
 
-        <div id="tableContent" class="min-h-96">
+        <div id="tableContent">
           <div id="loadingState" class="p-12 text-center">
             <div class="inline-flex items-center space-x-3">
               <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
@@ -596,7 +594,6 @@ class ModernEquipamentosTable {
   }
 
   updatePagination(data) {
-    // Implementar paginação se necessário
   }
 }
 
