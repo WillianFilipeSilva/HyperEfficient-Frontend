@@ -118,7 +118,7 @@
         </div>
         <div>
           <h1 class="text-xl font-bold text-white">HyperEfficient</h1>
-          <p class="text-xs text-gray-400">Sistema de Gestão</p>
+          <p class="text-xs text-gray-400">Sistema de Controle</p>
         </div>
       </div>
     </div>
@@ -253,5 +253,13 @@
   <script src="/pages/shared/services/api.js"></script>
   <script src="/pages/shared/services/auth-guard.js"></script>
   <script src="listar-categorias.js"></script>
+
+  <!-- Overlay global de loading -->
+  <div id="globalLoading" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(10,11,15,0.75); backdrop-filter:blur(2px); align-items:center; justify-content:center;">
+    <div class="flex flex-col items-center">
+      <div class="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <span class="text-white text-lg font-semibold">Carregando...</span>
+    </div>
+  </div>
 </body>
 </html>

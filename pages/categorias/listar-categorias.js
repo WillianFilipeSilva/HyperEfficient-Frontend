@@ -281,13 +281,11 @@ class CategoriasPage {
   }
 
   showToast(message, type = "info") {
-    // Usar o sistema global de toasts se disponível
     if (window.Utils && window.Utils.showToast) {
       window.Utils.showToast(message, type)
       return
     }
     
-    // Fallback local com posicionamento empilhado
     const toastCounter = window.toastCounter || 0
     window.toastCounter = toastCounter + 1
     
@@ -535,5 +533,6 @@ class ModernCategoriasTable {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.initAuthGuard) window.initAuthGuard();
   window.categoriasPage = new CategoriasPage()
 })

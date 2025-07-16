@@ -95,6 +95,11 @@
     .logo {
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
+    /* Forçar tema escuro no calendário nativo do input date (quando suportado) */
+    input[type="date"] {
+      color-scheme: dark;
+    }
   </style>
 </head>
 <body class="min-h-screen">
@@ -108,7 +113,7 @@
         </div>
         <div>
           <h1 class="text-xl font-bold text-white">HyperEfficient</h1>
-          <p class="text-xs text-gray-400">Sistema de Gestão</p>
+          <p class="text-xs text-gray-400">Sistema de Controle</p>
         </div>
       </div>
     </div>
@@ -190,7 +195,7 @@
       <div class="flex items-center justify-between mb-6">
         <div>
           <h1 class="text-3xl font-bold text-white mb-2">Dashboard</h1>
-          <p class="text-gray-400">Visão geral do sistema de gestão energética</p>
+          <p class="text-gray-400">Visão geral da empresa</p>
         </div>
       </div>
 
@@ -356,6 +361,14 @@
       </div>
     </div>
   </main>
+
+  <!-- Overlay global de loading -->
+  <div id="globalLoading" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(10,11,15,0.75); backdrop-filter:blur(2px); align-items:center; justify-content:center;">
+    <div class="flex flex-col items-center">
+      <div class="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <span class="text-white text-lg font-semibold">Carregando...</span>
+    </div>
+  </div>
 
   <script src="/pages/shared/services/utils.js"></script>
   <script src="/pages/shared/services/api.js"></script>

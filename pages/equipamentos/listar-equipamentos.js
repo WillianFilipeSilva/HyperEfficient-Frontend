@@ -38,10 +38,14 @@ class EquipamentosPage {
         {
           field: "ativo",
           label: "Status",
-          format: (value) =>
-            value
-              ? '<span class="px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded-full">Ativo</span>'
-              : '<span class="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded-full">Inativo</span>',
+          format: (value, item) =>
+            `<span class="px-2 py-1 text-xs rounded-full status-toggle cursor-pointer select-none ${
+              value
+                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/40'
+                : 'bg-red-500/20 text-red-400 hover:bg-red-500/40'
+            }" data-equipamento-id="${item.id}" title="Clique para registrar uso">
+              ${value ? 'Ativo' : 'Inativo'}
+            </span>`
         },
       ],
 
@@ -344,13 +348,11 @@ async loadData () {
   }
 
   showToast(message, type = "info") {
-    // Usar o sistema global de toasts se disponível
     if (window.Utils && window.Utils.showToast) {
       window.Utils.showToast(message, type)
       return
     }
     
-    // Fallback local com posicionamento empilhado
     const toastCounter = window.toastCounter || 0
     window.toastCounter = toastCounter + 1
     
@@ -394,9 +396,23 @@ async loadData () {
     }
     return icons[type] || icons.info
   }
+
+  async registrarEquipamento(equipamentoId) {
+    try {
+      await window.API_CONFIG.authenticatedRequest(`/registros/registrar/${equipamentoId}`, {
+        method: "POST"
+      })
+      setTimeout(() => {
+        this.showToast("Registro de uso realizado com sucesso!", "success")
+        this.loadData()
+      }, 1000)
+    } catch (error) {
+      console.error("Erro ao registrar uso do equipamento:", error)
+      this.showToast(error.message || "Erro ao registrar uso do equipamento", "error")
+    }
+  }
 }
 
-// Tabela moderna customizada para equipamentos
 class ModernEquipamentosTable {
   constructor(config) {
     this.config = config
@@ -529,7 +545,7 @@ class ModernEquipamentosTable {
                       </div>
                     `
                         : col.format
-                          ? col.format(item[col.field])
+                          ? col.format(item[col.field], item)
                           : `
                       <span class="text-gray-300">${item[col.field] || "-"}</span>
                     `
@@ -575,6 +591,18 @@ class ModernEquipamentosTable {
         </div>
       </div>
     `
+
+    setTimeout(() => {
+      const statusEls = content.querySelectorAll('.status-toggle')
+      statusEls.forEach(el => {
+        el.addEventListener('click', (e) => {
+          const equipamentoId = el.getAttribute('data-equipamento-id')
+          if (equipamentoId && window.equipamentosPage && typeof window.equipamentosPage.registrarEquipamento === 'function') {
+            window.equipamentosPage.registrarEquipamento(equipamentoId)
+          }
+        })
+      })
+    }, 0)
   }
 
   setLoading(loading) {

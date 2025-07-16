@@ -1,4 +1,3 @@
-// Configuração dos endpoints de relatórios
 if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
   window.API_CONFIG.ENDPOINTS.RELATORIOS = "/relatorios"
 }
@@ -6,17 +5,8 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
 
 
   window.addEventListener("DOMContentLoaded", () => {
-    if (!window.AuthUtils) {
-      console.error("AuthUtils não está disponível!")
-      return
-    }
-    
-    const initAuthGuard = window.AuthUtils.initAuthGuard
-    if (initAuthGuard) {
-      initAuthGuard()
-    }
+    if (window.initAuthGuard) window.initAuthGuard();
 
-  // Aguardar o carregamento de todas as dependências
       Promise.all([
       new Promise((resolve) => {
         const checkChart = () => {
@@ -47,7 +37,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     })
 
   function inicializarDashboard() {
-    // Carregar filtro do sessionStorage ou definir período padrão (mês atual completo)
     const filtroPeriodo = sessionStorage.getItem("filtroPeriodo")
     
     let dataInicio, dataFim
@@ -64,35 +53,22 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       dataInicio = primeiroDiaMes.toISOString().split("T")[0]
       dataFim = ultimoDiaMes.toISOString().split("T")[0]
       
-      // Salvar período padrão no sessionStorage
       salvarFiltroPeriodo(dataInicio, dataFim)
     }
 
-    // Definir valores nos campos de data
     document.getElementById("dataInicio").value = dataInicio
     document.getElementById("dataFim").value = dataFim
 
-    // Event listeners
     document.getElementById("btnAtualizarRelatorio").addEventListener("click", atualizarRelatorios)
     
-    // Adicionar listeners para mudança de data
     document.getElementById("dataInicio").addEventListener("change", onPeriodoChange)
     document.getElementById("dataFim").addEventListener("change", onPeriodoChange)
 
-    // Carregar dados automaticamente do período atual ao inicializar
     console.log("Carregando dados do período atual...")
-    const inicioFormatado = new Date(dataInicio).toLocaleDateString("pt-BR")
-    const fimFormatado = new Date(dataFim).toLocaleDateString("pt-BR")
-    showToast(
-      `Carregando dados de ${inicioFormatado} a ${fimFormatado}`,
-      "info",
-    )
 
-    // Carregar dados imediatamente
     atualizarRelatorios()
   }
 
-  // Função para salvar filtro no sessionStorage
   function salvarFiltroPeriodo(dataInicio, dataFim) {
     const filtro = {
       dataInicio: dataInicio,
@@ -101,18 +77,15 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     sessionStorage.setItem("filtroPeriodo", JSON.stringify(filtro))
   }
 
-  // Função para limpar filtro do sessionStorage
   function limparFiltroPeriodo() {
     sessionStorage.removeItem("filtroPeriodo")
   }
 
-  // Função chamada quando o período é alterado
   function onPeriodoChange() {
     const dataInicio = document.getElementById("dataInicio").value
     const dataFim = document.getElementById("dataFim").value
     
     if (dataInicio && dataFim) {
-      // Validar período máximo
       const dataInicioObj = new Date(dataInicio)
       const dataFimObj = new Date(dataFim)
       const diffEmDias = (dataFimObj - dataInicioObj) / (1000 * 60 * 60 * 24)
@@ -136,19 +109,16 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     }
   }
 
-  // Setup para limpar sessionStorage quando sair da página
   function setupPageUnload() {
     window.addEventListener("beforeunload", () => {
       limparFiltroPeriodo()
     })
     
-    // Também limpar quando navegar para outras páginas
     window.addEventListener("pagehide", () => {
       limparFiltroPeriodo()
     })
   }
 
-  // Setup logout button
   function setupLogout() {
     const logoutBtn = document.getElementById("logoutBtn")
     if (logoutBtn) {
@@ -179,7 +149,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       return
     }
 
-    // Validar período máximo de 1 ano
     const dataInicioObj = new Date(dataInicio)
     const dataFimObj = new Date(dataFim)
     const diffEmDias = (dataFimObj - dataInicioObj) / (1000 * 60 * 60 * 24)
@@ -189,17 +158,10 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       return
     }
 
-    // Atualizar filtro no sessionStorage
     salvarFiltroPeriodo(dataInicio, dataFim)
-
-    // Mostrar feedback do período selecionado
-    const inicioFormatado = new Date(dataInicio).toLocaleDateString("pt-BR")
-    const fimFormatado = new Date(dataFim).toLocaleDateString("pt-BR")
-    showToast(`Atualizando dados: ${inicioFormatado} a ${fimFormatado}`, "info")
 
     try {
       await carregarDashboard(dataInicio, dataFim)
-      showToast("Relatórios atualizados com sucesso!", "success")
     } catch (error) {
       console.error("Erro ao atualizar relatórios:", error)
       showToast("Erro ao atualizar alguns dados", "error")
@@ -214,24 +176,20 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       const url = `/relatorios/empresa?dataInicio=${encodeURIComponent(inicioISO)}&dataFim=${encodeURIComponent(fimISO)}`
       const data = await window.API_CONFIG.authenticatedRequest(url)
 
-      // Animar os totalizadores usando a nova estrutura
       if (data.totalizadores) {
         animateNumber("cardSetores", data.totalizadores.quantidadeSetores || 0)
         animateNumber("cardEquipamentos", data.totalizadores.quantidadeEquipamentos || 0)
         animateValue("cardTempoUso", data.totalizadores.tempoUsoTotal || 0, "h")
         animateValue("cardGastoEnergetico", data.totalizadores.gastoEnergeticoTotal || 0, "kWh")
       } else {
-        // Fallback para estrutura antiga
         animateNumber("cardSetores", data.quantidadeSetores || 0)
         animateNumber("cardEquipamentos", data.quantidadeEquipamentos || 0)
         animateValue("cardTempoUso", data.tempoUsoTotal || 0, "h")
         animateValue("cardGastoEnergetico", data.gastoEnergeticoTotal || 0, "kWh")
       }
 
-      // Atualizar gráfico com dados dinâmicos
       atualizarGraficoComDadosReais(data, dataInicio, dataFim)
 
-      // Atualizar listas de setores e categorias se disponíveis
       if (data.setores) {
         atualizarListaSetores(data.setores)
       }
@@ -240,10 +198,8 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
         atualizarListaCategorias(data.categorias)
       }
 
-      showToast("Dados do dashboard carregados com sucesso!", "success")
     } catch (error) {
       console.error("Erro ao carregar dashboard:", error)
-      // Definir valores padrão em caso de erro
       document.getElementById("cardSetores").textContent = "0"
       document.getElementById("cardEquipamentos").textContent = "0"
       document.getElementById("cardTempoUso").textContent = "0h"
@@ -273,10 +229,8 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       return
     }
 
-    // Ordenar por gasto total (decrescente)
     setores.sort((a, b) => b.gastoTotal - a.gastoTotal)
 
-    // Renderizar lista
     setoresList.innerHTML = setores
       .map(
         (setor, index) => `
@@ -324,10 +278,8 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       return
     }
 
-    // Ordenar por gasto total (decrescente)
     categorias.sort((a, b) => b.gastoTotal - a.gastoTotal)
 
-    // Renderizar lista
     categoriasList.innerHTML = categorias
       .map(
         (categoria, index) => `
@@ -354,7 +306,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       .join("")
   }
 
-  // Função para animar números
   function animateNumber(elementId, finalValue) {
     const element = document.getElementById(elementId)
     let currentValue = 0
@@ -370,7 +321,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     }, 50)
   }
 
-  // Função para animar valores com unidade
   function animateValue(elementId, finalValue, unit) {
     const element = document.getElementById(elementId)
     let currentValue = 0
@@ -386,15 +336,12 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     }, 50)
   }
 
-  // Toast notification function
   function showToast(message, type = "info") {
-    // Usar o sistema global de toasts
     if (window.Utils && window.Utils.showToast) {
       window.Utils.showToast(message, type)
       return
     }
     
-    // Fallback local com posicionamento empilhado
     const toastCounter = window.toastCounter || 0
     window.toastCounter = toastCounter + 1
     
@@ -439,25 +386,19 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     return icons[type] || icons.info
   }
 
-
-
-  // Função para atualizar o gráfico com dados reais
   function atualizarGraficoComDadosReais(data, dataInicio, dataFim) {
     const canvas = document.getElementById("chart-line")
     const ctx = canvas.getContext("2d")
     
-    // Destruir gráfico existente se houver
     if (window.dashboardChart) {
       window.dashboardChart.destroy()
     }
 
-    // Criar gradiente
     const gradientStroke = ctx.createLinearGradient(0, 230, 0, 50)
     gradientStroke.addColorStop(1, "rgba(255, 202, 28, 0.2)")
     gradientStroke.addColorStop(0.2, "rgba(255, 202, 28, 0.1)")
     gradientStroke.addColorStop(0, "rgba(255, 202, 28, 0)")
 
-    // Usar dados do gráfico mensal do backend
     const dadosGrafico = gerarDadosGrafico(data, dataInicio, dataFim)
 
     window.dashboardChart = new Chart(ctx, {
@@ -533,9 +474,7 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     })
   }
 
-  // Função para gerar dados do gráfico baseado nos dados mensais do backend
   function gerarDadosGrafico(data, dataInicio, dataFim) {
-    // Se temos dados mensais do backend já ordenados, usar eles
     if (data.dadosMensais && data.dadosMensais.length > 0) {
       const labels = data.dadosMensais.map(item => item.mesAbreviado)
       const dados = data.dadosMensais.map(item => item.consumoKwh || 0)
@@ -543,11 +482,9 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       return { labels, dados }
     }
     
-    // Fallback: se não temos dados do backend, gerar dados baseados no período
     const inicio = new Date(dataInicio)
     const fim = new Date(dataFim)
     
-    // Se for o mesmo mês, mostrar dias
     if (inicio.getMonth() === fim.getMonth() && inicio.getFullYear() === fim.getFullYear()) {
       const dias = []
       const dados = []
@@ -555,7 +492,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       
       while (dataAtual <= fim) {
         dias.push(dataAtual.getDate().toString().padStart(2, '0'))
-        // Usar dados reais se disponíveis, senão usar uma distribuição do gasto total
         const gastoDiario = data.gastoEnergeticoTotal ? 
           (data.gastoEnergeticoTotal / (fim.getDate() - inicio.getDate() + 1)) : 0
         dados.push(gastoDiario)
@@ -564,7 +500,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       
       return { labels: dias, dados: dados }
     } else {
-      // Se for período maior, mostrar meses usando os campos de consumo mensal
       const meses = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
       const dados = [
         data.consumoJan || 0,

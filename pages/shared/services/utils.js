@@ -1,35 +1,22 @@
-// Utilitários gerais para o HyperEfficient
 const Utils = {
-    // ========================================
-    // FUNÇÕES DE VALIDAÇÃO
-    // ========================================
     
-    // Validar email
     isValidEmail: function(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     },
     
-    // Validar senha
     isValidPassword: function(senha) {
         return senha && senha.length >= 6;
     },
     
-    // Validar nome
     isValidName: function(nome) {
         return nome && nome.trim().length >= 2;
     },
     
-    // Validar campo obrigatório
     isRequired: function(value) {
         return value && value.trim().length > 0;
     },
     
-    // ========================================
-    // FUNÇÕES DE UI/UX
-    // ========================================
-    
-    // Mostrar mensagem de erro
     showError: function(elementId, message) {
         const errorElement = document.getElementById(elementId);
         if (errorElement) {
@@ -38,7 +25,6 @@ const Utils = {
         }
     },
     
-    // Esconder mensagem de erro
     hideError: function(elementId) {
         const errorElement = document.getElementById(elementId);
         if (errorElement) {
@@ -46,7 +32,6 @@ const Utils = {
         }
     },
     
-    // Mostrar loading em botão
     showButtonLoading: function(buttonId, loadingText = 'Carregando...') {
         const button = document.getElementById(buttonId);
         if (button) {
@@ -62,7 +47,6 @@ const Utils = {
         }
     },
     
-    // Esconder loading em botão
     hideButtonLoading: function(buttonId) {
         const button = document.getElementById(buttonId);
         if (button) {
@@ -77,24 +61,18 @@ const Utils = {
         }
     },
     
-    // Contador para posicionamento dos toasts
     _toastCounter: 0,
     
-    // Mostrar toast/notificação
     showToast: function(message, type = 'info', duration = 3000) {
-        // Incrementar contador
         this._toastCounter++;
         const toastIndex = this._toastCounter;
         
-        // Criar elemento toast
         const toast = document.createElement('div');
         toast.className = `fixed right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full backdrop-blur-lg`;
         
-        // Calcular posição baseada no índice
-        const topPosition = 24 + (toastIndex - 1) * 80; // 24px inicial + 80px por toast
+        const topPosition = 24 + (toastIndex - 1) * 80;
         toast.style.top = `${topPosition}px`;
         
-        // Definir cores baseadas no tipo
         const colors = {
             success: 'bg-green-500/90 text-white',
             error: 'bg-red-500/90 text-white',
@@ -104,7 +82,6 @@ const Utils = {
         
         toast.className += ` ${colors[type] || colors.info}`;
         
-        // Adicionar ícone baseado no tipo
         const icons = {
             success: 'fas fa-check-circle',
             error: 'fas fa-exclamation-circle',
@@ -119,32 +96,23 @@ const Utils = {
             </div>
         `;
         
-        // Adicionar ao DOM
         document.body.appendChild(toast);
         
-        // Animar entrada
         setTimeout(() => {
             toast.classList.remove('translate-x-full');
         }, 100);
         
-        // Remover após duração
         setTimeout(() => {
             toast.classList.add('translate-x-full');
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
-                // Decrementar contador quando o toast for removido
                 this._toastCounter = Math.max(0, this._toastCounter - 1);
             }, 300);
         }, duration);
     },
     
-    // ========================================
-    // FUNÇÕES DE FORMULÁRIO
-    // ========================================
-    
-    // Validar formulário
     validateForm: function(formData, validations) {
         const errors = {};
         
@@ -152,13 +120,11 @@ const Utils = {
             if (validations[field]) {
                 const validation = validations[field];
                 
-                // Verificar se é obrigatório
                 if (validation.required && !this.isRequired(value)) {
                     errors[field] = validation.requiredMessage || 'Este campo é obrigatório';
                     continue;
                 }
                 
-                // Verificar validações específicas
                 if (validation.email && !this.isValidEmail(value)) {
                     errors[field] = validation.emailMessage || 'Email inválido';
                     continue;
@@ -182,12 +148,10 @@ const Utils = {
         };
     },
     
-    // Limpar formulário
     clearForm: function(formId) {
         const form = document.getElementById(formId);
         if (form) {
             form.reset();
-            // Limpar todos os erros
             const errorElements = form.querySelectorAll('[id*="error"]');
             errorElements.forEach(element => {
                 element.classList.add('hidden');
@@ -195,11 +159,6 @@ const Utils = {
         }
     },
     
-    // ========================================
-    // FUNÇÕES DE NAVEGAÇÃO
-    // ========================================
-    
-    // Redirecionar com delay
     redirect: function(url, delay = 0) {
         if (delay > 0) {
             setTimeout(() => {
@@ -210,16 +169,10 @@ const Utils = {
         }
     },
     
-    // Verificar se está em uma página específica
     isCurrentPage: function(pageName) {
         return window.location.pathname.includes(pageName);
     },
     
-    // ========================================
-    // FUNÇÕES DE DADOS
-    // ========================================
-    
-    // Formatar data
     formatDate: function(date, format = 'dd/mm/yyyy') {
         const d = new Date(date);
         const day = String(d.getDate()).padStart(2, '0');
@@ -232,7 +185,6 @@ const Utils = {
             .replace('yyyy', year);
     },
     
-    // Formatar moeda
     formatCurrency: function(value, currency = 'R$') {
         if (value === null || value === undefined) return `${currency} 0,00`;
         
@@ -245,7 +197,6 @@ const Utils = {
         })}`;
     },
     
-    // Formatar número
     formatNumber: function(value, decimals = 2) {
         if (value === null || value === undefined) return '0';
         
@@ -258,11 +209,6 @@ const Utils = {
         });
     },
     
-    // ========================================
-    // FUNÇÕES DE ELEMENTOS DOM
-    // ========================================
-    
-    // Mostrar elemento
     showElement: function(elementId) {
         const element = document.getElementById(elementId);
         if (element) {
@@ -270,15 +216,13 @@ const Utils = {
         }
     },
     
-    // Esconder elemento
     hideElement: function(elementId) {
         const element = document.getElementById(elementId);
         if (element) {
             element.classList.add('hidden');
         }
     },
-    
-    // Alternar visibilidade de elemento
+
     toggleElement: function(elementId) {
         const element = document.getElementById(elementId);
         if (element) {
@@ -286,17 +230,11 @@ const Utils = {
         }
     },
     
-    // ========================================
-    // FUNÇÕES DE STRING
-    // ========================================
-    
-    // Capitalizar primeira letra
     capitalize: function(str) {
         if (!str) return '';
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     },
     
-    // Obter iniciais
     getInitials: function(name, maxLength = 2) {
         if (!name) return '';
         
@@ -306,28 +244,20 @@ const Utils = {
         return initials.substring(0, maxLength);
     },
     
-    // Truncar texto
     truncate: function(str, maxLength = 50, suffix = '...') {
         if (!str || str.length <= maxLength) return str;
         return str.substring(0, maxLength) + suffix;
     },
     
-    // Remover acentos
     removeAccents: function(str) {
         if (!str) return '';
         return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     },
     
-    // ========================================
-    // FUNÇÕES DE ARRAY/OBJETO
-    // ========================================
-    
-    // Filtrar array por propriedade
     filterByProperty: function(array, property, value) {
         return array.filter(item => item[property] === value);
     },
     
-    // Ordenar array por propriedade
     sortByProperty: function(array, property, ascending = true) {
         return array.sort((a, b) => {
             const aVal = a[property];
@@ -341,11 +271,6 @@ const Utils = {
         });
     },
     
-    // ========================================
-    // FUNÇÕES DE STORAGE
-    // ========================================
-    
-    // Salvar no localStorage
     saveToStorage: function(key, value) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
@@ -356,7 +281,6 @@ const Utils = {
         }
     },
     
-    // Carregar do localStorage
     loadFromStorage: function(key, defaultValue = null) {
         try {
             const item = localStorage.getItem(key);
@@ -367,7 +291,6 @@ const Utils = {
         }
     },
     
-    // Remover do localStorage
     removeFromStorage: function(key) {
         try {
             localStorage.removeItem(key);
@@ -377,12 +300,7 @@ const Utils = {
             return false;
         }
     },
-    
-    // ========================================
-    // FUNÇÕES DE DEBOUNCE/THROTTLE
-    // ========================================
-    
-    // Debounce function
+
     debounce: function(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -395,7 +313,6 @@ const Utils = {
         };
     },
     
-    // Throttle function
     throttle: function(func, limit) {
         let inThrottle;
         return function() {
@@ -409,8 +326,60 @@ const Utils = {
         };
     },
     
+    showModal: function({ title = 'Confirmação', message = '', onConfirm = null, onCancel = null, confirmText = 'Confirmar', cancelText = 'Cancelar' }) {
+        const existing = document.getElementById('globalCustomModal');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'globalCustomModal';
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.zIndex = '10000';
+        overlay.style.background = 'rgba(10,11,15,0.75)';
+        overlay.style.backdropFilter = 'blur(2px)';
+        overlay.style.display = 'flex';
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+
+        overlay.innerHTML = `
+          <div class="glass rounded-2xl max-w-md w-full p-8 shadow-2xl animate-fade-in-up" style="background:rgba(26,27,35,0.98); border:1px solid rgba(255,255,255,0.08);">
+            <h2 class="text-xl font-bold text-white mb-4">${title}</h2>
+            <p class="text-gray-300 mb-8">${message}</p>
+            <div class="flex justify-end gap-3">
+              <button id="modalCancelBtn" class="px-6 py-3 bg-white/5 text-gray-300 rounded-xl hover:bg-white/10 transition-all font-medium">${cancelText}</button>
+              <button id="modalConfirmBtn" class="btn-primary px-6 py-3 rounded-xl flex items-center space-x-2 hover-lift">${confirmText}</button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.remove();
+            if (onCancel) onCancel();
+          }
+        });
+
+        overlay.querySelector('#modalCancelBtn').onclick = () => {
+          overlay.remove();
+          if (onCancel) onCancel();
+        };
+        overlay.querySelector('#modalConfirmBtn').onclick = () => {
+          overlay.remove();
+          if (onConfirm) onConfirm();
+        };
+    },
 
 };
 
-// Exportar para uso global
 window.Utils = Utils; 
+
+window.showGlobalLoading = function() {
+  const el = document.getElementById('globalLoading');
+  if (el) el.style.display = 'flex';
+}
+window.hideGlobalLoading = function() {
+  const el = document.getElementById('globalLoading');
+  if (el) el.style.display = 'none';
+} 

@@ -1,5 +1,3 @@
-// Script de login externo para HyperEfficient
-
 window.addEventListener("DOMContentLoaded", () => {
   ;(async () => {
     if (window.AuthUtils && (await AuthUtils.isLoggedIn())) {
@@ -7,14 +5,12 @@ window.addEventListener("DOMContentLoaded", () => {
       return
     }
 
-    // Elementos do DOM
     const loginForm = document.getElementById("loginForm")
     const emailInput = document.getElementById("email")
     const senhaInput = document.getElementById("senha")
     const loginButton = document.getElementById("loginButton")
     const errorMessage = document.getElementById("errorMessage")
 
-    // Função para fazer login
     async function fazerLogin(email, senha) {
       try {
         const lembrarDeMim = document.getElementById("rememberMe").checked
@@ -27,11 +23,9 @@ window.addEventListener("DOMContentLoaded", () => {
           }),
         })
 
-        // Sempre salvar no localStorage
         localStorage.setItem("token", data.token)
         localStorage.setItem("usuario", JSON.stringify(data.usuario))
 
-        // Mostrar sucesso e redirecionar
         showToast("Login realizado com sucesso!", "success")
         setTimeout(() => {
           window.location.href = "/pages/dashboard/dashboard.html"
@@ -39,17 +33,16 @@ window.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         console.error("Erro no login:", error)
         showError(error.message || "Erro ao conectar com o servidor")
+        showToast(error.message || "Usuário ou senha inválidos", "error")
       }
     }
 
-    // Event listener para o formulário
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault()
 
       const email = emailInput.value.trim()
       const senha = senhaInput.value.trim()
 
-      // Validação básica
       if (!email) {
         showError("Por favor, preencha o email")
         return
@@ -73,11 +66,9 @@ window.addEventListener("DOMContentLoaded", () => {
       showButtonLoading(false)
     })
 
-    // Limpar erro quando o usuário começar a digitar
     emailInput.addEventListener("input", () => hideError())
     senhaInput.addEventListener("input", () => hideError())
 
-    // Funções auxiliares
     function showError(message) {
       errorMessage.textContent = message
       errorMessage.classList.remove("hidden")
@@ -103,13 +94,11 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function showToast(message, type = "info") {
-      // Usar o sistema global de toasts se disponível
       if (window.Utils && window.Utils.showToast) {
         window.Utils.showToast(message, type)
         return
       }
       
-      // Fallback local com posicionamento empilhado
       const toastCounter = window.toastCounter || 0
       window.toastCounter = toastCounter + 1
       

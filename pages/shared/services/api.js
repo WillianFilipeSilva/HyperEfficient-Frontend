@@ -1,9 +1,6 @@
-// Configuração da API HyperEfficient
 const API_CONFIG = {
-    // URL base da API - ajuste conforme sua configuração
     BASE_URL: 'http://localhost:5205',
     
-    // Endpoints
     ENDPOINTS: {
         LOGIN: '/usuarios/login',
         CADASTRO: '/usuarios',
@@ -15,23 +12,19 @@ const API_CONFIG = {
         RELATORIOS: '/relatorios'
     },
     
-    // Headers padrão
     DEFAULT_HEADERS: {
         'Content-Type': 'application/json'
     },
     
-    // Função para obter token do localStorage
     getToken: function() {
         return localStorage.getItem('token');
     },
     
-    // Função para obter usuário do localStorage
     getUsuario: function() {
         const userStr = localStorage.getItem('usuario');
         return userStr ? JSON.parse(userStr) : null;
     },
     
-    // Função para obter headers com autenticação
     getAuthHeaders: function() {
         let token = this.getToken();
         
@@ -45,15 +38,38 @@ const API_CONFIG = {
         };
     },
     
-    // Função para fazer requisições autenticadas
     async authenticatedRequest(url, options = {}) {
-        const headers = this.getAuthHeaders();
-        
+        window.showGlobalLoading && window.showGlobalLoading();
+        try {
+            const token = API_CONFIG.getToken();
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                ...options.headers,
+            };
+            const fetchOptions = { ...options, headers };
+            const response = await fetch(this.BASE_URL + url, fetchOptions);
+            
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || `Erro na requisição: ${response.status}`);
+            }
+            
+            return response.json();
+        } catch (error) {
+            throw error;
+        } finally {
+            window.hideGlobalLoading && window.hideGlobalLoading();
+        }
+    },
+    
+    async publicRequest(url, options = {}) {
+        window.showGlobalLoading && window.showGlobalLoading();
         try {
             const response = await fetch(this.BASE_URL + url, {
                 ...options,
                 headers: {
-                    ...headers,
+                    ...this.DEFAULT_HEADERS,
                     ...options.headers
                 }
             });
@@ -63,31 +79,12 @@ const API_CONFIG = {
                 throw new Error(errorData.message || `Erro na requisição: ${response.status}`);
             }
             
-            return await response.json();
-        } catch (error) {
-            throw error;
+            return response.json();
+        } finally {
+            window.hideGlobalLoading && window.hideGlobalLoading();
         }
     },
     
-    // Função para fazer requisições públicas
-    async publicRequest(url, options = {}) {
-        const response = await fetch(this.BASE_URL + url, {
-            ...options,
-            headers: {
-                ...this.DEFAULT_HEADERS,
-                ...options.headers
-            }
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Erro na requisição: ${response.status}`);
-        }
-        
-        return response.json();
-    },
-    
-    // Função para verificar handshake do token
     async handshake() {
         try {
             await this.authenticatedRequest('/usuarios/handshake', { method: 'GET' });
@@ -98,48 +95,39 @@ const API_CONFIG = {
     }
 };
 
-// Funções utilitárias para autenticação
 const AuthUtils = {
-    // Cache para o resultado do handshake
     _handshakeCache: {
         result: null,
         timestamp: 0,
-        ttl: 30000 // 30 segundos
+        ttl: 30000
     },
 
-    // Verificar se o usuário está logado (agora usando handshake com cache)
     isLoggedIn: async function() {
         const token = API_CONFIG.getToken();
         if (!token) return false;
         if (this.isTokenExpired()) return false;
         
-        // Verificar cache
         const now = Date.now();
         if (this._handshakeCache.result !== null && 
             (now - this._handshakeCache.timestamp) < this._handshakeCache.ttl) {
             return this._handshakeCache.result;
         }
         
-        // Verifica no backend se o token é válido
         const result = await API_CONFIG.handshake();
         
-        // Atualizar cache
         this._handshakeCache.result = result;
         this._handshakeCache.timestamp = now;
         
         return result;
     },
     
-    // Obter dados do usuário logado
     getCurrentUser: function() {
         return API_CONFIG.getUsuario();
     },
     
-    // Fazer logout
     logout: function() {
         localStorage.removeItem('token');
         localStorage.removeItem('usuario');
-        // Limpar cache do handshake
         this._handshakeCache.result = null;
         this._handshakeCache.timestamp = 0;
         if (!window.location.pathname.includes('/pages/auth/login.html')) {
@@ -147,7 +135,6 @@ const AuthUtils = {
         }
     },
     
-    // Verificar se o token expirou (implementação robusta)
     isTokenExpired: function() {
         const token = API_CONFIG.getToken();
         if (!token) return true;
@@ -168,6 +155,5 @@ const AuthUtils = {
     }
 };
 
-// Exportar para uso global
 window.API_CONFIG = API_CONFIG;
 window.AuthUtils = AuthUtils; 

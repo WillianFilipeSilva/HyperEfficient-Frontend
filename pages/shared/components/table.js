@@ -1,19 +1,12 @@
-// ========================================
-// COMPONENTE DE TABELA GENÉRICA - HyperEfficient
-// ========================================
-
 class GenericTable {
   constructor(config) {
     this.config = {
-      // Configurações obrigatórias
       containerId: config.containerId || "tableContainer",
       columns: config.columns || [],
       
-      // Configurações de dados
       data: config.data || [],
       loading: config.loading || false,
       
-      // Configurações de paginação
       pagination: {
         enabled: config.pagination?.enabled !== false,
         currentPage: config.pagination?.currentPage || 1,
@@ -23,14 +16,12 @@ class GenericTable {
         onPageChange: config.pagination?.onPageChange || null
       },
       
-      // Configurações de busca
       search: {
         enabled: config.search?.enabled !== false,
         placeholder: config.search?.placeholder || "Pesquisar...",
         onSearch: config.search?.onSearch || null
       },
       
-      // Configurações de ações
       actions: {
         enabled: config.actions?.enabled !== false,
         edit: {
@@ -48,7 +39,6 @@ class GenericTable {
         custom: config.actions?.custom || []
       },
       
-      // Configurações de estilo
       styling: {
         striped: config.styling?.striped !== false,
         hover: config.styling?.hover !== false,
@@ -57,12 +47,10 @@ class GenericTable {
         responsive: config.styling?.responsive !== false
       },
       
-      // Callbacks
       onRowClick: config.onRowClick || null,
       onEmpty: config.onEmpty || null,
       onLoading: config.onLoading || null,
       
-      // Configurações do botão de adicionar entidade
       addButton: {
         enabled: config.addButton?.enabled !== false,
         label: config.addButton?.label || 'Adicionar',
@@ -73,17 +61,11 @@ class GenericTable {
     this.init()
   }
 
-  // ========================================
-  // INICIALIZAÇÃO
-  // ========================================
   init() {
     this.render()
     this.setupEventListeners()
   }
 
-  // ========================================
-  // RENDERIZAÇÃO
-  // ========================================
   render() {
     const container = document.getElementById(this.config.containerId)
     if (!container) {
@@ -92,7 +74,6 @@ class GenericTable {
     }
 
     container.innerHTML = this.generateHTML()
-    // Reatribuir evento do botão de adicionar entidade após renderização
     if (this.config.addButton && this.config.addButton.enabled && typeof this.config.addButton.onClick === 'function') {
       const addBtn = document.getElementById('tableAddButton')
       if (addBtn) {
@@ -124,7 +105,6 @@ class GenericTable {
   generateHeader() {
     if (!this.config.search.enabled) return ""
 
-    // Botão de adicionar entidade (opcional)
     let addButtonHTML = ""
     if (this.config.addButton && this.config.addButton.enabled) {
       addButtonHTML = `
@@ -225,7 +205,6 @@ class GenericTable {
   generateActionButtons(item) {
     const buttons = []
 
-    // Botão Editar
     if (this.config.actions.edit.enabled) {
       buttons.push(`
         <button 
@@ -237,7 +216,6 @@ class GenericTable {
       `)
     }
 
-    // Botão Excluir
     if (this.config.actions.delete.enabled) {
       buttons.push(`
         <button 
@@ -249,7 +227,6 @@ class GenericTable {
       `)
     }
 
-    // Botões customizados
     this.config.actions.custom.forEach(action => {
       buttons.push(`
         <button 
@@ -327,11 +304,7 @@ class GenericTable {
     `
   }
 
-  // ========================================
-  // EVENT LISTENERS
-  // ========================================
   setupEventListeners() {
-    // Busca
     if (this.config.search.enabled) {
       const searchInput = document.getElementById("tableSearchInput")
       if (searchInput) {
@@ -343,9 +316,6 @@ class GenericTable {
     }
   }
 
-  // ========================================
-  // HANDLERS
-  // ========================================
   handleSearch(e) {
     const term = e.target.value.toLowerCase().trim()
     if (this.config.search.onSearch) {
@@ -385,9 +355,6 @@ class GenericTable {
     }
   }
 
-  // ========================================
-  // MÉTODOS PÚBLICOS
-  // ========================================
   updateData(newData) {
     this.config.data = newData
     this.render()
@@ -407,12 +374,8 @@ class GenericTable {
     this.render()
   }
 
-  // ========================================
-  // UTILITÁRIOS
-  // ========================================
   getColumnCount() {
     const columnCount = this.config.columns.length + (this.config.actions.enabled ? 1 : 0)
-    // Garantir que temos pelo menos 1 coluna e no máximo 12
     return Math.max(1, Math.min(12, columnCount))
   }
 
@@ -468,5 +431,4 @@ class GenericTable {
   }
 }
 
-// Exportar para uso global
 window.GenericTable = GenericTable 

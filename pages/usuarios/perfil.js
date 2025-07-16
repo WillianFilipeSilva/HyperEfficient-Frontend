@@ -1,19 +1,15 @@
 window.addEventListener("DOMContentLoaded", () => {
-  // Declare initAuthGuard, AuthUtils, and API_CONFIG variables here
+  if (window.initAuthGuard) window.initAuthGuard();
   const initAuthGuard = () => {
-    // Placeholder for initAuthGuard implementation
   }
   const AuthUtils = {
     getCurrentUser: () => {
-      // Placeholder for getCurrentUser implementation
     },
     saveUser: (user) => {
-      // Placeholder for saveUser implementation
     },
   }
   const API_CONFIG = {
     authenticatedRequest: async (url, options) => {
-      // Placeholder for authenticatedRequest implementation
     },
   }
 
@@ -35,21 +31,29 @@ window.addEventListener("DOMContentLoaded", () => {
   const cancelButton = document.getElementById("cancelButton")
   const errorMessageDiv = document.getElementById("errorMessage")
 
-  function carregarInformacoesUsuario() {
-    const usuario = AuthUtils.getCurrentUser()
-    if (!usuario) {
-      console.error("Usuário não encontrado no localStorage.")
-      return
+  async function carregarInformacoesUsuario() {
+    const usuarioLocal = window.AuthUtils.getCurrentUser();
+    if (!usuarioLocal || !usuarioLocal.id) {
+      showError("Usuário não encontrado.");
+      return;
     }
 
-    usuarioOriginal = { ...usuario }
+    window.showGlobalLoading && window.showGlobalLoading();
+    try {
+      const usuario = await window.API_CONFIG.authenticatedRequest(`/usuarios/${usuarioLocal.id}`);
+      usuarioOriginal = { ...usuario };
 
-    profileName.textContent = usuario.nome
-    profileEmail.textContent = usuario.email
-    profileInitials.textContent = getInitials(usuario.nome)
+      profileName.textContent = usuario.nome;
+      profileEmail.textContent = usuario.email;
+      profileInitials.textContent = getInitials(usuario.nome);
 
-    nameInput.value = usuario.nome
-    emailInput.value = usuario.email
+      nameInput.value = usuario.nome;
+      emailInput.value = usuario.email;
+    } catch (error) {
+      showError("Erro ao carregar informações do usuário.");
+    } finally {
+      window.hideGlobalLoading && window.hideGlobalLoading();
+    }
   }
 
   function getInitials(name) {
@@ -119,8 +123,8 @@ window.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(payload),
       })
 
-      const usuarioAtualizado = { ...usuarioOriginal, nome: nome }
-      AuthUtils.saveUser(usuarioAtualizado)
+      const usuarioAtualizado = await API_CONFIG.authenticatedRequest(`/usuarios/${usuarioOriginal.id}`);
+      window.AuthUtils.saveUser(usuarioAtualizado);
 
       showToast("Perfil atualizado com sucesso!", "success")
       carregarInformacoesUsuario()
@@ -158,13 +162,11 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function showToast(message, type = "info") {
-    // Usar o sistema global de toasts se disponível
     if (window.Utils && window.Utils.showToast) {
       window.Utils.showToast(message, type)
       return
     }
     
-    // Fallback local com posicionamento empilhado
     const toastCounter = window.toastCounter || 0
     window.toastCounter = toastCounter + 1
     
@@ -210,6 +212,27 @@ window.addEventListener("DOMContentLoaded", () => {
     editButton.addEventListener("click", () => alternarModoEdicao(true))
     saveButton.addEventListener("click", salvarAlteracoes)
     cancelButton.addEventListener("click", () => alternarModoEdicao(false))
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (window.Utils && typeof window.Utils.showModal === 'function') {
+          window.Utils.showModal({
+            title: "Sair do sistema",
+            message: "Tem certeza que deseja sair?",
+            confirmText: "Sair",
+            cancelText: "Cancelar",
+            onConfirm: () => window.AuthUtils.logout(),
+            onCancel: () => {}
+          });
+        } else {
+          if (confirm("Tem certeza que deseja sair?")) {
+            window.AuthUtils.logout();
+          }
+        }
+      });
+    }
   }
 
   waitForDependencies().then(() => {

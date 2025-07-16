@@ -154,13 +154,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
         function showToast(message, type = "info") {
-      // Usar o sistema global de toasts se disponível
       if (window.Utils && window.Utils.showToast) {
         window.Utils.showToast(message, type)
         return
       }
       
-      // Fallback local com posicionamento empilhado
       const toastCounter = window.toastCounter || 0
       window.toastCounter = toastCounter + 1
       
@@ -202,7 +200,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 3000)
     }
   
-    // Validação em tempo real
     const inputs = form.querySelectorAll("input")
     inputs.forEach((input) => {
       input.addEventListener("blur", () => {

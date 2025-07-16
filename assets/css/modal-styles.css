@@ -1,4 +1,3 @@
-/* Estilos personalizados para modais */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -8,7 +7,7 @@
   justify-content: center;
   min-height: 100vh;
   min-width: 100vw;
-  background: rgba(30, 30, 40, 0.55); /* Fundo escuro e translúcido */
+  background: rgba(30, 30, 40, 0.55);
   backdrop-filter: blur(4px) saturate(1.2);
   transition: background 0.2s;
 }
@@ -49,7 +48,6 @@
   }
 }
 
-/* Melhorias nos inputs dos modais */
 .modal-input {
   transition: all 0.2s ease;
 }
@@ -59,7 +57,6 @@
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
 
-/* Efeito hover nos botões */
 .modal-btn {
   transition: all 0.2s ease;
 }
@@ -72,7 +69,6 @@
   transform: translateY(0);
 }
 
-/* Scrollbar personalizada para modais */
 .modal-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
@@ -95,7 +91,6 @@
   background-color: rgba(156, 163, 175, 0.7);
 }
 
-/* Garante que .hidden sempre vença para backdrop de modal */
 .modal-backdrop.hidden {
   display: none !important;
 } 
