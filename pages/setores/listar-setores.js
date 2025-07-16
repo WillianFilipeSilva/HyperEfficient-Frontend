@@ -531,6 +531,9 @@ window.addEventListener("DOMContentLoaded", async () => {
       window.initAuthGuard()
       setoresPage = new SetoresPage()
       window.setoresPage = setoresPage
+      if (window.Utils && typeof window.Utils.setupLogoutButton === 'function') {
+        window.Utils.setupLogoutButton();
+      }
     } else {
       setTimeout(checkDependencies, 100)
     }

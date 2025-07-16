@@ -101,22 +101,6 @@ class EquipamentosPage {
 
   setupEventListeners() {
     this.setupModalListeners()
-    this.setupLogout()
-  }
-
-  setupLogout() {
-    const logoutBtn = document.getElementById("logoutBtn")
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault()
-        if (confirm("Tem certeza que deseja sair?")) {
-          this.showToast("Logout realizado com sucesso!", "info")
-          setTimeout(() => {
-            window.location.href = "/pages/auth/login.html"
-          }, 1000)
-        }
-      })
-    }
   }
 
   setupModalListeners() {
@@ -637,6 +621,9 @@ window.addEventListener("DOMContentLoaded", async () => {
       window.initAuthGuard()
       equipamentosPage = new EquipamentosPage()
       window.equipamentosPage = equipamentosPage
+      if (window.Utils && typeof window.Utils.setupLogoutButton === 'function') {
+        window.Utils.setupLogoutButton();
+      }
     } else {
       setTimeout(checkDependencies, 100)
     }

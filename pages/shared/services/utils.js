@@ -375,6 +375,29 @@ const Utils = {
 
 window.Utils = Utils; 
 
+window.Utils.setupLogoutButton = function() {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (window.Utils && typeof window.Utils.showModal === 'function') {
+        window.Utils.showModal({
+          title: "Sair do sistema",
+          message: "Tem certeza que deseja sair?",
+          confirmText: "Sair",
+          cancelText: "Cancelar",
+          onConfirm: () => window.AuthUtils.logout(),
+          onCancel: () => {}
+        });
+      } else {
+        if (confirm("Tem certeza que deseja sair?")) {
+          window.AuthUtils.logout();
+        }
+      }
+    });
+  }
+};
+
 window.showGlobalLoading = function() {
   const el = document.getElementById('globalLoading');
   if (el) el.style.display = 'flex';

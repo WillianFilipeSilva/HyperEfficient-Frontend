@@ -6,6 +6,9 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
 
   window.addEventListener("DOMContentLoaded", () => {
     if (window.initAuthGuard) window.initAuthGuard();
+    if (window.Utils && typeof window.Utils.setupLogoutButton === 'function') {
+      window.Utils.setupLogoutButton();
+    }
 
       Promise.all([
       new Promise((resolve) => {
@@ -30,7 +33,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
       }),
     ]).then(() => {
       inicializarDashboard()
-      setupLogout()
       setupPageUnload()
     }).catch((error) => {
       console.error("Erro ao carregar dependências:", error)
@@ -117,22 +119,6 @@ if (!window.API_CONFIG.ENDPOINTS.RELATORIOS) {
     window.addEventListener("pagehide", () => {
       limparFiltroPeriodo()
     })
-  }
-
-  function setupLogout() {
-    const logoutBtn = document.getElementById("logoutBtn")
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault()
-        if (confirm("Tem certeza que deseja sair?")) {
-          limparFiltroPeriodo()
-          showToast("Logout realizado com sucesso!", "info")
-          setTimeout(() => {
-            window.location.href = "/pages/auth/login.html"
-          }, 1000)
-        }
-      })
-    }
   }
 
   async function atualizarRelatorios() {

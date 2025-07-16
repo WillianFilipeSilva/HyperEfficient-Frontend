@@ -70,22 +70,6 @@ class CategoriasPage {
 
   setupEventListeners() {
     this.setupModalListeners()
-    this.setupLogout()
-  }
-
-  setupLogout() {
-    const logoutBtn = document.getElementById("logoutBtn")
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", (e) => {
-        e.preventDefault()
-        if (confirm("Tem certeza que deseja sair?")) {
-          this.showToast("Logout realizado com sucesso!", "info")
-          setTimeout(() => {
-            window.location.href = "/pages/auth/login.html"
-          }, 1000)
-        }
-      })
-    }
   }
 
   setupModalListeners() {
@@ -535,4 +519,7 @@ class ModernCategoriasTable {
 document.addEventListener("DOMContentLoaded", () => {
   if (window.initAuthGuard) window.initAuthGuard();
   window.categoriasPage = new CategoriasPage()
+  if (window.Utils && typeof window.Utils.setupLogoutButton === 'function') {
+    window.Utils.setupLogoutButton();
+  }
 })
