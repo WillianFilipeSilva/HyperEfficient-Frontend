@@ -201,11 +201,6 @@ class SetoresPage {
       return
     }
 
-    if (!data.descricao) {
-      this.showToast("Descrição é obrigatória", "error")
-      return
-    }
-
     try {
       this.showButtonLoading(true)
 
