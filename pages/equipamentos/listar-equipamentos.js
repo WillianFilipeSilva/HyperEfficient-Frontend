@@ -1,22 +1,22 @@
 class EquipamentosPage {
   constructor() {
-    this.currentPage = 1
-    this.searchTerm = ""
-    this.editingItem = null
-    this.table = null
+    this.currentPage = 1;
+    this.searchTerm = "";
+    this.editingItem = null;
+    this.table = null;
 
-    const modal = document.getElementById("modalEquipamento")
+    const modal = document.getElementById("modalEquipamento");
     if (modal && !modal.classList.contains("hidden")) {
-      modal.classList.add("hidden")
+      modal.classList.add("hidden");
     }
 
-    this.init()
+    this.init();
   }
 
   init() {
-    this.setupEventListeners()
-    this.createTable()
-    this.loadData()
+    this.setupEventListeners();
+    this.createTable();
+    this.loadData();
   }
 
   createTable() {
@@ -26,10 +26,12 @@ class EquipamentosPage {
 
       columns: [
         { field: "nome", label: "Nome" },
-        { field: "categoria", label: "Categoria",
-          format: v => v?.nome ?? "-" },
-        { field: "setor", label: "Setor",
-          format: v => v?.nome ?? "-" },
+        {
+          field: "categoria",
+          label: "Categoria",
+          format: (v) => v?.nome ?? "-",
+        },
+        { field: "setor", label: "Setor", format: (v) => v?.nome ?? "-" },
         {
           field: "gastokwh",
           label: "Gasto kW/h",
@@ -41,11 +43,13 @@ class EquipamentosPage {
           format: (value, item) =>
             `<span class="px-2 py-1 text-xs rounded-full status-toggle cursor-pointer select-none ${
               value
-                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/40'
-                : 'bg-red-500/20 text-red-400 hover:bg-red-500/40'
-            }" data-equipamento-id="${item.id}" title="Clique para registrar uso">
-              ${value ? 'Ativo' : 'Inativo'}
-            </span>`
+                ? "bg-green-500/20 text-green-400 hover:bg-green-500/40"
+                : "bg-red-500/20 text-red-400 hover:bg-red-500/40"
+            }" data-equipamento-id="${
+              item.id
+            }" title="Clique para registrar uso">
+              ${value ? "Ativo" : "Inativo"}
+            </span>`,
         },
       ],
 
@@ -94,168 +98,172 @@ class EquipamentosPage {
         hover: true,
         responsive: true,
       },
-    }
+    };
 
-    this.table = new ModernEquipamentosTable(tableConfig)
+    this.table = new ModernEquipamentosTable(tableConfig);
   }
 
   setupEventListeners() {
-    this.setupModalListeners()
+    this.setupModalListeners();
   }
 
   setupModalListeners() {
-    const modal = document.getElementById("modalEquipamento")
-    const btnCancelar = document.getElementById("btnCancelar")
-    const form = document.getElementById("formEquipamento")
+    const modal = document.getElementById("modalEquipamento");
+    const btnCancelar = document.getElementById("btnCancelar");
+    const form = document.getElementById("formEquipamento");
 
     if (btnCancelar) {
-      btnCancelar.addEventListener("click", () => this.closeModal())
+      btnCancelar.addEventListener("click", () => this.closeModal());
     }
 
     if (modal) {
       modal.addEventListener("click", (e) => {
-        if (e.target === e.currentTarget) this.closeModal()
-      })
+        if (e.target === e.currentTarget) this.closeModal();
+      });
     }
 
     if (form) {
-      form.addEventListener("submit", (e) => this.handleSubmit(e))
+      form.addEventListener("submit", (e) => this.handleSubmit(e));
     }
   }
 
-async loadData () {
+  async loadData() {
     try {
-      this.table.setLoading(true)
-      let url = `${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/paged?page=${this.currentPage}&pageSize=10`
-      if (this.searchTerm) url += `&search=${encodeURIComponent(this.searchTerm)}`
+      this.table.setLoading(true);
+      let url = `${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/paged?page=${this.currentPage}&pageSize=10`;
+      if (this.searchTerm)
+        url += `&search=${encodeURIComponent(this.searchTerm)}`;
 
-      const response = await window.API_CONFIG.authenticatedRequest(url)
-      const data = (response.Data || response.data || []).map(item => ({
+      const response = await window.API_CONFIG.authenticatedRequest(url);
+      const data = (response.Data || response.data || []).map((item) => ({
         ...item,
         categoriaId: item.categoriaId ?? item.categoria?.id ?? null,
-        setorId: item.setorId ?? item.setor?.id ?? null
-      }))
+        setorId: item.setorId ?? item.setor?.id ?? null,
+      }));
 
-      this.table.updateData(data)
+      this.table.updateData(data);
       this.table.updatePagination({
         currentPage: response.Page || this.currentPage,
         totalPages: response.TotalPages || response.totalPages || 1,
-        totalItems: response.TotalItems || response.totalItems || data.length
-      })
+        totalItems: response.TotalItems || response.totalItems || data.length,
+      });
     } catch (error) {
-      console.error('Erro ao carregar equipamentos:', error)
-      this.showToast('Erro ao carregar equipamentos', 'error')
+      this.showToast("Erro ao carregar equipamentos", "error");
     } finally {
-      this.table.setLoading(false)
+      this.table.setLoading(false);
     }
   }
 
   handlePageChange(page) {
-    this.currentPage = page
-    this.loadData()
+    this.currentPage = page;
+    this.loadData();
   }
 
   handleSearch(term) {
-    this.searchTerm = term
-    this.currentPage = 1
-    this.loadData()
+    this.searchTerm = term;
+    this.currentPage = 1;
+    this.loadData();
   }
 
   async fetchAndPopulateCategorias() {
-    const select = document.getElementById("categoriaId")
-    if (!select) return
-    select.innerHTML = '<option value="">Selecione uma categoria</option>'
+    const select = document.getElementById("categoriaId");
+    if (!select) return;
+    select.innerHTML = '<option value="">Selecione uma categoria</option>';
     try {
-      const response = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.CATEGORIAS)
-      const categorias = response.Data || response.data || []
-      categorias.forEach(cat => {
-        const option = document.createElement('option')
-        option.value = cat.id
-        option.textContent = cat.nome
-        select.appendChild(option)
-      })
+      const response = await window.API_CONFIG.authenticatedRequest(
+        window.API_CONFIG.ENDPOINTS.CATEGORIAS
+      );
+      const categorias = response.Data || response.data || [];
+      categorias.forEach((cat) => {
+        const option = document.createElement("option");
+        option.value = cat.id;
+        option.textContent = cat.nome;
+        select.appendChild(option);
+      });
     } catch (e) {
-      this.showToast("Erro ao carregar categorias", "error")
+      this.showToast("Erro ao carregar categorias", "error");
     }
   }
 
   async fetchAndPopulateSetores() {
-    const select = document.getElementById("setorId")
-    if (!select) return
-    select.innerHTML = '<option value="">Selecione um setor</option>'
+    const select = document.getElementById("setorId");
+    if (!select) return;
+    select.innerHTML = '<option value="">Selecione um setor</option>';
     try {
-      const response = await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES)
-      const setores = response.Data || response.data || []
-      setores.forEach(setor => {
-        const option = document.createElement('option')
-        option.value = setor.id
-        option.textContent = setor.nome
-        select.appendChild(option)
-      })
+      const response = await window.API_CONFIG.authenticatedRequest(
+        window.API_CONFIG.ENDPOINTS.SETORES
+      );
+      const setores = response.Data || response.data || [];
+      setores.forEach((setor) => {
+        const option = document.createElement("option");
+        option.value = setor.id;
+        option.textContent = setor.nome;
+        select.appendChild(option);
+      });
     } catch (e) {
-      this.showToast("Erro ao carregar setores", "error")
+      this.showToast("Erro ao carregar setores", "error");
     }
   }
 
   async openAddModal() {
-    this.editingItem = null
-    this.updateModalTitle("Novo Equipamento")
-    this.clearForm()
-    await this.fetchAndPopulateCategorias()
-    await this.fetchAndPopulateSetores()
-    this.openModal()
+    this.editingItem = null;
+    this.updateModalTitle("Novo Equipamento");
+    this.clearForm();
+    await this.fetchAndPopulateCategorias();
+    await this.fetchAndPopulateSetores();
+    this.openModal();
   }
 
   async openEditModal(item) {
-    this.editingItem = item
-    this.updateModalTitle("Editar Equipamento")
-    await this.fetchAndPopulateCategorias()
-    await this.fetchAndPopulateSetores()
-    this.fillForm(item)
-    this.openModal()
+    this.editingItem = item;
+    this.updateModalTitle("Editar Equipamento");
+    await this.fetchAndPopulateCategorias();
+    await this.fetchAndPopulateSetores();
+    this.fillForm(item);
+    this.openModal();
   }
 
   openModal() {
-    const modal = document.getElementById("modalEquipamento")
-    modal?.classList.remove("hidden")
+    const modal = document.getElementById("modalEquipamento");
+    modal?.classList.remove("hidden");
   }
 
   closeModal() {
-    const modal = document.getElementById("modalEquipamento")
-    modal?.classList.add("hidden")
-    this.editingItem = null
-    this.clearForm()
+    const modal = document.getElementById("modalEquipamento");
+    modal?.classList.add("hidden");
+    this.editingItem = null;
+    this.clearForm();
   }
 
   updateModalTitle(title) {
-    const modalTitle = document.getElementById("modalTitle")
+    const modalTitle = document.getElementById("modalTitle");
     if (modalTitle) {
-      modalTitle.textContent = title
+      modalTitle.textContent = title;
     }
   }
 
   fillForm(item) {
-    const form = document.getElementById("formEquipamento")
+    const form = document.getElementById("formEquipamento");
     if (form && item) {
-      form.nome.value = item.nome || ""
-      form.categoriaId.value = item.categoriaId || ""
-      form.setorId.value = item.setorId || ""
-      form.gastokwh.value = item.gastokwh || ""
-      form.descricao.value = item.descricao || ""
+      form.nome.value = item.nome || "";
+      form.categoriaId.value = item.categoriaId || "";
+      form.setorId.value = item.setorId || "";
+      form.gastokwh.value = item.gastokwh || "";
+      form.descricao.value = item.descricao || "";
     }
   }
 
   clearForm() {
-    const form = document.getElementById("formEquipamento")
+    const form = document.getElementById("formEquipamento");
     if (form) {
-      form.reset()
+      form.reset();
     }
   }
 
   async handleSubmit(e) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData(e.target)
+    const formData = new FormData(e.target);
     const data = {
       nome: formData.get("nome"),
       categoriaId: Number.parseInt(formData.get("categoriaId")),
@@ -263,112 +271,148 @@ async loadData () {
       gastokwh: Number.parseFloat(formData.get("gastokwh")),
       descricao: formData.get("descricao"),
       ativo: true,
-    }
+    };
 
     if (!data.nome || !data.categoriaId || !data.setorId || !data.gastokwh) {
-      this.showToast("Preencha todos os campos obrigatórios", "error")
-      return
+      this.showToast("Preencha todos os campos obrigatórios", "error");
+      return;
     }
 
     try {
-      this.showButtonLoading(true)
+      this.showButtonLoading(true);
 
       if (this.editingItem) {
-        await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS, {
-          method: "PUT",
-          body: JSON.stringify({ ...data, id: this.editingItem.id }),
-        })
-        this.showToast("Equipamento atualizado com sucesso!", "success")
+        await window.API_CONFIG.authenticatedRequest(
+          window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS,
+          {
+            method: "PUT",
+            body: JSON.stringify({ ...data, id: this.editingItem.id }),
+          }
+        );
+        this.showToast("Equipamento atualizado com sucesso!", "success");
       } else {
-        await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS, {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-        this.showToast("Equipamento criado com sucesso!", "success")
+        await window.API_CONFIG.authenticatedRequest(
+          window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS,
+          {
+            method: "POST",
+            body: JSON.stringify(data),
+          }
+        );
+        this.showToast("Equipamento criado com sucesso!", "success");
       }
 
-      this.closeModal()
-      this.loadData()
+      this.closeModal();
+      this.loadData();
     } catch (error) {
-      console.error("Erro ao salvar equipamento:", error)
-      this.showToast("Erro ao salvar equipamento", "error")
+      this.showToast("Erro ao salvar equipamento", "error");
     } finally {
-      this.showButtonLoading(false)
+      this.showButtonLoading(false);
     }
   }
 
   async handleDelete(item) {
-    if (!confirm(`Deseja excluir o equipamento "${item.nome}"?\n\nEsta ação não pode ser desfeita.`)) {
-      return
-    }
+    if (window.Utils && typeof window.Utils.showModal === "function") {
+      window.Utils.showModal({
+        title: "Confirmar Exclusão",
+        message: `Deseja excluir o equipamento "${item.nome}"?\n\nEsta ação não pode ser desfeita.`,
+        confirmText: "Excluir",
+        cancelText: "Cancelar",
+        onConfirm: async () => {
+          try {
+            await window.API_CONFIG.authenticatedRequest(
+              `${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/${item.id}`,
+              {
+                method: "DELETE",
+              }
+            );
 
-    try {
-      await window.API_CONFIG.authenticatedRequest(`${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/${item.id}`, {
-        method: "DELETE",
-      })
+            this.showToast("Equipamento excluído com sucesso!", "success");
+            this.loadData();
+          } catch (error) {
+            this.showToast("Erro ao excluir equipamento", "error");
+          }
+        },
+        onCancel: () => {},
+      });
+    } else {
+      if (
+        !confirm(
+          `Deseja excluir o equipamento "${item.nome}"?\n\nEsta ação não pode ser desfeita.`
+        )
+      ) {
+        return;
+      }
 
-      this.showToast("Equipamento excluído com sucesso!", "success")
-      this.loadData()
-    } catch (error) {
-      console.error("Erro ao excluir equipamento:", error)
-      this.showToast("Erro ao excluir equipamento", "error")
+      try {
+        await window.API_CONFIG.authenticatedRequest(
+          `${window.API_CONFIG.ENDPOINTS.EQUIPAMENTOS}/${item.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        this.showToast("Equipamento excluído com sucesso!", "success");
+        this.loadData();
+      } catch (error) {
+        this.showToast("Erro ao excluir equipamento", "error");
+      }
     }
   }
 
   showButtonLoading(show) {
-    const btn = document.getElementById("btnSalvar")
-    const textSpan = btn?.querySelector("[data-text]")
-    const loadingSpan = btn?.querySelector("[data-loading]")
+    const btn = document.getElementById("btnSalvar");
+    const textSpan = btn?.querySelector("[data-text]");
+    const loadingSpan = btn?.querySelector("[data-loading]");
 
     if (show) {
-      textSpan?.classList.add("hidden")
-      loadingSpan?.classList.remove("hidden")
-      btn?.setAttribute("disabled", "true")
+      textSpan?.classList.add("hidden");
+      loadingSpan?.classList.remove("hidden");
+      btn?.setAttribute("disabled", "true");
     } else {
-      textSpan?.classList.remove("hidden")
-      loadingSpan?.classList.add("hidden")
-      btn?.removeAttribute("disabled")
+      textSpan?.classList.remove("hidden");
+      loadingSpan?.classList.add("hidden");
+      btn?.removeAttribute("disabled");
     }
   }
 
   showToast(message, type = "info") {
     if (window.Utils && window.Utils.showToast) {
-      window.Utils.showToast(message, type)
-      return
+      window.Utils.showToast(message, type);
+      return;
     }
-    
-    const toastCounter = window.toastCounter || 0
-    window.toastCounter = toastCounter + 1
-    
-    const toast = document.createElement("div")
-    const topPosition = 24 + (toastCounter) * 80
-    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
-    toast.style.top = `${topPosition}px`
+
+    const toastCounter = window.toastCounter || 0;
+    window.toastCounter = toastCounter + 1;
+
+    const toast = document.createElement("div");
+    const topPosition = 24 + toastCounter * 80;
+    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`;
+    toast.style.top = `${topPosition}px`;
 
     const colors = {
       success: "bg-green-500/90 text-white",
       error: "bg-red-500/90 text-white",
       warning: "bg-yellow-500/90 text-black",
       info: "bg-blue-500/90 text-white",
-    }
+    };
 
-    toast.className += ` ${colors[type] || colors.info}`
+    toast.className += ` ${colors[type] || colors.info}`;
     toast.innerHTML = `
       <div class="flex items-center space-x-2">
         <i class="fas ${this.getToastIcon(type)}"></i>
         <span>${message}</span>
       </div>
-    `
+    `;
 
-    document.body.appendChild(toast)
-    setTimeout(() => toast.classList.remove("translate-x-full"), 100)
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.remove("translate-x-full"), 100);
     setTimeout(() => {
-      toast.classList.add("translate-x-full")
+      toast.classList.add("translate-x-full");
       setTimeout(() => {
-        toast.remove()
-        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1)
-      }, 300)
-    }, 3000)
+        toast.remove();
+        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1);
+      }, 300);
+    }, 3000);
   }
 
   getToastIcon(type) {
@@ -377,35 +421,40 @@ async loadData () {
       error: "fa-exclamation-circle",
       warning: "fa-exclamation-triangle",
       info: "fa-info-circle",
-    }
-    return icons[type] || icons.info
+    };
+    return icons[type] || icons.info;
   }
 
   async registrarEquipamento(equipamentoId) {
     try {
-      await window.API_CONFIG.authenticatedRequest(`/registros/registrar/${equipamentoId}`, {
-        method: "POST"
-      })
+      await window.API_CONFIG.authenticatedRequest(
+        `/registros/registrar/${equipamentoId}`,
+        {
+          method: "POST",
+        }
+      );
       setTimeout(() => {
-        this.showToast("Registro de uso realizado com sucesso!", "success")
-        this.loadData()
-      }, 1000)
+        this.showToast("Registro de uso realizado com sucesso!", "success");
+        this.loadData();
+      }, 1000);
     } catch (error) {
-      console.error("Erro ao registrar uso do equipamento:", error)
-      this.showToast(error.message || "Erro ao registrar uso do equipamento", "error")
+      this.showToast(
+        error.message || "Erro ao registrar uso do equipamento",
+        "error"
+      );
     }
   }
 }
 
 class ModernEquipamentosTable {
   constructor(config) {
-    this.config = config
-    this.render()
+    this.config = config;
+    this.render();
   }
 
   render() {
-    const container = document.getElementById(this.config.containerId)
-    if (!container) return
+    const container = document.getElementById(this.config.containerId);
+    if (!container) return;
 
     container.innerHTML = `
       <div class="glass rounded-2xl overflow-hidden">
@@ -445,36 +494,39 @@ class ModernEquipamentosTable {
           </div>
         </div>
       </div>
-    `
+    `;
 
-    this.setupEventListeners()
+    this.setupEventListeners();
   }
 
   setupEventListeners() {
-    const searchInput = document.getElementById("tableSearch")
-    const addBtn = document.getElementById("tableAddBtn")
+    const searchInput = document.getElementById("tableSearch");
+    const addBtn = document.getElementById("tableAddBtn");
 
     if (searchInput) {
-      let timeout
+      let timeout;
       searchInput.addEventListener("input", (e) => {
-        clearTimeout(timeout)
-        timeout = setTimeout(() => this.config.search.onSearch(e.target.value), 300)
-      })
+        clearTimeout(timeout);
+        timeout = setTimeout(
+          () => this.config.search.onSearch(e.target.value),
+          300
+        );
+      });
     }
 
     if (addBtn && this.config.addButton.onClick) {
-      addBtn.addEventListener("click", this.config.addButton.onClick)
+      addBtn.addEventListener("click", this.config.addButton.onClick);
     }
   }
 
   updateData(data) {
-    this.config.data = data
-    this.renderTable()
+    this.config.data = data;
+    this.renderTable();
   }
 
   renderTable() {
-    const content = document.getElementById("tableContent")
-    if (!content) return
+    const content = document.getElementById("tableContent");
+    if (!content) return;
 
     if (this.config.data.length === 0) {
       content.innerHTML = `
@@ -483,8 +535,8 @@ class ModernEquipamentosTable {
           <h3 class="text-lg font-semibold text-white mb-2">Nenhum equipamento encontrado</h3>
           <p class="text-gray-400">Comece criando seu primeiro equipamento</p>
         </div>
-      `
-      return
+      `;
+      return;
     }
 
     content.innerHTML = `
@@ -498,7 +550,7 @@ class ModernEquipamentosTable {
                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   ${col.label}
                 </th>
-              `,
+              `
                 )
                 .join("")}
               <th class="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -510,7 +562,9 @@ class ModernEquipamentosTable {
             ${this.config.data
               .map(
                 (item, index) => `
-              <tr class="hover:bg-white/5 transition-all duration-200" style="animation-delay: ${index * 0.05}s;">
+              <tr class="hover:bg-white/5 transition-all duration-200" style="animation-delay: ${
+                index * 0.05
+              }s;">
                 ${this.config.columns
                   .map(
                     (col) => `
@@ -523,32 +577,42 @@ class ModernEquipamentosTable {
                           <i class="fas fa-cogs text-white"></i>
                         </div>
                         <div>
-                          <div class="text-white font-medium">${item[col.field]}</div>
-                          <div class="text-xs text-gray-400">Equipamento • ID: ${item.id}</div>
+                          <div class="text-white font-medium">${
+                            item[col.field]
+                          }</div>
+                          <div class="text-xs text-gray-400">Equipamento • ID: ${
+                            item.id
+                          }</div>
                         </div>
                       </div>
                     `
                         : col.format
-                          ? col.format(item[col.field], item)
-                          : `
-                      <span class="text-gray-300">${item[col.field] || "-"}</span>
+                        ? col.format(item[col.field], item)
+                        : `
+                      <span class="text-gray-300">${
+                        item[col.field] || "-"
+                      }</span>
                     `
                     }
                   </td>
-                `,
+                `
                   )
                   .join("")}
                 <td class="px-6 py-4">
                   <div class="flex items-center justify-center space-x-2">
                     <button 
-                      onclick="equipamentosPage.openEditModal(${JSON.stringify(item).replace(/"/g, "&quot;")})"
+                      onclick="equipamentosPage.openEditModal(${JSON.stringify(
+                        item
+                      ).replace(/"/g, "&quot;")})"
                       class="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 hover:text-blue-300 transition-all"
                       title="Editar equipamento"
                     >
                       <i class="fas fa-edit"></i>
                     </button>
                     <button 
-                      onclick="equipamentosPage.handleDelete(${JSON.stringify(item).replace(/"/g, "&quot;")})"
+                      onclick="equipamentosPage.handleDelete(${JSON.stringify(
+                        item
+                      ).replace(/"/g, "&quot;")})"
                       class="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 hover:text-red-300 transition-all"
                       title="Excluir equipamento"
                     >
@@ -557,7 +621,7 @@ class ModernEquipamentosTable {
                   </div>
                 </td>
               </tr>
-            `,
+            `
               )
               .join("")}
           </tbody>
@@ -570,28 +634,35 @@ class ModernEquipamentosTable {
             <span>${this.config.data.length}</span> equipamentos encontrados
           </div>
           <div class="text-xs text-gray-500">
-            Última atualização: ${new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+            Última atualização: ${new Date().toLocaleTimeString("pt-BR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </div>
         </div>
       </div>
-    `
+    `;
 
     setTimeout(() => {
-      const statusEls = content.querySelectorAll('.status-toggle')
-      statusEls.forEach(el => {
-        el.addEventListener('click', (e) => {
-          const equipamentoId = el.getAttribute('data-equipamento-id')
-          if (equipamentoId && window.equipamentosPage && typeof window.equipamentosPage.registrarEquipamento === 'function') {
-            window.equipamentosPage.registrarEquipamento(equipamentoId)
+      const statusEls = content.querySelectorAll(".status-toggle");
+      statusEls.forEach((el) => {
+        el.addEventListener("click", (e) => {
+          const equipamentoId = el.getAttribute("data-equipamento-id");
+          if (
+            equipamentoId &&
+            window.equipamentosPage &&
+            typeof window.equipamentosPage.registrarEquipamento === "function"
+          ) {
+            window.equipamentosPage.registrarEquipamento(equipamentoId);
           }
-        })
-      })
-    }, 0)
+        });
+      });
+    }, 0);
   }
 
   setLoading(loading) {
-    const content = document.getElementById("tableContent")
-    if (!content) return
+    const content = document.getElementById("tableContent");
+    if (!content) return;
 
     if (loading) {
       content.innerHTML = `
@@ -601,32 +672,34 @@ class ModernEquipamentosTable {
             <span class="text-gray-300">Carregando equipamentos...</span>
           </div>
         </div>
-      `
+      `;
     }
   }
 
-  updatePagination(data) {
-  }
+  updatePagination(data) {}
 }
 
-let equipamentosPage
+let equipamentosPage;
 window.addEventListener("DOMContentLoaded", async () => {
-  const modal = document.getElementById("modalEquipamento")
+  const modal = document.getElementById("modalEquipamento");
   if (modal && !modal.classList.contains("hidden")) {
-    modal.classList.add("hidden")
+    modal.classList.add("hidden");
   }
 
   const checkDependencies = () => {
     if (window.Utils && window.API_CONFIG) {
-      window.initAuthGuard()
-      equipamentosPage = new EquipamentosPage()
-      window.equipamentosPage = equipamentosPage
-      if (window.Utils && typeof window.Utils.setupLogoutButton === 'function') {
+      window.initAuthGuard();
+      equipamentosPage = new EquipamentosPage();
+      window.equipamentosPage = equipamentosPage;
+      if (
+        window.Utils &&
+        typeof window.Utils.setupLogoutButton === "function"
+      ) {
         window.Utils.setupLogoutButton();
       }
     } else {
-      setTimeout(checkDependencies, 100)
+      setTimeout(checkDependencies, 100);
     }
-  }
-  checkDependencies()
-})
+  };
+  checkDependencies();
+});

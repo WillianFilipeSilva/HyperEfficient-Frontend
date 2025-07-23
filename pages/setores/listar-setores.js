@@ -1,22 +1,22 @@
 class SetoresPage {
   constructor() {
-    this.currentPage = 1
-    this.searchTerm = ""
-    this.editingItem = null
-    this.table = null
+    this.currentPage = 1;
+    this.searchTerm = "";
+    this.editingItem = null;
+    this.table = null;
 
-    const modal = document.getElementById("modalSetor")
+    const modal = document.getElementById("modalSetor");
     if (modal && !modal.classList.contains("hidden")) {
-      modal.classList.add("hidden")
+      modal.classList.add("hidden");
     }
 
-    this.init()
+    this.init();
   }
 
   init() {
-    this.setupEventListeners()
-    this.createTable()
-    this.loadData()
+    this.setupEventListeners();
+    this.createTable();
+    this.loadData();
   }
 
   createTable() {
@@ -74,232 +74,267 @@ class SetoresPage {
         hover: true,
         responsive: true,
       },
-    }
+    };
 
-    this.table = new ModernTable(tableConfig)
+    this.table = new ModernTable(tableConfig);
   }
 
   setupEventListeners() {
-    this.setupModalListeners()
+    this.setupModalListeners();
   }
 
   setupModalListeners() {
-    const modal = document.getElementById("modalSetor")
-    const btnCancelar = document.getElementById("btnCancelar")
-    const form = document.getElementById("formSetor")
+    const modal = document.getElementById("modalSetor");
+    const btnCancelar = document.getElementById("btnCancelar");
+    const form = document.getElementById("formSetor");
 
     if (btnCancelar) {
-      btnCancelar.addEventListener("click", () => this.closeModal())
+      btnCancelar.addEventListener("click", () => this.closeModal());
     }
 
     if (modal) {
       modal.addEventListener("click", (e) => {
-        if (e.target === e.currentTarget) this.closeModal()
-      })
+        if (e.target === e.currentTarget) this.closeModal();
+      });
     }
 
     if (form) {
-      form.addEventListener("submit", (e) => this.handleSubmit(e))
+      form.addEventListener("submit", (e) => this.handleSubmit(e));
     }
   }
 
   async loadData() {
     try {
-      this.table.setLoading(true)
+      this.table.setLoading(true);
 
-      let url = `${window.API_CONFIG.ENDPOINTS.SETORES}/paged?page=${this.currentPage}&pageSize=10`
+      let url = `${window.API_CONFIG.ENDPOINTS.SETORES}/paged?page=${this.currentPage}&pageSize=10`;
       if (this.searchTerm) {
-        url += `&search=${encodeURIComponent(this.searchTerm)}`
+        url += `&search=${encodeURIComponent(this.searchTerm)}`;
       }
 
-      const response = await window.API_CONFIG.authenticatedRequest(url)
+      const response = await window.API_CONFIG.authenticatedRequest(url);
 
-      this.table.updateData(response.Data || response.data || [])
+      this.table.updateData(response.Data || response.data || []);
       this.table.updatePagination({
         currentPage: response.Page || this.currentPage,
         totalPages: response.TotalPages || response.totalPages || 1,
         totalItems: response.TotalItems || response.totalItems || 0,
-      })
+      });
     } catch (error) {
-      console.error("Erro ao carregar setores:", error)
-      this.showToast("Erro ao carregar setores", "error")
+      this.showToast("Erro ao carregar setores", "error");
     } finally {
-      this.table.setLoading(false)
+      this.table.setLoading(false);
     }
   }
 
   handlePageChange(page) {
-    this.currentPage = page
-    this.loadData()
+    this.currentPage = page;
+    this.loadData();
   }
 
   handleSearch(term) {
-    this.searchTerm = term
-    this.currentPage = 1
-    this.loadData()
+    this.searchTerm = term;
+    this.currentPage = 1;
+    this.loadData();
   }
 
   openAddModal() {
-    this.editingItem = null
-    this.updateModalTitle("Novo Setor")
-    this.clearForm()
-    this.openModal()
+    this.editingItem = null;
+    this.updateModalTitle("Novo Setor");
+    this.clearForm();
+    this.openModal();
   }
 
   openEditModal(item) {
-    this.editingItem = item
-    this.updateModalTitle("Editar Setor")
-    this.fillForm(item)
-    this.openModal()
+    this.editingItem = item;
+    this.updateModalTitle("Editar Setor");
+    this.fillForm(item);
+    this.openModal();
   }
 
   openModal() {
-    const modal = document.getElementById("modalSetor")
-    modal?.classList.remove("hidden")
+    const modal = document.getElementById("modalSetor");
+    modal?.classList.remove("hidden");
   }
 
   closeModal() {
-    const modal = document.getElementById("modalSetor")
-    modal?.classList.add("hidden")
-    this.editingItem = null
-    this.clearForm()
+    const modal = document.getElementById("modalSetor");
+    modal?.classList.add("hidden");
+    this.editingItem = null;
+    this.clearForm();
   }
 
   updateModalTitle(title) {
-    const modalTitle = document.getElementById("modalTitle")
+    const modalTitle = document.getElementById("modalTitle");
     if (modalTitle) {
-      modalTitle.textContent = title
+      modalTitle.textContent = title;
     }
   }
 
   fillForm(item) {
-    const form = document.getElementById("formSetor")
+    const form = document.getElementById("formSetor");
     if (form && item) {
-      form.nome.value = item.nome || ""
-      form.descricao.value = item.descricao || ""
+      form.nome.value = item.nome || "";
+      form.descricao.value = item.descricao || "";
     }
   }
 
   clearForm() {
-    const form = document.getElementById("formSetor")
+    const form = document.getElementById("formSetor");
     if (form) {
-      form.reset()
+      form.reset();
     }
   }
 
   async handleSubmit(e) {
-    e.preventDefault()
+    e.preventDefault();
 
-    const formData = new FormData(e.target)
+    const formData = new FormData(e.target);
     const data = {
       nome: formData.get("nome"),
       descricao: formData.get("descricao"),
-    }
+    };
 
     if (!data.nome) {
-      this.showToast("Nome é obrigatório", "error")
-      return
+      this.showToast("Nome é obrigatório", "error");
+      return;
     }
 
     try {
-      this.showButtonLoading(true)
+      this.showButtonLoading(true);
 
       if (this.editingItem) {
-        await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES, {
-          method: "PUT",
-          body: JSON.stringify({ ...data, id: this.editingItem.id }),
-        })
-        this.showToast("Setor atualizado com sucesso!", "success")
+        await window.API_CONFIG.authenticatedRequest(
+          window.API_CONFIG.ENDPOINTS.SETORES,
+          {
+            method: "PUT",
+            body: JSON.stringify({ ...data, id: this.editingItem.id }),
+          }
+        );
+        this.showToast("Setor atualizado com sucesso!", "success");
       } else {
-        await window.API_CONFIG.authenticatedRequest(window.API_CONFIG.ENDPOINTS.SETORES, {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
-        this.showToast("Setor criado com sucesso!", "success")
+        await window.API_CONFIG.authenticatedRequest(
+          window.API_CONFIG.ENDPOINTS.SETORES,
+          {
+            method: "POST",
+            body: JSON.stringify(data),
+          }
+        );
+        this.showToast("Setor criado com sucesso!", "success");
       }
 
-      this.closeModal()
-      this.loadData()
+      this.closeModal();
+      this.loadData();
     } catch (error) {
-      console.error("Erro ao salvar setor:", error)
-      this.showToast(error.message || "Erro ao salvar setor", "error")
+      this.showToast(error.message || "Erro ao salvar setor", "error");
     } finally {
-      this.showButtonLoading(false)
+      this.showButtonLoading(false);
     }
   }
 
   async handleDelete(item) {
-    if (!confirm(`Deseja excluir o setor "${item.nome}"?\n\nEsta ação não pode ser desfeita.`)) {
-      return
-    }
+    if (window.Utils && typeof window.Utils.showModal === "function") {
+      window.Utils.showModal({
+        title: "Confirmar Exclusão",
+        message: `Deseja excluir o setor "${item.nome}"?\n\nEsta ação não pode ser desfeita.`,
+        confirmText: "Excluir",
+        cancelText: "Cancelar",
+        onConfirm: async () => {
+          try {
+            await window.API_CONFIG.authenticatedRequest(
+              `${window.API_CONFIG.ENDPOINTS.SETORES}/${item.id}`,
+              {
+                method: "DELETE",
+              }
+            );
 
-    try {
-      await window.API_CONFIG.authenticatedRequest(`${window.API_CONFIG.ENDPOINTS.SETORES}/${item.id}`, {
-        method: "DELETE",
-      })
+            this.showToast("Setor excluído com sucesso!", "success");
+            this.loadData();
+          } catch (error) {
+            this.showToast("Erro ao excluir setor", "error");
+          }
+        },
+        onCancel: () => {},
+      });
+    } else {
+      if (
+        !confirm(
+          `Deseja excluir o setor "${item.nome}"?\n\nEsta ação não pode ser desfeita.`
+        )
+      ) {
+        return;
+      }
 
-      this.showToast("Setor excluído com sucesso!", "success")
-      this.loadData()
-    } catch (error) {
-      console.error("Erro ao excluir setor:", error)
-      this.showToast("Erro ao excluir setor", "error")
+      try {
+        await window.API_CONFIG.authenticatedRequest(
+          `${window.API_CONFIG.ENDPOINTS.SETORES}/${item.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        this.showToast("Setor excluído com sucesso!", "success");
+        this.loadData();
+      } catch (error) {
+        this.showToast("Erro ao excluir setor", "error");
+      }
     }
   }
 
   showButtonLoading(show) {
-    const btn = document.getElementById("btnSalvar")
-    const textSpan = btn?.querySelector("[data-text]")
-    const loadingSpan = btn?.querySelector("[data-loading]")
+    const btn = document.getElementById("btnSalvar");
+    const textSpan = btn?.querySelector("[data-text]");
+    const loadingSpan = btn?.querySelector("[data-loading]");
 
     if (show) {
-      textSpan?.classList.add("hidden")
-      loadingSpan?.classList.remove("hidden")
-      btn?.setAttribute("disabled", "true")
+      textSpan?.classList.add("hidden");
+      loadingSpan?.classList.remove("hidden");
+      btn?.setAttribute("disabled", "true");
     } else {
-      textSpan?.classList.remove("hidden")
-      loadingSpan?.classList.add("hidden")
-      btn?.removeAttribute("disabled")
+      textSpan?.classList.remove("hidden");
+      loadingSpan?.classList.add("hidden");
+      btn?.removeAttribute("disabled");
     }
   }
 
   showToast(message, type = "info") {
     if (window.Utils && window.Utils.showToast) {
-      window.Utils.showToast(message, type)
-      return
+      window.Utils.showToast(message, type);
+      return;
     }
-    
-    const toastCounter = window.toastCounter || 0
-    window.toastCounter = toastCounter + 1
-    
-    const toast = document.createElement("div")
-    const topPosition = 24 + (toastCounter) * 80
-    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`
-    toast.style.top = `${topPosition}px`
+
+    const toastCounter = window.toastCounter || 0;
+    window.toastCounter = toastCounter + 1;
+
+    const toast = document.createElement("div");
+    const topPosition = 24 + toastCounter * 80;
+    toast.className = `fixed right-4 z-50 p-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-x-full backdrop-blur-lg`;
+    toast.style.top = `${topPosition}px`;
 
     const colors = {
       success: "bg-green-500/90 text-white",
       error: "bg-red-500/90 text-white",
       warning: "bg-yellow-500/90 text-black",
       info: "bg-blue-500/90 text-white",
-    }
+    };
 
-    toast.className += ` ${colors[type] || colors.info}`
+    toast.className += ` ${colors[type] || colors.info}`;
     toast.innerHTML = `
       <div class="flex items-center space-x-2">
         <i class="fas ${this.getToastIcon(type)}"></i>
         <span>${message}</span>
       </div>
-    `
+    `;
 
-    document.body.appendChild(toast)
-    setTimeout(() => toast.classList.remove("translate-x-full"), 100)
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.remove("translate-x-full"), 100);
     setTimeout(() => {
-      toast.classList.add("translate-x-full")
+      toast.classList.add("translate-x-full");
       setTimeout(() => {
-        toast.remove()
-        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1)
-      }, 300)
-    }, 3000)
+        toast.remove();
+        window.toastCounter = Math.max(0, (window.toastCounter || 1) - 1);
+      }, 300);
+    }, 3000);
   }
 
   getToastIcon(type) {
@@ -308,20 +343,20 @@ class SetoresPage {
       error: "fa-exclamation-circle",
       warning: "fa-exclamation-triangle",
       info: "fa-info-circle",
-    }
-    return icons[type] || icons.info
+    };
+    return icons[type] || icons.info;
   }
 }
 
 class ModernTable {
   constructor(config) {
-    this.config = config
-    this.render()
+    this.config = config;
+    this.render();
   }
 
   render() {
-    const container = document.getElementById(this.config.containerId)
-    if (!container) return
+    const container = document.getElementById(this.config.containerId);
+    if (!container) return;
 
     container.innerHTML = `
       <div class="glass rounded-2xl overflow-hidden">
@@ -361,36 +396,39 @@ class ModernTable {
           </div>
         </div>
       </div>
-    `
+    `;
 
-    this.setupEventListeners()
+    this.setupEventListeners();
   }
 
   setupEventListeners() {
-    const searchInput = document.getElementById("tableSearch")
-    const addBtn = document.getElementById("tableAddBtn")
+    const searchInput = document.getElementById("tableSearch");
+    const addBtn = document.getElementById("tableAddBtn");
 
     if (searchInput) {
-      let timeout
+      let timeout;
       searchInput.addEventListener("input", (e) => {
-        clearTimeout(timeout)
-        timeout = setTimeout(() => this.config.search.onSearch(e.target.value), 300)
-      })
+        clearTimeout(timeout);
+        timeout = setTimeout(
+          () => this.config.search.onSearch(e.target.value),
+          300
+        );
+      });
     }
 
     if (addBtn && this.config.addButton.onClick) {
-      addBtn.addEventListener("click", this.config.addButton.onClick)
+      addBtn.addEventListener("click", this.config.addButton.onClick);
     }
   }
 
   updateData(data) {
-    this.config.data = data
-    this.renderTable()
+    this.config.data = data;
+    this.renderTable();
   }
 
   renderTable() {
-    const content = document.getElementById("tableContent")
-    if (!content) return
+    const content = document.getElementById("tableContent");
+    if (!content) return;
 
     if (this.config.data.length === 0) {
       content.innerHTML = `
@@ -399,8 +437,8 @@ class ModernTable {
           <h3 class="text-lg font-semibold text-white mb-2">Nenhum setor encontrado</h3>
           <p class="text-gray-400">Comece criando seu primeiro setor</p>
         </div>
-      `
-      return
+      `;
+      return;
     }
 
     content.innerHTML = `
@@ -414,7 +452,7 @@ class ModernTable {
                 <th class="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   ${col.label}
                 </th>
-              `,
+              `
                 )
                 .join("")}
               <th class="px-6 py-4 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -426,7 +464,9 @@ class ModernTable {
             ${this.config.data
               .map(
                 (item, index) => `
-              <tr class="hover:bg-white/5 transition-all duration-200" style="animation-delay: ${index * 0.05}s;">
+              <tr class="hover:bg-white/5 transition-all duration-200" style="animation-delay: ${
+                index * 0.05
+              }s;">
                 ${this.config.columns
                   .map(
                     (col) => `
@@ -439,8 +479,12 @@ class ModernTable {
                           <i class="fas fa-building text-gray-900"></i>
                         </div>
                         <div>
-                          <div class="text-white font-medium">${item[col.field]}</div>
-                          <div class="text-xs text-gray-400">Setor • ID: ${item.id}</div>
+                          <div class="text-white font-medium">${
+                            item[col.field]
+                          }</div>
+                          <div class="text-xs text-gray-400">Setor • ID: ${
+                            item.id
+                          }</div>
                         </div>
                       </div>
                     `
@@ -449,20 +493,24 @@ class ModernTable {
                     `
                     }
                   </td>
-                `,
+                `
                   )
                   .join("")}
                 <td class="px-6 py-4">
                   <div class="flex items-center justify-center space-x-2">
                     <button 
-                      onclick="setoresPage.openEditModal(${JSON.stringify(item).replace(/"/g, "&quot;")})"
+                      onclick="setoresPage.openEditModal(${JSON.stringify(
+                        item
+                      ).replace(/"/g, "&quot;")})"
                       class="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 hover:text-blue-300 transition-all"
                       title="Editar setor"
                     >
                       <i class="fas fa-edit"></i>
                     </button>
                     <button 
-                      onclick="setoresPage.handleDelete(${JSON.stringify(item).replace(/"/g, "&quot;")})"
+                      onclick="setoresPage.handleDelete(${JSON.stringify(
+                        item
+                      ).replace(/"/g, "&quot;")})"
                       class="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 hover:text-red-300 transition-all"
                       title="Excluir setor"
                     >
@@ -471,7 +519,7 @@ class ModernTable {
                   </div>
                 </td>
               </tr>
-            `,
+            `
               )
               .join("")}
           </tbody>
@@ -491,12 +539,12 @@ class ModernTable {
           </div>
         </div>
       </div>
-    `
+    `;
   }
 
   setLoading(loading) {
-    const content = document.getElementById("tableContent")
-    if (!content) return
+    const content = document.getElementById("tableContent");
+    if (!content) return;
 
     if (loading) {
       content.innerHTML = `
@@ -506,32 +554,34 @@ class ModernTable {
             <span class="text-gray-300">Carregando setores...</span>
           </div>
         </div>
-      `
+      `;
     }
   }
 
-  updatePagination(data) {
-  }
+  updatePagination(data) {}
 }
 
-let setoresPage
+let setoresPage;
 window.addEventListener("DOMContentLoaded", async () => {
-  const modal = document.getElementById("modalSetor")
+  const modal = document.getElementById("modalSetor");
   if (modal && !modal.classList.contains("hidden")) {
-    modal.classList.add("hidden")
+    modal.classList.add("hidden");
   }
 
   const checkDependencies = () => {
     if (window.Utils && window.API_CONFIG) {
-      window.initAuthGuard()
-      setoresPage = new SetoresPage()
-      window.setoresPage = setoresPage
-      if (window.Utils && typeof window.Utils.setupLogoutButton === 'function') {
+      window.initAuthGuard();
+      setoresPage = new SetoresPage();
+      window.setoresPage = setoresPage;
+      if (
+        window.Utils &&
+        typeof window.Utils.setupLogoutButton === "function"
+      ) {
         window.Utils.setupLogoutButton();
       }
     } else {
-      setTimeout(checkDependencies, 100)
+      setTimeout(checkDependencies, 100);
     }
-  }
-  checkDependencies()
-})
+  };
+  checkDependencies();
+});
