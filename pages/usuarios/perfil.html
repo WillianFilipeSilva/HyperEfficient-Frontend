@@ -9,76 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root {
-      --primary: #FFCA1C;
-      --primary-dark: #E6B325;
-      --dark-bg: #0A0B0F;
-      --dark-surface: #1A1B23;
-      --dark-surface-hover: #25262F;
-      --dark-border: #2A2B35;
-      --text-primary: #FFFFFF;
-      --text-secondary: #A1A1AA;
-    }
-
-    * { font-family: 'Inter', sans-serif; }
-    body { 
-      background: linear-gradient(135deg, var(--dark-bg) 0%, #1A1B23 100%);
-      color: var(--text-primary);
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes fadeInUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .animate-slide-in { animation: slideInLeft 0.6s ease-out; }
-    .animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
-
-    .glass {
-      background: rgba(26, 27, 35, 0.8);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: var(--dark-bg);
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 25px rgba(255, 202, 28, 0.4);
-    }
-
-    .input-field {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .input-field:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(255, 202, 28, 0.1);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .input-field:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--dark-surface); }
-    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
-  </style>
+  
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/modal-styles.css">
 </head>
 <body class="min-h-screen">
   

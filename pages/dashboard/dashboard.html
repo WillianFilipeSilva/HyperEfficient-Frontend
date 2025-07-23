@@ -1,378 +1,407 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/logo.svg" />
-  <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
-  <title>HyperEfficient - Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --primary: #FFCA1C;
-      --primary-dark: #E6B325;
-      --primary-light: #FFF4CC;
-      --dark-bg: #0A0B0F;
-      --dark-surface: #1A1B23;
-      --dark-surface-hover: #25262F;
-      --dark-border: #2A2B35;
-      --text-primary: #FFFFFF;
-      --text-secondary: #A1A1AA;
-      --text-muted: #71717A;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/logo.svg" />
+    <link rel="icon" type="image/png" href="/assets/img/logo.svg" />
+    <title>HyperEfficient - Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    * { font-family: 'Inter', sans-serif; }
-    body { 
-      background: linear-gradient(135deg, var(--dark-bg) 0%, #1A1B23 100%);
-      color: var(--text-primary);
-    }
-
-    @keyframes slideInLeft {
-      from { transform: translateX(-100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    @keyframes fadeInUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.8; }
-    }
-
-    .animate-slide-in { animation: slideInLeft 0.6s ease-out; }
-    .animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
-    .animate-pulse-slow { animation: pulse 2s infinite; }
-
-    .glass {
-      background: rgba(26, 27, 35, 0.8);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: var(--dark-bg);
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 25px rgba(255, 202, 28, 0.4);
-    }
-
-    .hover-lift:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(255, 202, 28, 0.2);
-    }
-
-    .input-field {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .input-field:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(255, 202, 28, 0.1);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: var(--dark-surface); }
-    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
-
-    .logo-container:hover .logo {
-      transform: scale(1.1) rotate(5deg);
-    }
-
-    .logo {
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Forçar tema escuro no calendário nativo do input date (quando suportado) */
-    input[type="date"] {
-      color-scheme: dark;
-    }
-  </style>
-</head>
-<body class="min-h-screen">
-  
-  <!-- Sidebar -->
-  <aside class="fixed inset-y-0 left-0 z-50 w-72 glass animate-slide-in">
-    <div class="p-6 border-b border-white/10">
-      <div class="flex items-center logo-container">
-        <div class="w-12 h-12 mr-4 logo">
-          <img src="/assets/img/logo.svg" alt="HyperEfficient" class="w-full h-full" />
-        </div>
-        <div>
-          <h1 class="text-xl font-bold text-white">HyperEfficient</h1>
-          <p class="text-xs text-gray-400">Sistema de Controle</p>
-        </div>
-      </div>
-    </div>
-
-    <nav class="p-4 space-y-2">
-      <div class="mb-6">
-        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Principal</h3>
-        <ul class="space-y-1">
-          <li>
-            <a href="/pages/dashboard/dashboard.html" 
-               class="flex items-center px-4 py-3 text-gray-900 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl font-semibold shadow-lg">
-              <div class="w-5 h-5 mr-3">
-                <i class="fas fa-home"></i>
-              </div>
-              Dashboard
-              <div class="ml-auto w-2 h-2 bg-gray-900 rounded-full animate-pulse-slow"></div>
-            </a>
-          </li>
-          <li>
-            <a href="/pages/equipamentos/listar-equipamentos.html" 
-               class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group">
-              <div class="w-5 h-5 mr-3 text-green-400 group-hover:scale-110 transition-transform">
-                <i class="fas fa-cogs"></i>
-              </div>
-              Equipamentos
-            </a>
-          </li>
-          <li>
-            <a href="/pages/setores/listar-setores.html" 
-               class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group">
-              <div class="w-5 h-5 mr-3 text-purple-400 group-hover:scale-110 transition-transform">
-                <i class="fas fa-building"></i>
-              </div>
-              Setores
-            </a>
-          </li>
-          <li>
-            <a href="/pages/categorias/listar-categorias.html" 
-               class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group">
-              <div class="w-5 h-5 mr-3 text-yellow-400 group-hover:scale-110 transition-transform">
-                <i class="fas fa-tags"></i>
-              </div>
-              Categorias
-            </a>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Conta</h3>
-        <ul class="space-y-1">
-          <li>
-            <a href="/pages/usuarios/perfil.html" 
-               class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group">
-              <div class="w-5 h-5 mr-3 text-cyan-400 group-hover:scale-110 transition-transform">
-                <i class="fas fa-user"></i>
-              </div>
-              Perfil
-            </a>
-          </li>
-          <li>
-            <a href="#" id="logoutBtn"
-               class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group">
-              <div class="w-5 h-5 mr-3 text-red-400 group-hover:scale-110 transition-transform">
-                <i class="fas fa-sign-out-alt"></i>
-              </div>
-              Sair
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </aside>
-
-  <!-- Main Content -->
-  <main class="ml-72 p-6">
-    <!-- Header with Period Selection -->
-    <header class="mb-8 animate-fade-in-up">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1 class="text-3xl font-bold text-white mb-2">Dashboard</h1>
-          <p class="text-gray-400">Visão geral da empresa</p>
-        </div>
-      </div>
-
-      <!-- Period Selection -->
-      <div class="glass rounded-2xl p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-lg font-semibold text-white mb-1">Período de Análise</h3>
-            <p class="text-gray-400 text-sm">Selecione o período para visualizar os relatórios</p>
+      <link rel="stylesheet" href="/assets/css/styles.css" />
+  <link rel="stylesheet" href="/assets/css/dashboard-specific.css" />
+  <link rel="stylesheet" href="/assets/css/modal-styles.css" />
+  </head>
+  <body class="min-h-screen">
+    <!-- Sidebar -->
+    <aside class="fixed inset-y-0 left-0 z-50 w-72 glass animate-slide-in">
+      <div class="p-6 border-b border-white/10">
+        <div class="flex items-center logo-container">
+          <div class="w-12 h-12 mr-4 logo">
+            <img
+              src="/assets/img/logo.svg"
+              alt="HyperEfficient"
+              class="w-full h-full"
+            />
           </div>
-          <div class="flex items-center space-x-4">
+          <div>
+            <h1 class="text-xl font-bold text-white">HyperEfficient</h1>
+            <p class="text-xs text-gray-400">Sistema de Controle</p>
+          </div>
+        </div>
+      </div>
+
+      <nav class="p-4 space-y-2">
+        <div class="mb-6">
+          <h3
+            class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3"
+          >
+            Principal
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                href="/pages/dashboard/dashboard.html"
+                class="flex items-center px-4 py-3 text-gray-900 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl font-semibold shadow-lg"
+              >
+                <div class="w-5 h-5 mr-3">
+                  <i class="fas fa-home"></i>
+                </div>
+                Dashboard
+                <div
+                  class="ml-auto w-2 h-2 bg-gray-900 rounded-full animate-pulse-slow"
+                ></div>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/pages/equipamentos/listar-equipamentos.html"
+                class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group"
+              >
+                <div
+                  class="w-5 h-5 mr-3 text-green-400 group-hover:scale-110 transition-transform"
+                >
+                  <i class="fas fa-cogs"></i>
+                </div>
+                Equipamentos
+              </a>
+            </li>
+            <li>
+              <a
+                href="/pages/setores/listar-setores.html"
+                class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group"
+              >
+                <div
+                  class="w-5 h-5 mr-3 text-purple-400 group-hover:scale-110 transition-transform"
+                >
+                  <i class="fas fa-building"></i>
+                </div>
+                Setores
+              </a>
+            </li>
+            <li>
+              <a
+                href="/pages/categorias/listar-categorias.html"
+                class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group"
+              >
+                <div
+                  class="w-5 h-5 mr-3 text-yellow-400 group-hover:scale-110 transition-transform"
+                >
+                  <i class="fas fa-tags"></i>
+                </div>
+                Categorias
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3
+            class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3"
+          >
+            Conta
+          </h3>
+          <ul class="space-y-1">
+            <li>
+              <a
+                href="/pages/usuarios/perfil.html"
+                class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 hover:text-white transition-all duration-200 group"
+              >
+                <div
+                  class="w-5 h-5 mr-3 text-cyan-400 group-hover:scale-110 transition-transform"
+                >
+                  <i class="fas fa-user"></i>
+                </div>
+                Perfil
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                id="logoutBtn"
+                class="flex items-center px-4 py-3 text-gray-300 rounded-xl hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
+              >
+                <div
+                  class="w-5 h-5 mr-3 text-red-400 group-hover:scale-110 transition-transform"
+                >
+                  <i class="fas fa-sign-out-alt"></i>
+                </div>
+                Sair
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-72 p-6">
+      <!-- Header with Period Selection -->
+      <header class="mb-8 animate-fade-in-up">
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Dashboard</h1>
+            <p class="text-gray-400">Visão geral da empresa</p>
+          </div>
+        </div>
+
+        <!-- Period Selection -->
+        <div class="glass rounded-2xl p-6">
+          <div class="flex items-center justify-between">
             <div>
-              <label for="dataInicio" class="block text-sm font-medium text-gray-300 mb-2">
-                Data Inicial
-              </label>
-              <input 
-                type="date" 
-                id="dataInicio" 
-                class="input-field px-4 py-2 rounded-xl text-white focus:outline-none"
-              />
+              <h3 class="text-lg font-semibold text-white mb-1">
+                Período de Análise
+              </h3>
+              <p class="text-gray-400 text-sm">
+                Selecione o período para visualizar os relatórios
+              </p>
             </div>
+            <div class="flex items-center space-x-4">
+              <div>
+                <label
+                  for="dataInicio"
+                  class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                  Data Inicial
+                </label>
+                <input
+                  type="date"
+                  id="dataInicio"
+                  class="input-field px-4 py-2 rounded-xl text-white focus:outline-none"
+                />
+              </div>
+              <div>
+                <label
+                  for="dataFim"
+                  class="block text-sm font-medium text-gray-300 mb-2"
+                >
+                  Data Final
+                </label>
+                <input
+                  type="date"
+                  id="dataFim"
+                  class="input-field px-4 py-2 rounded-xl text-white focus:outline-none"
+                />
+              </div>
+              <button
+                id="btnAtualizarRelatorio"
+                class="btn-primary px-6 py-2 rounded-xl flex items-center space-x-2 hover-lift mt-6"
+              >
+                <i class="fas fa-sync-alt"></i>
+                <span>Atualizar</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Statistics Cards -->
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in-up"
+        style="animation-delay: 0.1s"
+      >
+        <!-- Setores Card -->
+        <div class="glass rounded-2xl p-6 hover-lift">
+          <div class="flex items-center justify-between">
             <div>
-              <label for="dataFim" class="block text-sm font-medium text-gray-300 mb-2">
-                Data Final
-              </label>
-              <input 
-                type="date" 
-                id="dataFim" 
-                class="input-field px-4 py-2 rounded-xl text-white focus:outline-none"
-              />
+              <p class="text-gray-400 text-sm font-medium">Total de Setores</p>
+              <p class="text-3xl font-bold text-white mt-2" id="cardSetores">
+                0
+              </p>
             </div>
-            <button 
-              id="btnAtualizarRelatorio" 
-              class="btn-primary px-6 py-2 rounded-xl flex items-center space-x-2 hover-lift mt-6"
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center"
             >
-              <i class="fas fa-sync-alt"></i>
-              <span>Atualizar</span>
-            </button>
+              <i class="fas fa-building text-white text-xl"></i>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in-up" style="animation-delay: 0.1s;">
-      <!-- Setores Card -->
-      <div class="glass rounded-2xl p-6 hover-lift">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-400 text-sm font-medium">Total de Setores</p>
-            <p class="text-3xl font-bold text-white mt-2" id="cardSetores">0</p>
-          </div>
-          <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <i class="fas fa-building text-white text-xl"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Equipamentos Card -->
-      <div class="glass rounded-2xl p-6 hover-lift">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-400 text-sm font-medium">Total de Equipamentos</p>
-            <p class="text-3xl font-bold text-white mt-2" id="cardEquipamentos">0</p>
-          </div>
-          <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
-            <i class="fas fa-cogs text-white text-xl"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tempo de Uso Card -->
-      <div class="glass rounded-2xl p-6 hover-lift">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-400 text-sm font-medium">Tempo de Uso Total</p>
-            <p class="text-3xl font-bold text-white mt-2" id="cardTempoUso">0h</p>
-          </div>
-          <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <i class="fas fa-clock text-white text-xl"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- Gasto Energético Card -->
-      <div class="glass rounded-2xl p-6 hover-lift">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-gray-400 text-sm font-medium">Gasto Energético Total</p>
-            <p class="text-3xl font-bold text-white mt-2" id="cardGastoEnergetico">0 kWh</p>
-          </div>
-          <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center">
-            <i class="fas fa-bolt text-gray-900 text-xl"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Chart Section -->
-    <div class="glass rounded-2xl p-6 mb-8 animate-fade-in-up" style="animation-delay: 0.2s;">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h3 class="text-xl font-semibold text-white">Consumo Energético</h3>
-          <p class="text-gray-400 text-sm">Evolução do consumo no período selecionado</p>
-        </div>
-      </div>
-      <div class="h-80">
-        <canvas id="chart-line"></canvas>
-      </div>
-    </div>
-
-    <!-- Setores and Categorias Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up" style="animation-delay: 0.3s;">
-      
-      <!-- Setores Section -->
-      <div class="glass rounded-2xl overflow-hidden">
-        <div class="p-6 border-b border-white/10">
+        <!-- Equipamentos Card -->
+        <div class="glass rounded-2xl p-6 hover-lift">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-xl font-semibold text-white">Setores</h3>
-              <p class="text-gray-400 text-sm">Consumo por setor no período</p>
+              <p class="text-gray-400 text-sm font-medium">
+                Total de Equipamentos
+              </p>
+              <p
+                class="text-3xl font-bold text-white mt-2"
+                id="cardEquipamentos"
+              >
+                0
+              </p>
             </div>
-            <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <i class="fas fa-building text-white"></i>
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center"
+            >
+              <i class="fas fa-cogs text-white text-xl"></i>
             </div>
           </div>
         </div>
-        
-        <div id="setoresContainer" class="max-h-96 overflow-y-auto">
-          <div id="setoresLoading" class="p-8 text-center">
-            <div class="inline-flex items-center space-x-3">
-              <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-              <span class="text-gray-300">Carregando setores...</span>
-            </div>
-          </div>
-          <div id="setoresList" class="hidden"></div>
-        </div>
-      </div>
 
-      <!-- Categorias Section -->
-      <div class="glass rounded-2xl overflow-hidden">
-        <div class="p-6 border-b border-white/10">
+        <!-- Tempo de Uso Card -->
+        <div class="glass rounded-2xl p-6 hover-lift">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-xl font-semibold text-white">Categorias</h3>
-              <p class="text-gray-400 text-sm">Consumo por categoria no período</p>
+              <p class="text-gray-400 text-sm font-medium">
+                Tempo de Uso Total
+              </p>
+              <p class="text-3xl font-bold text-white mt-2" id="cardTempoUso">
+                0h
+              </p>
             </div>
-            <div class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center">
-              <i class="fas fa-tags text-gray-900"></i>
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center"
+            >
+              <i class="fas fa-clock text-white text-xl"></i>
             </div>
           </div>
         </div>
-        
-        <div id="categoriasContainer" class="max-h-96 overflow-y-auto">
-          <div id="categoriasLoading" class="p-8 text-center">
-            <div class="inline-flex items-center space-x-3">
-              <div class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-              <span class="text-gray-300">Carregando categorias...</span>
+
+        <!-- Gasto Energético Card -->
+        <div class="glass rounded-2xl p-6 hover-lift">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-gray-400 text-sm font-medium">
+                Gasto Energético Total
+              </p>
+              <p
+                class="text-3xl font-bold text-white mt-2"
+                id="cardGastoEnergetico"
+              >
+                0 kWh
+              </p>
+            </div>
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center"
+            >
+              <i class="fas fa-bolt text-gray-900 text-xl"></i>
             </div>
           </div>
-          <div id="categoriasList" class="hidden"></div>
         </div>
       </div>
-    </div>
-  </main>
 
-  <!-- Overlay global de loading -->
-  <div id="globalLoading" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(10,11,15,0.75); backdrop-filter:blur(2px); align-items:center; justify-content:center;">
-    <div class="flex flex-col items-center">
-      <div class="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <span class="text-white text-lg font-semibold">Carregando...</span>
-    </div>
-  </div>
+      <!-- Chart Section -->
+      <div
+        class="glass rounded-2xl p-6 mb-8 animate-fade-in-up"
+        style="animation-delay: 0.2s"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h3 class="text-xl font-semibold text-white">Consumo Energético</h3>
+            <p class="text-gray-400 text-sm">
+              Evolução do consumo no período selecionado
+            </p>
+          </div>
+        </div>
+        <div class="h-80">
+          <canvas id="chart-line"></canvas>
+        </div>
+      </div>
 
-  <script src="/pages/shared/services/utils.js"></script>
-  <script src="/pages/shared/services/api.js"></script>
-  <script src="/pages/shared/services/auth-guard.js"></script>
-  <script src="dashboard.js"></script>
-</body>
+      <!-- Setores and Categorias Section -->
+      <div
+        class="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up"
+        style="animation-delay: 0.3s"
+      >
+        <!-- Setores Section -->
+        <div class="glass rounded-2xl overflow-hidden">
+          <div class="p-6 border-b border-white/10">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xl font-semibold text-white">Setores</h3>
+                <p class="text-gray-400 text-sm">
+                  Consumo por setor no período
+                </p>
+              </div>
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center"
+              >
+                <i class="fas fa-building text-white"></i>
+              </div>
+            </div>
+          </div>
+
+          <div id="setoresContainer" class="max-h-96 overflow-y-auto">
+            <div id="setoresLoading" class="p-8 text-center">
+              <div class="inline-flex items-center space-x-3">
+                <div
+                  class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"
+                ></div>
+                <span class="text-gray-300">Carregando setores...</span>
+              </div>
+            </div>
+            <div id="setoresList" class="hidden"></div>
+          </div>
+        </div>
+
+        <!-- Categorias Section -->
+        <div class="glass rounded-2xl overflow-hidden">
+          <div class="p-6 border-b border-white/10">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-xl font-semibold text-white">Categorias</h3>
+                <p class="text-gray-400 text-sm">
+                  Consumo por categoria no período
+                </p>
+              </div>
+              <div
+                class="w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center"
+              >
+                <i class="fas fa-tags text-gray-900"></i>
+              </div>
+            </div>
+          </div>
+
+          <div id="categoriasContainer" class="max-h-96 overflow-y-auto">
+            <div id="categoriasLoading" class="p-8 text-center">
+              <div class="inline-flex items-center space-x-3">
+                <div
+                  class="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"
+                ></div>
+                <span class="text-gray-300">Carregando categorias...</span>
+              </div>
+            </div>
+            <div id="categoriasList" class="hidden"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Overlay global de loading -->
+    <div
+      id="globalLoading"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(10, 11, 15, 0.75);
+        backdrop-filter: blur(2px);
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div class="flex flex-col items-center">
+        <div
+          class="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4"
+        ></div>
+        <span class="text-white text-lg font-semibold">Carregando...</span>
+      </div>
+    </div>
+
+    <script src="/pages/shared/services/utils.js"></script>
+    <script src="/pages/shared/services/api.js"></script>
+    <script src="/pages/shared/services/auth-guard.js"></script>
+    <script src="dashboard.js"></script>
+  </body>
 </html>
