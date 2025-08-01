@@ -1,7 +1,7 @@
 # Prompt Completo Sistema HyperEfficient - Versão Atualizada 2025
 
 ## Visão Geral do Projeto
-HyperEfficient é um sistema completo de gestão de gastos elétricos empresariais desenvolvido como projeto acadêmico para o curso Entra21 (turma C). O sistema permite monitorar equipamentos, registrar consumo energético, gerar relatórios e controlar custos por setor com uma arquitetura moderna e modular.
+HyperEfficient é um sistema completo de gestão de gastos elétricos empresariais desenvolvido como projeto acadêmico para o curso Entra21 (turma C). O sistema permite monitorar equipamentos, registrar consumo energético, gerar relatórios e controlar custos por setor com uma arquitetura moderna e modular. Inclui integração com dispositivos inteligentes Tuya para monitoramento em tempo real.
 
 ## Arquitetura e Stack Tecnológica
 
@@ -17,6 +17,8 @@ HyperEfficient é um sistema completo de gestão de gastos elétricos empresaria
 - **Padrões:** Repository Pattern + Service Layer
 - **Logs:** ILogger integrado
 - **Validação:** Data Annotations nos DTOs
+- **Integração:** Tuya API para dispositivos inteligentes
+- **Background Services:** IHostedService para atualizações periódicas
 
 ### Frontend - SPA Vanilla
 - **Core:** HTML5 + Vanilla JavaScript + Tailwind CSS
@@ -27,12 +29,14 @@ HyperEfficient é um sistema completo de gestão de gastos elétricos empresaria
 - **HTTP:** Fetch API nativo para comunicação com backend
 - **Utilitários:** Biblioteca Utils.js com funções auxiliares extensivas
 - **Autenticação:** Sistema AuthGuard centralizado para proteção de rotas
+- **Charts:** Chart.js para gráficos de consumo energético
 
 ### Banco de Dados - MySQL
 - **Schema:** `hyperefficient`
 - **Engine:** InnoDB
 - **Versionamento:** Scripts SQL manuais (sem migrations)
 - **Convenções:** Tabelas/campos UPPERCASE, entidades PascalCase
+- **Tipos:** DOUBLE para valores de potência e energia (kWh)
 
 ## Estrutura Completa do Backend
 
@@ -49,14 +53,16 @@ HyperEfficient/ (Pasta raiz do backend)
 │   │   ├── ICategoriaRepository.cs
 │   │   ├── IEquipamentoRepository.cs
 │   │   ├── ISetorRepository.cs
-│   │   └── IRegistroRepository.cs
+│   │   ├── IRegistroRepository.cs
+│   │   └── IRelatorioRepository.cs
 │   └── Services/
 │       ├── IUsuarioService.cs
 │       ├── ICategoriaService.cs
 │       ├── IEquipamentoService.cs
 │       ├── ISetorService.cs
 │       ├── IRegistroService.cs
-│       └── IRelatorioService.cs
+│       ├── IRelatorioService.cs
+│       └── ITuyaApiClientService.cs
 ├── Controllers/ (Endpoints da API)
 │   ├── UsuarioController.cs
 │   ├── CategoriaController.cs
@@ -76,9 +82,21 @@ HyperEfficient/ (Pasta raiz do backend)
 │   │   └── UsuarioGetAllResponse.cs
 │   ├── Categoria/
 │   ├── Equipamento/
+│   │   ├── EquipamentoDto.cs
+│   │   ├── EquipamentoInsertDto.cs
+│   │   ├── EquipamentoGetAllResponse.cs
+│   │   └── EquipamentoStatusDto.cs
 │   ├── Setor/
 │   ├── Registro/
+│   │   ├── RegistroDto.cs
+│   │   ├── RegistroInsertDto.cs
+│   │   └── RegistroGetAllResponse.cs
 │   ├── Relatorios/
+│   │   ├── RelatorioEmpresaResponse.cs
+│   │   ├── TotalizadoresDto.cs
+│   │   ├── DadosMensaisDto.cs
+│   │   ├── SetorResumoDto.cs
+│   │   └── CategoriaResumoDto.cs
 │   └── MessageResponse/
 │       └── MessageResponse.cs
 ├── Entities/ (Modelos de domínio)
@@ -111,14 +129,18 @@ HyperEfficient/ (Pasta raiz do backend)
 │   ├── CategoriaRepository.cs
 │   ├── EquipamentoRepository.cs
 │   ├── SetorRepository.cs
-│   └── RegistroRepository.cs
+│   ├── RegistroRepository.cs
+│   └── RelatorioRepository.cs
 ├── Services/ (Lógica de negócio)
 │   ├── UsuarioService.cs
 │   ├── CategoriaService.cs
 │   ├── EquipamentoService.cs
 │   ├── SetorService.cs
 │   ├── RegistroService.cs
-│   └── RelatorioService.cs
+│   ├── RelatorioService.cs
+│   ├── TuyaApiClientService.cs
+│   └── BackgroundServices/
+│       └── TuyaUpdateService.cs
 ├── appsettings.json
 ├── Program.cs
 └── [arquivos de configuração]
@@ -133,6 +155,11 @@ HyperEfficient-frontEnd/
 ├── assets/
 │   ├── css/
 │   │   ├── dashboard-tailwind.css (Estilos principais)
+│   │   ├── dashboard-specific.css (Estilos específicos do dashboard)
+│   │   ├── auth-pages.css (Estilos das páginas de autenticação)
+│   │   ├── listing-pages.css (Estilos das páginas de listagem)
+│   │   ├── modal-styles.css (Estilos dos modais)
+│   │   ├── global.css (Estilos globais)
 │   │   ├── nucleo-icons.css (Ícones)
 │   │   ├── nucleo-svg.css (SVG icons)
 │   │   ├── perfect-scrollbar.css (Scrollbar customizada)
@@ -146,15 +173,17 @@ HyperEfficient-frontEnd/
 │           └── perfect-scrollbar.min.js (Scrollbar)
 ├── pages/
 │   ├── auth/
-│   │   └── login.html (Página de login)
+│   │   ├── login.html (Página de login)
+│   │   └── login.js (Lógica de login)
 │   ├── dashboard/
 │   │   ├── components/
 │   │   │   └── dashboard-cards.js
 │   │   ├── dashboard.html (Dashboard principal)
-│   │   └── dashboard.html (Relatórios)
+│   │   └── dashboard.js (Lógica do dashboard)
 │   ├── shared/
 │   │   ├── components/
 │   │   │   ├── modal.js
+│   │   │   ├── table.js
 │   │   │   ├── sidebar.html
 │   │   │   └── sidebar.js
 │   │   └── services/
@@ -162,16 +191,26 @@ HyperEfficient-frontEnd/
 │   │       ├── utils.js (Utilitários gerais - CRÍTICO)
 │   │       └── auth-guard.js (Sistema de autenticação - NOVO)
 │   ├── usuarios/
-│   │   ├── listar-setores.html (Gestão de setores)
+│   │   ├── cadastro/
+│   │   │   ├── cadastro.html (Cadastro de usuários)
+│   │   │   └── cadastro.js (Lógica de cadastro)
 │   │   ├── perfil.html (Perfil do usuário)
-│   │   ├── cadastro.html (Cadastro de usuários)
-│   │   └── usuarios.html (Listagem de usuários)
-│   └── documentacao.html (Documentação do projeto)
+│   │   └── perfil.js (Lógica do perfil)
+│   ├── setores/
+│   │   ├── listar-setores.html (Gestão de setores)
+│   │   └── listar-setores.js (Lógica de setores)
+│   ├── categorias/
+│   │   ├── listar-categorias.html (Gestão de categorias)
+│   │   └── listar-categorias.js (Lógica de categorias)
+│   └── equipamentos/
+│       ├── listar-equipamentos.html (Gestão de equipamentos)
+│       └── listar-equipamentos.js (Lógica de equipamentos)
 ├── Backend/ (Pasta do backend)
 ├── package.json
 ├── postcss.config.js
 ├── tailwind.config.js
 ├── README-API.md
+├── Requisitos.txt
 └── .gitignore
 ```
 
@@ -200,6 +239,9 @@ initAuthGuard();
 // Páginas protegidas (precisam de autenticação):
 - /pages/dashboard/
 - /pages/usuarios/ (exceto cadastro.html)
+- /pages/setores/
+- /pages/categorias/
+- /pages/equipamentos/
 ```
 
 ## Biblioteca Utils.js - Componente Crítico
@@ -343,7 +385,7 @@ Categoria {
 -- SETOR (Divisões da empresa)
 Setor {
   Id: INT PRIMARY KEY AUTO_INCREMENT
-  GastoGeral: DECIMAL(10,2)
+  GastoGeral: DOUBLE
   Nome: VARCHAR(100)
 }
 
@@ -352,7 +394,8 @@ Equipamento {
   Id: INT PRIMARY KEY AUTO_INCREMENT
   Nome: VARCHAR(100) NOT NULL
   Descricao: VARCHAR(300)
-  Gastokwh: DECIMAL(10,2) NOT NULL  -- Consumo por hora
+  PotenciaKwh: DOUBLE NOT NULL  -- Consumo por hora
+  DeviceIdIntegration: VARCHAR(100)  -- ID do dispositivo Tuya
   CategoriaId: INT FK > Categoria.Id
   SetorId: INT FK > Setor.Id
   Ativo: TINYINT DEFAULT 1
@@ -364,7 +407,96 @@ Registro {
   DataInicial: DATETIME NOT NULL
   DataFinal: DATETIME  -- Null = ainda em uso
   EquipamentoId: INT FK > Equipamento.Id
+  TotalKwh: DOUBLE NOT NULL DEFAULT 0  -- Total de kWh consumido
+  TotalTempo: DOUBLE GENERATED ALWAYS AS (
+    IF(DataFinal IS NOT NULL, TIMESTAMPDIFF(SECOND, DataInicial, DataFinal) / 3600, NULL)
+  ) STORED
 }
+```
+
+## Integração com Tuya API
+
+### Funcionalidades Implementadas
+
+#### 1. TuyaApiClientService
+```csharp
+public interface ITuyaApiClientService
+{
+    Task<EquipamentoStatusDto> GetStatusAsync(string deviceId);
+    Task LigarAsync(int equipamentoId);
+    Task DesligarAsync(int equipamentoId);
+}
+
+// Funcionalidades:
+- Autenticação HMAC-SHA256 com nonce UUID
+- Obtenção de status em tempo real dos dispositivos
+- Controle remoto de ligar/desligar
+- Tratamento de erros de autenticação
+- Cache de token de acesso
+```
+
+#### 2. Sistema de Registros Inteligente
+```csharp
+// RegistroService.cs
+public async Task<MessageResponse> StartStopRegistro(int equipamentoId)
+{
+    // Atualiza dados do equipamento antes de iniciar/parar
+    await _equipamentoService.AtualizarConsumoEquipamento(equipamentoId);
+    
+    // Lógica de start/stop com sincronização
+}
+
+// Cálculo de consumo:
+// - Com DeviceIdIntegration: usa dados reais da Tuya API
+// - Sem DeviceIdIntegration: calcula com base na potência informada
+```
+
+#### 3. Background Service
+```csharp
+// TuyaUpdateService.cs
+public class TuyaUpdateService : BackgroundService
+{
+    // Atualiza equipamentos com integração Tuya a cada 3 horas
+    // Mantém dados de potência e status atualizados
+    // Evita sobrecarga da API Tuya
+}
+```
+
+## Dashboard e Relatórios
+
+### Funcionalidades do Dashboard
+```javascript
+// dashboard.js
+- Seleção de período (data inicial/final)
+- Cards com totalizadores animados
+- Gráfico de consumo energético (Chart.js)
+- Lista de setores ordenada por consumo
+- Lista de categorias ordenada por consumo
+- Validação de período máximo (1 ano)
+- Persistência de filtros na sessão
+```
+
+### Relatórios Backend
+```csharp
+// RelatorioService.cs
+public async Task<RelatorioEmpresaResponse> GetRelatorioEmpresa(DateTime dataInicio, DateTime dataFim)
+{
+    return new RelatorioEmpresaResponse
+    {
+        Totalizadores = await _relatorioRepository.GetTotalizadores(dataInicio, dataFim),
+        DadosMensais = await _relatorioRepository.GetDadosMensais(dataInicio, dataFim),
+        Setores = await _relatorioRepository.GetSetorResumo(dataInicio, dataFim),
+        Categorias = await _relatorioRepository.GetCategoriaResumo(dataInicio, dataFim)
+    };
+}
+```
+
+### Consultas SQL Otimizadas
+```sql
+-- Cálculo de consumo considerando registros ativos e finalizados
+-- Períodos parciais calculados corretamente
+-- Agrupamento por setor e categoria
+-- Ordenação por consumo total
 ```
 
 ## Padrões de Código e Convenções
@@ -372,52 +504,51 @@ Registro {
 ### Controllers (Endpoints da API)
 ```csharp
 [ApiController]
-[Route("usuarios")]  // Sempre plural, lowercase
-public class UsuarioController : ControllerBase
+[Route("relatorios")]  // Sempre plural, lowercase
+public class RelatoriosController : ControllerBase
 {
     // Padrão: Apenas delegam para Services
     // Sempre retornam Ok(resultado)
     // DTOs para entrada, Entities/DTOs para saída
     // [Authorize] em tudo, exceto [AllowAnonymous] no login
     
-    [HttpPost] public Task<ActionResult<MessageResponse>> Insert([FromBody] UsuarioInsertDto dto)
-    [HttpPut] public Task<ActionResult<MessageResponse>> Update([FromBody] UsuarioEntity entity)
-    [HttpDelete("{id}")] public Task<ActionResult<MessageResponse>> Delete(int id)
-    [HttpGet] public Task<ActionResult<UsuarioGetAllResponse>> GetAll()
-    [HttpGet("{id}")] public Task<ActionResult<UsuarioDto>> GetById(int id)
+    [HttpGet("empresa")]
+    [Authorize]
+    public async Task<ActionResult<RelatorioEmpresaResponse>> Empresa(
+        [FromQuery] DateTime dataInicio, [FromQuery] DateTime dataFim)
+    {
+        return Ok(await _relatorioService.GetRelatorioEmpresa(dataInicio, dataFim));
+    }
 }
 ```
 
 ### Services (Lógica de Negócio)
 ```csharp
-public class UsuarioService : IUsuarioService
+public class RegistroService : ServiceBase<Registro>, IRegistroService
 {
     // Responsabilidades:
     // - Validações de negócio
-    // - Criptografia de senhas (PBKDF2)
-    // - Mapeamento com AutoMapper
-    // - Chamadas aos Repositories
-    // - Geração de tokens JWT
-    // - Tratamento de exceções (KeyNotFoundException)
+    // - Integração com Tuya API
+    // - Cálculos de consumo energético
+    // - Sincronização de dados
+    // - Tratamento de exceções
     
-    // Padrão de retorno:
-    // - MessageResponse para Insert/Update/Delete
-    // - DTOs/Entities para consultas
-    // - Sempre async Task<T>
+    public async Task<MessageResponse> StartStopRegistro(int equipamentoId)
+    public async Task<EquipamentoStatusDto> ObterConsumoAsync(int equipamentoId)
+    public async Task LigarAsync(int equipamentoId)
+    public async Task DesligarAsync(int equipamentoId)
 }
 ```
 
 ### Repositories (Acesso a Dados)
 ```csharp
-public class UsuarioRepository : IUsuarioRepository
+public class RelatorioRepository : IRelatorioRepository
 {
-    // Métodos padrão:
-    // Insert(entity) > int (affected rows)
-    // Update(entity) > int
-    // Delete(id) > int  
-    // GetAll() > IEnumerable<Entity>
-    // GetPaged(page, pageSize) > IEnumerable<Entity>
-    // GetById(id) > Entity?
+    // Métodos para relatórios:
+    // GetTotalizadores(dataInicio, dataFim)
+    // GetDadosMensais(dataInicio, dataFim)
+    // GetSetorResumo(dataInicio, dataFim)
+    // GetCategoriaResumo(dataInicio, dataFim)
     
     // SQL sempre nativo com Dapper
     // Campos DB em UPPERCASE, propriedades em PascalCase
@@ -427,26 +558,22 @@ public class UsuarioRepository : IUsuarioRepository
 
 ### DTOs (Transferência de Dados)
 ```csharp
-// InsertDto: Criação (com DataAnnotations)
-public class UsuarioInsertDto
+// EquipamentoStatusDto: Status em tempo real
+public class EquipamentoStatusDto
 {
-    [Required][StringLength(100)] public string Nome { get; set; }
-    [EmailAddress][Required] public string Email { get; set; }
-    [Required][MinLength(6)] public string Senha { get; set; }
+    public double PotenciaKwh { get; set; }
+    public double TotalKwh { get; set; }
+    public bool Ligado { get; set; }
 }
 
-// Dto: Consulta (sem campos sensíveis)
-public class UsuarioDto : BaseDto
+// RelatorioEmpresaResponse: Dados do dashboard
+public class RelatorioEmpresaResponse
 {
-    public string Nome { get; set; }
-    public string Email { get; set; }
-    public bool Ativo { get; set; }
-    // Sem Senha!
+    public TotalizadoresDto Totalizadores { get; set; }
+    public List<DadosMensaisDto> DadosMensais { get; set; }
+    public List<SetorResumoDto> Setores { get; set; }
+    public List<CategoriaResumoDto> Categorias { get; set; }
 }
-
-// LoginDto: Autenticação
-// GetAllResponse: Listagens
-// LoginTokenDto: Resposta do login (token + usuário)
 ```
 
 ## Configuração e Inicialização
@@ -459,6 +586,11 @@ public class UsuarioDto : BaseDto
   },
   "JwtSettings": {
     "SecretKey": "zjcvbnoDmkKeugcBfkoxcmZCqDbBlWJw"
+  },
+  "TuyaApi": {
+    "ClientId": "your_client_id",
+    "ClientSecret": "your_client_secret",
+    "BaseUrl": "https://openapi.tuyaeu.com"
   }
 }
 ```
@@ -474,10 +606,13 @@ builder.Services.AddScoped<IAutentication, Autentication>();
 builder.Services.AddCamadaInfra().AddCamadaAplicacao();  // Extension methods
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// 2. Database initialization
+// 2. Background Services
+builder.Services.AddHostedService<TuyaUpdateService>();
+
+// 3. Database initialization
 EnsureDatabaseAndTablesCreated(connection, configuration);
 
-// 3. Middleware pipeline
+// 4. Middleware pipeline
 app.UseHttpsRedirection();
 app.UseMiddleware<ErrorHandlingMiddleware>();  // Custom error handling
 app.UseAuthentication();  // ANTES do Authorization!
@@ -495,24 +630,34 @@ app.MapControllers();
 
 ### Módulo de Equipamentos
 - Cadastro com categoria e setor obrigatórios
-- Campo Gastokwh para cálculo de consumo
+- Campo PotenciaKwh para cálculo de consumo
+- Integração opcional com dispositivos Tuya (DeviceIdIntegration)
 - Relacionamento com Categoria e Setor
 - Status ativo/inativo
+- Atualização automática de dados via Tuya API
 
 ### Módulo de Registros
 - Início/fim de uso de equipamentos
 - DataFinal null = equipamento ainda em uso
+- Cálculo automático de TotalKwh
+- Integração com dados reais da Tuya API
 - Base para cálculos de consumo e relatórios
 
 ### Módulo de Relatórios
-- Consumo por setor
-- Consumo por equipamento
+- Dashboard com período selecionável
+- Consumo por setor com ordenação
+- Consumo por categoria com ordenação
+- Gráfico de evolução do consumo
+- Totalizadores animados
 - Histórico de registros
-- Cálculos de custo energético
 
-### Módulo de Setores (NOVO)
+### Módulo de Setores
 - Gestão de setores da empresa
 - Cálculo de gasto geral por setor
+- Interface de listagem e edição
+
+### Módulo de Categorias
+- Gestão de categorias de equipamentos
 - Interface de listagem e edição
 
 ## Tratamento de Erros
@@ -710,6 +855,7 @@ Utils.formatDate(registro.dataInicial);
 - Estado: localStorage + variáveis globais
 - Utils.js: Biblioteca central obrigatória para todas as operações
 - AuthGuard: Sistema de autenticação centralizado obrigatório
+- Chart.js: Para gráficos de consumo energético
 
 ### Backend
 - Dapper: SQL nativo, sem ORM complexo
@@ -717,12 +863,15 @@ Utils.formatDate(registro.dataInicial);
 - JWT: Autenticação stateless
 - AutoMapper: Mapeamento automático entre camadas
 - Middleware: Tratamento global de erros
+- Tuya API: Integração com dispositivos inteligentes
+- Background Services: Atualizações periódicas
 
 ### Integração
 - API REST: Comunicação via JSON
 - CORS: Configurado para desenvolvimento local
 - Swagger: Documentação automática da API
 - Logging: ILogger para rastreamento
+- Tuya API: HMAC-SHA256 para autenticação
 
 ## Melhorias Implementadas (2025)
 
@@ -752,20 +901,43 @@ Utils.formatDate(registro.dataInicial);
 - ✅ Endpoints organizados e documentados
 - ✅ Tratamento de erros padronizado
 
+### Integração com Tuya API
+- ✅ TuyaApiClientService: Cliente para API Tuya
+- ✅ Autenticação HMAC-SHA256 com nonce
+- ✅ Obtenção de status em tempo real
+- ✅ Controle remoto de dispositivos
+- ✅ Background service para atualizações periódicas
+
+### Sistema de Registros Inteligente
+- ✅ Cálculo automático de consumo
+- ✅ Integração com dados reais da Tuya API
+- ✅ Fallback para equipamentos sem integração
+- ✅ Armazenamento de TotalKwh nos registros
+
+### Dashboard Completo
+- ✅ Seleção de período com validação
+- ✅ Cards animados com totalizadores
+- ✅ Gráfico de consumo energético
+- ✅ Listas ordenadas por consumo
+- ✅ Persistência de filtros
+
 ## Funcionalidades e Endpoints Adicionados (2025)
 
 ### Backend
 - **Endpoint `/usuarios/handshake`**: Permite ao frontend validar se o token JWT ainda é aceito pelo backend (usado para handshake/autenticação).
 - **Login com campo `lembrarDeMim`**: O endpoint de login agora aceita o campo `lembrarDeMim` (boolean). Se true, o backend gera um token JWT com expiração maior (ex: 30 dias); se false, expiração padrão (ex: 2 horas).
+- **Integração Tuya API**: Endpoints para controle e monitoramento de dispositivos inteligentes.
+- **Background Service**: Atualização periódica de dados dos equipamentos Tuya.
+- **Sistema de Registros**: Controle inteligente de início/fim de uso com cálculo automático de consumo.
 
 ### Frontend
 - **Armazenamento do token**: O frontend salva o token e o usuário apenas no `localStorage`, independente do checkbox "Lembrar de mim".
 - **Verificação periódica de token**: O frontend verifica a validade do token a cada 1 minuto usando o AuthGuard e o endpoint `/usuarios/handshake`.
 - **Logout global**: O logout remove sempre o token/usuário do localStorage e redireciona para a tela de login.
+- **Dashboard completo**: Interface moderna com gráficos, filtros e totalizadores.
+- **Gestão de equipamentos**: Interface para cadastro e controle de equipamentos com integração Tuya.
 
-Essas mudanças garantem maior segurança, controle de sessão e alinhamento entre frontend e backend para autenticação e expiração de sessão.
-
-Este prompt captura completamente a essência, estrutura, padrões e especificidades técnicas do projeto HyperEfficient, incluindo a importância crítica da biblioteca Utils.js no frontend, o novo sistema AuthGuard para autenticação centralizada, e todos os detalhes arquiteturais necessários para compreensão integral do sistema.
+Essas mudanças garantem maior segurança, controle de sessão, alinhamento entre frontend e backend para autenticação e expiração de sessão, além de funcionalidades avançadas de monitoramento energético.
 
 ### Organização dos Scripts de Login e Cadastro (2025)
 - Todos os scripts de lógica de login e cadastro foram movidos para arquivos JavaScript externos:
@@ -791,7 +963,7 @@ Este prompt captura completamente a essência, estrutura, padrões e especificid
 
 - **Setor / SetorEntity**
   - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
-  - GastoGeral: DECIMAL(10,2) / decimal
+  - GastoGeral: DOUBLE / double
   - Nome: VARCHAR(100) / string
   - Descricao: VARCHAR(300) / string
 
@@ -799,7 +971,8 @@ Este prompt captura completamente a essência, estrutura, padrões e especificid
   - Id: INT/AUTO_INCREMENT (herdado de EntityBase)
   - Nome: VARCHAR(100) / string
   - Descricao: VARCHAR(300) / string
-  - Gastokwh: DECIMAL(10,2) / decimal
+  - PotenciaKwh: DOUBLE / double
+  - DeviceIdIntegration: VARCHAR(100) / string
   - CategoriaId: INT / int
   - SetorId: INT / int
   - Ativo: TINYINT / bool
@@ -809,3 +982,7 @@ Este prompt captura completamente a essência, estrutura, padrões e especificid
   - DataInicial: DATETIME / DateTime
   - DataFinal: DATETIME / DateTime
   - EquipamentoId: INT / int
+  - TotalKwh: DOUBLE / double
+  - TotalTempo: DOUBLE (GENERATED) / double
+
+Este prompt captura completamente a essência, estrutura, padrões e especificidades técnicas do projeto HyperEfficient, incluindo a importância crítica da biblioteca Utils.js no frontend, o novo sistema AuthGuard para autenticação centralizada, a integração com Tuya API, o sistema de registros inteligente, o dashboard completo, e todos os detalhes arquiteturais necessários para compreensão integral do sistema.

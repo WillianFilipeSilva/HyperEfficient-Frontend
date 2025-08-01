@@ -26,6 +26,7 @@ class EquipamentosPage {
 
       columns: [
         { field: "nome", label: "Nome" },
+        { field: "descricao", label: "Descrição" },
         {
           field: "categoria",
           label: "Categoria",
@@ -33,8 +34,8 @@ class EquipamentosPage {
         },
         { field: "setor", label: "Setor", format: (v) => v?.nome ?? "-" },
         {
-          field: "gastokwh",
-          label: "Gasto kW/h",
+          field: "potenciaKwh",
+          label: "Potência kW/h",
           format: (value) => (value ? `${value} kW/h` : "-"),
         },
         {
@@ -248,7 +249,8 @@ class EquipamentosPage {
       form.nome.value = item.nome || "";
       form.categoriaId.value = item.categoriaId || "";
       form.setorId.value = item.setorId || "";
-      form.gastokwh.value = item.gastokwh || "";
+      form.potenciaKwh.value = item.potenciaKwh || "";
+      form.deviceIdIntegration.value = item.deviceIdIntegration || "";
       form.descricao.value = item.descricao || "";
     }
   }
@@ -268,12 +270,13 @@ class EquipamentosPage {
       nome: formData.get("nome"),
       categoriaId: Number.parseInt(formData.get("categoriaId")),
       setorId: Number.parseInt(formData.get("setorId")),
-      gastokwh: Number.parseFloat(formData.get("gastokwh")),
+      potenciaKwh: Number.parseFloat(formData.get("potenciaKwh")) || 0,
+      deviceIdIntegration: formData.get("deviceIdIntegration"),
       descricao: formData.get("descricao"),
       ativo: true,
     };
 
-    if (!data.nome || !data.categoriaId || !data.setorId || !data.gastokwh) {
+    if (!data.nome || !data.categoriaId || !data.setorId) {
       this.showToast("Preencha todos os campos obrigatórios", "error");
       return;
     }
