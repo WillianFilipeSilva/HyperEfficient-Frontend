@@ -42,15 +42,20 @@ class EquipamentosPage {
           field: "ativo",
           label: "Status",
           format: (value, item) =>
-            `<span class="px-2 py-1 text-xs rounded-full status-toggle cursor-pointer select-none ${
-              value
-                ? "bg-green-500/20 text-green-400 hover:bg-green-500/40"
-                : "bg-red-500/20 text-red-400 hover:bg-red-500/40"
-            }" data-equipamento-id="${
+            `<div class="flex items-center space-x-2">
+              <div class="relative inline-block w-12 h-6 transition-colors duration-200 ease-in-out status-toggle cursor-pointer select-none ${
+                value ? "bg-green-500" : "bg-gray-600"
+              } rounded-full shadow-inner" data-equipamento-id="${
               item.id
-            }" title="Clique para registrar uso">
-              ${value ? "Ativo" : "Inativo"}
-            </span>`,
+            }" data-status="${value}" title="Clique para alternar status">
+                <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                  value ? "translate-x-6" : "translate-x-0"
+                }"></div>
+              </div>
+              <span class="text-xs font-medium ${
+                value ? "text-green-400" : "text-red-400"
+              }">${value ? "Ativo" : "Inativo"}</span>
+            </div>`,
         },
       ],
 
@@ -428,21 +433,20 @@ class EquipamentosPage {
     return icons[type] || icons.info;
   }
 
-  async registrarEquipamento(equipamentoId) {
+  async toggleEquipamentoStatus(equipamentoId, currentStatus) {
     try {
       await window.API_CONFIG.authenticatedRequest(
-        `/registros/registrar/${equipamentoId}`,
+        `${window.API_CONFIG.ENDPOINTS.REGISTROS}/registrar/${equipamentoId}`,
         {
           method: "POST",
         }
       );
-      setTimeout(() => {
-        this.showToast("Registro de uso realizado com sucesso!", "success");
-        this.loadData();
-      }, 1000);
+
+      this.loadData();
+      this.showToast("Status do equipamento alterado com sucesso!", "success");
     } catch (error) {
       this.showToast(
-        error.message || "Erro ao registrar uso do equipamento",
+        error.message || "Erro ao alterar status do equipamento",
         "error"
       );
     }
@@ -651,12 +655,17 @@ class ModernEquipamentosTable {
       statusEls.forEach((el) => {
         el.addEventListener("click", (e) => {
           const equipamentoId = el.getAttribute("data-equipamento-id");
+          const currentStatus = el.getAttribute("data-status") === "true";
           if (
             equipamentoId &&
             window.equipamentosPage &&
-            typeof window.equipamentosPage.registrarEquipamento === "function"
+            typeof window.equipamentosPage.toggleEquipamentoStatus ===
+              "function"
           ) {
-            window.equipamentosPage.registrarEquipamento(equipamentoId);
+            window.equipamentosPage.toggleEquipamentoStatus(
+              equipamentoId,
+              currentStatus
+            );
           }
         });
       });
