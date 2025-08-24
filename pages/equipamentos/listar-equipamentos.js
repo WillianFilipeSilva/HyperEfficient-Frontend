@@ -4,6 +4,8 @@ class EquipamentosPage {
     this.searchTerm = "";
     this.editingItem = null;
     this.table = null;
+    this.pollingInterval = null;
+    this.lastEquipmentStatus = new Map();
 
     const modal = document.getElementById("modalEquipamento");
     if (modal && !modal.classList.contains("hidden")) {
@@ -17,6 +19,7 @@ class EquipamentosPage {
     this.setupEventListeners();
     this.createTable();
     this.loadData();
+    this.startPolling();
   }
 
   createTable() {
@@ -451,6 +454,86 @@ class EquipamentosPage {
       );
     }
   }
+
+  startPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+    }
+
+    this.pollingInterval = setInterval(() => {
+      this.checkEquipmentStatus();
+    }, 60000);
+  }
+
+  stopPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+      this.pollingInterval = null;
+    }
+  }
+
+  async checkEquipmentStatus() {
+    try {
+      const activeEquipments =
+        this.table?.config?.data?.filter(
+          (equipment) =>
+            equipment.ativo &&
+            equipment.deviceIdIntegration &&
+            equipment.deviceIdIntegration.trim() !== ""
+        ) || [];
+
+      if (activeEquipments.length === 0) {
+        return;
+      }
+
+      let hasChanges = false;
+
+      for (const equipment of activeEquipments) {
+        try {
+          const statusResponse = await window.API_CONFIG.authenticatedRequest(
+            `${window.API_CONFIG.ENDPOINTS.REGISTROS}/${equipment.id}/status`
+          );
+
+          const currentStatus = {
+            ativo: statusResponse.ativo || false,
+            potenciaKwh: statusResponse.potenciaKwh || 0,
+          };
+
+          const lastStatus = this.lastEquipmentStatus.get(equipment.id);
+
+          if (!lastStatus) {
+            this.lastEquipmentStatus.set(equipment.id, currentStatus);
+            continue;
+          }
+
+          if (
+            lastStatus.ativo !== currentStatus.ativo ||
+            lastStatus.potenciaKwh !== currentStatus.potenciaKwh
+          ) {
+            hasChanges = true;
+            this.lastEquipmentStatus.set(equipment.id, currentStatus);
+          }
+        } catch (error) {
+          console.warn(
+            `Erro ao verificar status do equipamento ${equipment.id}:`,
+            error
+          );
+        }
+      }
+
+      if (hasChanges) {
+        this.showToast(
+          "Alterações detectadas nos equipamentos. Recarregando...",
+          "info"
+        );
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } catch (error) {
+      console.warn("Erro no polling de status dos equipamentos:", error);
+    }
+  }
 }
 
 class ModernEquipamentosTable {
@@ -714,4 +797,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   };
   checkDependencies();
+});
+
+window.addEventListener("beforeunload", () => {
+  if (equipamentosPage && typeof equipamentosPage.stopPolling === "function") {
+    equipamentosPage.stopPolling();
+  }
 });
